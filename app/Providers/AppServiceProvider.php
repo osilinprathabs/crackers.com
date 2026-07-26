@@ -56,9 +56,15 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Register model observers
-        \App\Models\LoanAccount::observe(\App\Observers\LoanAccountObserver::class);
-        \App\Models\EmiAgentAssignment::observe(\App\Observers\EmiAgentAssignmentObserver::class);
-        \App\Models\EmiFollowup::observe(\App\Observers\EmiFollowupObserver::class);
+        if (class_exists(\App\Models\LoanAccount::class) && class_exists(\App\Observers\LoanAccountObserver::class)) {
+            \App\Models\LoanAccount::observe(\App\Observers\LoanAccountObserver::class);
+        }
+        if (class_exists(\App\Models\EmiAgentAssignment::class) && class_exists(\App\Observers\EmiAgentAssignmentObserver::class)) {
+            \App\Models\EmiAgentAssignment::observe(\App\Observers\EmiAgentAssignmentObserver::class);
+        }
+        if (class_exists(\App\Models\EmiFollowup::class) && class_exists(\App\Observers\EmiFollowupObserver::class)) {
+            \App\Models\EmiFollowup::observe(\App\Observers\EmiFollowupObserver::class);
+        }
 
         // Register login and logout event loggers
         Event::listen(Login::class, function (Login $event) {
@@ -94,39 +100,43 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Register collection created logger
-        \App\Models\EmiCollection::created(function ($collection) {
-            try {
-                $collection->loadMissing(['emi.loanAccount.client', 'agent', 'verifiedBy']);
-                
-                $clientName = $collection->emi?->loanAccount?->client?->client_name ?? 'Unknown';
-                $loanNumber = $collection->emi?->loanAccount?->account_number ?? 'N/A';
-                $emiNumber = $collection->emi?->instalment_number ?? 'N/A';
-                $amount = $collection->amount ?? 0;
-                $paymentMode = $collection->payment_method ?? 'direct';
-                
-                $collectedBy = 'System';
-                if ($collection->agent) {
-                    $collectedBy = $collection->agent->agent_name;
-                } elseif ($collection->verifiedBy) {
-                    $collectedBy = $collection->verifiedBy->name;
-                } elseif (auth()->check()) {
-                    $collectedBy = auth()->user()->name;
-                }
+        if (class_exists(\App\Models\EmiCollection::class)) {
+            \App\Models\EmiCollection::created(function ($collection) {
+                try {
+                    $collection->loadMissing(['emi.loanAccount.client', 'agent', 'verifiedBy']);
+                    
+                    $clientName = $collection->emi?->loanAccount?->client?->client_name ?? 'Unknown';
+                    $loanNumber = $collection->emi?->loanAccount?->account_number ?? 'N/A';
+                    $emiNumber = $collection->emi?->instalment_number ?? 'N/A';
+                    $amount = $collection->amount ?? 0;
+                    $paymentMode = $collection->payment_method ?? 'direct';
+                    
+                    $collectedBy = 'System';
+                    if ($collection->agent) {
+                        $collectedBy = $collection->agent->agent_name;
+                    } elseif ($collection->verifiedBy) {
+                        $collectedBy = $collection->verifiedBy->name;
+                    } elseif (auth()->check()) {
+                        $collectedBy = auth()->user()->name;
+                    }
 
-                \App\Models\CollectionLog::create([
-                    'client_name' => $clientName,
-                    'loan_number' => $loanNumber,
-                    'emi_number' => $emiNumber,
-                    'collected_amount' => $amount,
-                    'payment_mode' => $paymentMode,
-                    'collected_by_name' => $collectedBy,
-                    'ip_address' => request()->ip() ?: '127.0.0.1',
-                    'collected_at' => $collection->collected_at ?: now(),
-                ]);
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Failed to log collection log: ' . $e->getMessage());
-            }
-        });
+                    if (class_exists(\App\Models\CollectionLog::class)) {
+                        \App\Models\CollectionLog::create([
+                            'client_name' => $clientName,
+                            'loan_number' => $loanNumber,
+                            'emi_number' => $emiNumber,
+                            'collected_amount' => $amount,
+                            'payment_mode' => $paymentMode,
+                            'collected_by_name' => $collectedBy,
+                            'ip_address' => request()->ip() ?: '127.0.0.1',
+                            'collected_at' => $collection->collected_at ?: now(),
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Failed to log collection log: ' . $e->getMessage());
+                }
+            });
+        }
 
         Vite::useStyleTagAttributes(function (?string $src, string $url, ?array $chunk, ?array $manifest) {
             if ($src !== null) {

@@ -28,8 +28,8 @@
   $semiDarkEnabled = $isAdminLayout && filter_var($configData['semiDark'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
   // Get appearance settings from config-based helper
-  $adminTitle = SettingsHelper::get('admin_title', config('variables.templateName', 'Loan App'));
-  $adminSubtitle = SettingsHelper::get('admin_subtitle', config('variables.templateSuffix', 'Loan Management System'));
+  $adminTitle = SettingsHelper::get('admin_title', config('variables.templateName', 'Crackers Store'));
+  $adminSubtitle = SettingsHelper::get('admin_subtitle', config('variables.templateSuffix', 'Crackers Store Online'));
   $adminFavicon = SettingsHelper::get('admin_favicon');
   $primaryColor = SettingsHelper::get('primary_color', '#696cff');
   $secondaryColor = SettingsHelper::get('secondary_color', '#8592a3');

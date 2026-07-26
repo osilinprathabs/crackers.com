@@ -10,15 +10,6 @@
       ]
     },
     {
-      "icon": "menu-icon icon-base ri ri-home-smile-2-line",
-      "url": "app/agents/dashboard",
-      "name": "Dashboard",
-      "slug": "agent-dashboard",
-      "roles": [
-        "Agent"
-      ]
-    },
-     {
       "name": "Accounting",
       "icon": "menu-icon icon-base ri ri-book-2-line",
       "slug": [
@@ -37,7 +28,6 @@
             "Admin"
           ]
         },
-      
         {
           "url": "account/bank-accounts",
           "name": "Bank accounts",
@@ -140,182 +130,9 @@
       ]
     },
     {
-      "icon": "menu-icon icon-base ri ri-bar-chart-box-line",
-      "url": "verification/credit-score-history",
-      "name": "CIBIL / Credit score",
-      "slug": "verification-credit-score-history",
-      "roles": [
-        "CreditVerifier"
-      ]
-    },
-    {
-      "url": "client-management",
-      "icon": "menu-icon icon-base ri ri-group-line",
-      "name": "Clients",
-      "roles": [
-        "Admin",
-        "Agent"
-      ],
-      "slug": [
-        "client-management",
-        "client-view-",
-        "client-loan-emis",
-        "client-loan-document-view",
-        "client-loan-document-download"
-      ]
-    },
-    {
-      "url": "verification/kyc-verification",
-      "name": "KYC Verification",
-      "icon": "menu-icon icon-base ri ri-shield-check-line",
-      "roles": [
-        "Admin",
-        "Staff"
-      ],
-      "slug": [
-        "verification-kyc-verification",
-        "verification-kyc-view"
-      ]
-    },
-    {
-      "url": "loan/loan-applications",
-      "name": "Loan Applications",
-      "icon": "menu-icon icon-base ri ri-file-list-3-line",
-      "roles": [
-        "Admin",
-        "Agent"
-      ],
-      "slug": [
-        "loan-applications",
-        "loan-application-view"
-      ]
-    },
-    {
-      "url": "loan/loan-accounts",
-      "name": "Loan Accounts",
-      "icon": "menu-icon icon-base ri ri-bank-line",
-      "roles": [
-        "Admin"
-      ],
-      "slug": [
-        "loan-accounts",
-        "loan-account-view"
-      ]
-    },
-    {
-      "name": "Loan Setup",
-      "icon": "menu-icon icon-base ri ri-settings-4-line",
-      "roles": [
-        "Admin"
-      ],
-      "slug": [
-        "loan-products",
-        "loan-product-view",
-        "loan-types",
-        "loan-configuration"
-      ],
-      "submenu": [
-        {
-          "url": "loan/loan-types",
-          "name": "Loan Types",
-          "slug": "loan-types",
-          "roles": [
-            "Admin"
-          ]
-        },
-        {
-          "url": "loan/loan-products",
-          "name": "Loan Products",
-          "slug": [
-            "loan-products",
-            "loan-product-view"
-          ]
-        },
-        {
-          "url": "loan/loan-configuration",
-          "name": "Loan Configuration",
-          "slug": "loan-configuration",
-          "roles": [
-            "Admin"
-          ]
-        }
-      ]
-    },
-    {
-      "name": "EMI/Interest Loan & Repayments",
-      "icon": "menu-icon icon-base ri ri-calendar-check-line",
-      "roles": [
-        "Admin",
-        "Staff",
-        "Agent"
-      ],
-      "slug": [
-        "emi-repayments",
-        "emi-details",
-        "client-loan-emi-details",
-        "payment-receipts",
-        "pending-emis",
-        "create-receipt",
-        "view-receipt",
-        "print-receipt",
-        "emi-calculator"
-      ],
-      "submenu": [
-        {
-          "url": "emi/repayments",
-          "name": "EMI/Interest Loan Repayments",
-          "slug": [
-            "emi-repayments",
-            "emi-details",
-            "client-loan-emi-details"
-          ]
-        },
-        {
-          "url": "emi/receipts",
-          "name": "Payment Receipts",
-          "slug": "payment-receipts"
-        },
-        {
-          "url": "emi/emi-calculator",
-          "name": "EMI/Interest Loan Calculator",
-          "slug": "emi-calculator"
-        }
-      ]
-    },
-    {
-      "name": "Reports & Analytics",
-      "icon": "menu-icon icon-base ri ri-bar-chart-grouped-line",
-      "slug": "reports",
-      "roles": [
-        "Admin"
-      ],
-      "submenu": [
-        {
-          "url": "reports/clients",
-          "name": "Clients",
-          "slug": "reports-clients"
-        },
-        {
-          "url": "reports/applications",
-          "name": "Applications",
-          "slug": "reports-applications"
-        },
-        {
-          "url": "reports/loans",
-          "name": "Loans",
-          "slug": "reports-loans"
-        },
-        {
-          "url": "reports/emi",
-          "name": "EMI/Interest Loan",
-          "slug": "reports-emi"
-        }
-      ]
-    },
-    {
       "url": "reports/revenue",
       "icon": "menu-icon icon-base ri ri-money-rupee-circle-line",
-      "name": "Revenue",
+      "name": "Revenue Reports",
       "slug": "reports-revenue",
       "roles": [
         "Admin"
@@ -340,64 +157,14 @@
         "Admin"
       ],
       "slug": [
-        "admin.staff.index",
-        "agent-management",
-        "agent-management.index",
-        "agent-management.data",
-        "agent-management.view-account",
-        "agent-management.view-work",
-        "agent-management.view-visits",
-        "agent-management.view-assigned-client",
-        "agent-management.visit-details",
-        "agent-management.attendance",
-        "agent-collections"
+        "admin.staff.index"
       ],
       "submenu": [
         {
           "url": "staff",
           "name": "Staff Management",
           "slug": "admin.staff.index"
-        },
-        {
-          "url": "app/agents",
-          "name": "Agent Management",
-          "slug": [
-            "agent-management.index",
-            "agent-management.data",
-            "agent-management.view",
-            "agent-management.view-account",
-            "agent-management.view-work",
-            "agent-management.view-visits",
-            "agent-management.view-assigned-client",
-            "agent-management.visit-details"
-          ]
         }
-      ]
-    },
-    {
-      "name": "Agent Collections",
-      "icon": "menu-icon icon-base ri ri-wallet-line",
-      "url": "app/agents/agent-collections",
-      "roles": [
-        "Admin"
-      ],
-      "slug": [
-        "agent-collections",
-        "agent-collections.list",
-        "agent-collections.show"
-      ]
-    },
-    {
-      "name": "My Collections",
-      "icon": "menu-icon icon-base ri ri-wallet-line",
-      "url": "app/agents/agent-collections",
-      "roles": [
-        "Agent"
-      ],
-      "slug": [
-        "agent-collections",
-        "agent-collections.list",
-        "agent-collections.show"
       ]
     },
     {
@@ -529,7 +296,6 @@
         "payment-methods-update",
         "page-configuration",
         "faq-index",
-        "loan-document-templates",
         "setup-configuration-api-configuration",
         "faq-create",
         "faq-edit"
@@ -571,11 +337,6 @@
             "faq-create",
             "faq-edit"
           ]
-        },
-        {
-          "url": "setup-configuration/loan-document-templates",
-          "name": "Loan Document Template",
-          "slug": "loan-document-templates"
         }
       ]
     },
@@ -585,8 +346,7 @@
       "slug": [
         "system",
         "system-cache-clear",
-        "system-login-log",
-        "system-collection-log"
+        "system-login-log"
       ],
       "roles": [
         "Admin"
@@ -611,11 +371,6 @@
           "url": "system/login-log",
           "name": "Login Log",
           "slug": "system-login-log"
-        },
-        {
-          "url": "system/collection-log",
-          "name": "Collection Log",
-          "slug": "system-collection-log"
         }
       ]
     }
