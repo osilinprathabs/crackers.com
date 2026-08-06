@@ -10,6 +10,69 @@
       ]
     },
     {
+      "icon": "menu-icon icon-base ri ri-user-star-line",
+      "url": "admin/customers",
+      "name": "Customers",
+      "slug": "admin.customers",
+      "roles": [
+        "Admin"
+      ]
+    },
+    {
+      "icon": "menu-icon icon-base ri ri-price-tag-3-line",
+      "url": "admin/categories",
+      "name": "Crackers Categories",
+      "slug": "admin.categories",
+      "roles": [
+        "Admin"
+      ]
+    },
+    {
+      "icon": "menu-icon icon-base ri ri-sparkling-fill",
+      "url": "admin/products",
+      "name": "Crackers Products",
+      "slug": "admin.products",
+      "roles": [
+        "Admin"
+      ]
+    },
+    {
+      "icon": "menu-icon icon-base ri ri-archive-stack-line",
+      "url": "admin/inventory",
+      "name": "Inventory Management",
+      "slug": "admin.inventory",
+      "roles": [
+        "Admin"
+      ]
+    },
+    {
+      "icon": "menu-icon icon-base ri ri-shopping-bag-3-line",
+      "url": "admin/orders",
+      "name": "Cracker Orders",
+      "slug": "admin.orders",
+      "roles": [
+        "Admin"
+      ]
+    },
+    {
+      "icon": "menu-icon icon-base ri ri-shopping-cart-2-line",
+      "url": "admin/pos",
+      "name": "POS Counter (Walk-In)",
+      "slug": "admin.pos",
+      "roles": [
+        "Admin"
+      ]
+    },
+    {
+      "icon": "menu-icon icon-base ri ri-bank-card-line",
+      "url": "admin/payment-settings",
+      "name": "Bank & Payment Details",
+      "slug": "admin.payment-settings",
+      "roles": [
+        "Admin"
+      ]
+    },
+    {
       "name": "Accounting",
       "icon": "menu-icon icon-base ri ri-book-2-line",
       "slug": [
@@ -21,7 +84,7 @@
       "submenu": [
         {
           "url": "account",
-          "name": "Dashboard",
+          "name": "Overview",
           "icon": "menu-icon icon-base ri ri-dashboard-3-line",
           "slug": "account.index",
           "roles": [
@@ -29,28 +92,19 @@
           ]
         },
         {
-          "url": "account/bank-accounts",
-          "name": "Bank accounts",
-          "icon": "menu-icon icon-base ri ri-bank-line",
-          "slug": "account.bank-accounts",
-          "roles": [
-            "Admin"
-          ]
-        },
-        {
-          "url": "account/chart-of-accounts",
-          "name": "Chart of accounts",
-          "icon": "menu-icon icon-base ri ri-node-tree",
-          "slug": "account.chart-of-accounts",
-          "roles": [
-            "Admin"
-          ]
-        },
-        {
           "url": "account/revenues",
-          "name": "Revenues",
+          "name": "Revenues (Income)",
           "icon": "menu-icon icon-base ri ri-arrow-up-circle-line",
           "slug": "account.revenues",
+          "roles": [
+            "Admin"
+          ]
+        },
+        {
+          "url": "account/revenue-categories",
+          "name": "Revenue Categories",
+          "icon": "menu-icon icon-base ri ri-bookmark-3-line",
+          "slug": "account.revenue-categories.index",
           "roles": [
             "Admin"
           ]
@@ -65,28 +119,10 @@
           ]
         },
         {
-          "url": "account/reports",
-          "name": "Reports",
-          "icon": "menu-icon icon-base ri ri-file-chart-line",
-          "slug": "account.reports",
-          "roles": [
-            "Admin"
-          ]
-        },
-        {
-          "url": "account/day-book",
-          "name": "Day Book",
-          "icon": "menu-icon icon-base ri ri-book-3-line",
-          "slug": "account.day-book",
-          "roles": [
-            "Admin"
-          ]
-        },
-        {
-          "url": "account/ledger",
-          "name": "Ledger",
-          "icon": "menu-icon icon-base ri ri-book-open-line",
-          "slug": "account.ledger",
+          "url": "account/expense-categories",
+          "name": "Expense Categories",
+          "icon": "menu-icon icon-base ri ri-price-tag-3-line",
+          "slug": "account.expense-categories.index",
           "roles": [
             "Admin"
           ]
@@ -101,28 +137,19 @@
           ]
         },
         {
-          "url": "account/account-types",
-          "name": "Account types",
-          "icon": "menu-icon icon-base ri ri-shapes-line",
-          "slug": "account.account-types",
+          "url": "account/day-book",
+          "name": "Day Book",
+          "icon": "menu-icon icon-base ri ri-book-3-line",
+          "slug": "account.day-book",
           "roles": [
             "Admin"
           ]
         },
         {
-          "url": "account/revenue-categories",
-          "name": "Revenue categories",
-          "icon": "menu-icon icon-base ri ri-bookmark-2-line",
-          "slug": "account.revenue-categories",
-          "roles": [
-            "Admin"
-          ]
-        },
-        {
-          "url": "account/expense-categories",
-          "name": "Expense categories",
-          "icon": "menu-icon icon-base ri ri-bookmark-2-line",
-          "slug": "account.expense-categories",
+          "url": "account/reports",
+          "name": "Accounting Reports",
+          "icon": "menu-icon icon-base ri ri-file-chart-line",
+          "slug": "account.reports.index",
           "roles": [
             "Admin"
           ]
@@ -165,15 +192,6 @@
           "name": "Staff Management",
           "slug": "admin.staff.index"
         }
-      ]
-    },
-    {
-      "name": "Location Management",
-      "icon": "menu-icon icon-base ri ri-map-pin-line",
-      "slug": "location-management",
-      "url": "location-management",
-      "roles": [
-        "Admin"
       ]
     },
     {

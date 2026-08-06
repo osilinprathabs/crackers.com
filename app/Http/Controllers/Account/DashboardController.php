@@ -8,8 +8,8 @@ use App\Models\Account\Expense;
 use App\Models\Account\Revenue;
 use App\Models\Account\Vendor;
 use App\Models\Account\VendorPayment;
-use App\Models\Emi;
-use App\Models\LoanAccount;
+use App\Models\CrackersOrder;
+use App\Models\CrackersProduct;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Auth;
 class DashboardController extends Controller
 {
     /**
-     * Loan app: admins use the ERP-style company accounting dashboard.
+     * Crackers.com: Admins use the ERP-style company accounting dashboard.
      */
     public function index(Request $request)
     {
@@ -31,40 +31,34 @@ class DashboardController extends Controller
     {
         $creatorId = creatorId();
 
-        $totalClients = Customer::where('created_by', $creatorId)->count();
-        $totalVendors = Vendor::where('created_by', $creatorId)->count();
-        $totalRevenue = Revenue::where('created_by', $creatorId)->sum('amount');
-        $totalExpense = Expense::where('created_by', $creatorId)->sum('amount');
-        $totalRevenuePosted = Revenue::where('created_by', $creatorId)->where('status', 'posted')->sum('amount');
-        $totalExpensePosted = Expense::where('created_by', $creatorId)->where('status', 'posted')->sum('amount');
-        $totalCustomerPayments = CustomerPayment::whereHas('customer', function ($q) use ($creatorId) {
-            $q->where('created_by', $creatorId);
-        })->sum('payment_amount');
-        $totalVendorPayments = VendorPayment::whereHas('vendor', function ($q) use ($creatorId) {
-            $q->where('created_by', $creatorId);
-        })->sum('payment_amount');
+        $totalClients = Customer::count();
+        $totalVendors = Vendor::count();
+
+        // Crackers ERP Integrated Sales & Tax Metrics
+        $totalCrackersSales = CrackersOrder::sum('grand_total');
+        $onlineSales = CrackersOrder::where('is_pos', false)->sum('grand_total');
+        $posSales = CrackersOrder::where('is_pos', true)->sum('grand_total');
+        $totalGst = CrackersOrder::sum('gst_amount');
+        $inventoryValuation = CrackersProduct::selectRaw('SUM(stock * price) as val')->value('val') ?: 0;
+
+        $retailCustomersCount = Customer::where('customer_type', 'retail')->orWhereNull('customer_type')->count();
+        $wholesaleCustomersCount = Customer::where('customer_type', 'wholesale')->count();
+        $totalOrdersCount = CrackersOrder::count();
+
+        // GL Ledger Revenue & Expense Totals
+        $totalRevenue = Revenue::sum('amount') + $totalCrackersSales;
+        $totalExpense = Expense::sum('amount');
+        $totalRevenuePosted = Revenue::where('status', 'posted')->sum('amount') + $totalCrackersSales;
+        $totalExpensePosted = Expense::where('status', 'posted')->sum('amount');
+        $totalCustomerPayments = CustomerPayment::sum('payment_amount') + $totalCrackersSales;
+        $totalVendorPayments = VendorPayment::sum('payment_amount');
 
         $netProfit = $totalRevenue - $totalExpense;
         $netProfitPosted = $totalRevenuePosted - $totalExpensePosted;
 
-        $loanAccountsTotal = LoanAccount::query()->count();
-        $loanAccountsActive = LoanAccount::query()->where('status', 'active')->count();
-        $emisPending = Emi::query()->where('status', 'pending')->count();
+        $recentCrackersOrders = CrackersOrder::latest()->limit(5)->get();
 
-        // Count rows marked overdue OR still pending with due date in the past (matches app behaviour).
-        $emisOverdue = Emi::query()
-            ->where(function ($q) {
-                $q->where('status', 'overdue')
-                    ->orWhere(function ($q2) {
-                        $q2->where('status', 'pending')
-                            ->whereNotNull('due_date')
-                            ->whereDate('due_date', '<', today());
-                    });
-            })
-            ->count();
-
-        $recentRevenues = Revenue::where('created_by', $creatorId)
-            ->latest()
+        $recentRevenues = Revenue::latest()
             ->limit(5)
             ->get()
             ->map(function ($item) {
@@ -77,8 +71,7 @@ class DashboardController extends Controller
                 ];
             });
 
-        $recentExpenses = Expense::where('created_by', $creatorId)
-            ->latest()
+        $recentExpenses = Expense::latest()
             ->limit(5)
             ->get()
             ->map(function ($item) {
@@ -91,35 +84,27 @@ class DashboardController extends Controller
                 ];
             });
 
-        $isDemo = config('app.is_demo');
         $monthlyCustomerPayments = [];
         $monthlyVendorPayments = [];
         for ($i = 5; $i >= 0; $i--) {
             $date = Carbon::now()->subMonths($i);
             $monthName = $date->format('M');
 
-            if ($isDemo) {
-                $customerPayments = rand(15000, 45000) + rand(0, 99) / 100;
-                $vendorPayments = rand(5000, 25000) + rand(0, 99) / 100;
-            } else {
-                $customerPayments = CustomerPayment::whereHas('customer', function ($q) use ($creatorId) {
-                    $q->where('created_by', $creatorId);
-                })
-                    ->whereMonth('created_at', $date->month)
-                    ->whereYear('created_at', $date->year)
-                    ->sum('payment_amount');
+            $orderMonthlySales = CrackersOrder::whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->sum('grand_total');
 
-                $vendorPayments = VendorPayment::whereHas('vendor', function ($q) use ($creatorId) {
-                    $q->where('created_by', $creatorId);
-                })
-                    ->whereMonth('created_at', $date->month)
-                    ->whereYear('created_at', $date->year)
-                    ->sum('payment_amount');
-            }
+            $custPayments = CustomerPayment::whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->sum('payment_amount');
+
+            $vendorPayments = VendorPayment::whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->sum('payment_amount');
 
             $monthlyCustomerPayments[] = [
                 'month' => $monthName,
-                'customer_payments' => $customerPayments,
+                'customer_payments' => $orderMonthlySales + $custPayments,
             ];
 
             $monthlyVendorPayments[] = [
@@ -141,16 +126,21 @@ class DashboardController extends Controller
                 'net_profit' => $netProfit,
                 'net_profit_posted' => $netProfitPosted,
             ],
+            'crackersErp' => [
+                'total_sales' => $totalCrackersSales,
+                'online_sales' => $onlineSales,
+                'pos_sales' => $posSales,
+                'total_gst' => $totalGst,
+                'inventory_valuation' => $inventoryValuation,
+                'retail_customers' => $retailCustomersCount,
+                'wholesale_customers' => $wholesaleCustomersCount,
+                'total_orders' => $totalOrdersCount,
+            ],
             'monthlyCustomerPayments' => $monthlyCustomerPayments,
             'monthlyVendorPayments' => $monthlyVendorPayments,
             'recentRevenues' => $recentRevenues,
             'recentExpenses' => $recentExpenses,
-            'loanPortfolio' => [
-                'loan_accounts_total' => $loanAccountsTotal,
-                'loan_accounts_active' => $loanAccountsActive,
-                'emis_pending' => $emisPending,
-                'emis_overdue' => $emisOverdue,
-            ],
+            'recentCrackersOrders' => $recentCrackersOrders,
         ]);
     }
 }

@@ -44,7 +44,74 @@ class WebsiteSetupController extends Controller
             ]
         );
 
-        return view('admin.website-setup.homepage', compact('appearance', 'companyDetail'));
+        $heroBanners = \App\Models\Slide::where('type', 'banner')->latest()->get();
+
+        return view('admin.website-setup.homepage', compact('appearance', 'companyDetail', 'heroBanners'));
+    }
+
+    public function storeBanner(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:500',
+            'link' => 'nullable|string|max:255',
+            'image' => 'nullable|image|max:3072',
+            'image_url' => 'nullable|url',
+        ]);
+
+        $imagePath = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1200&auto=format&fit=crop';
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('banners', 'public');
+            $imagePath = Storage::url($path);
+        } elseif (!empty($validated['image_url'])) {
+            $imagePath = $validated['image_url'];
+        }
+
+        \App\Models\Slide::create([
+            'title' => $validated['title'] ?? '',
+            'description' => $validated['description'] ?? '',
+            'image_path' => $imagePath,
+            'type' => 'banner',
+            'link' => $validated['link'] ?? '#catalog',
+        ]);
+
+        return redirect()->back()->with('success', 'Hero Banner added successfully!');
+    }
+
+    public function updateBanner(Request $request, $id)
+    {
+        $slide = \App\Models\Slide::findOrFail($id);
+
+        $validated = $request->validate([
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:500',
+            'link' => 'nullable|string|max:255',
+            'image' => 'nullable|image|max:3072',
+            'image_url' => 'nullable|url',
+        ]);
+
+        $slide->title = $validated['title'] ?? '';
+        $slide->description = $validated['description'] ?? '';
+        $slide->link = $validated['link'] ?? '#catalog';
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('banners', 'public');
+            $slide->image_path = Storage::url($path);
+        } elseif (!empty($validated['image_url'])) {
+            $slide->image_path = $validated['image_url'];
+        }
+
+        $slide->save();
+
+        return redirect()->back()->with('success', 'Hero Banner updated successfully!');
+    }
+
+    public function destroyBanner($id)
+    {
+        $slide = \App\Models\Slide::findOrFail($id);
+        $slide->delete();
+
+        return redirect()->back()->with('success', 'Hero Banner deleted successfully!');
     }
 
     /**

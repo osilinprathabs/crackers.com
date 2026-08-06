@@ -43,15 +43,15 @@ class ReportsController extends Controller
 
             $creatorId = creatorId();
 
-            // Fetch overall accounting and loan data for report cards
-            $totalRevenue = \App\Models\Account\Revenue::where('created_by', $creatorId)->sum('amount');
-            $totalExpense = \App\Models\Account\Expense::where('created_by', $creatorId)->sum('amount');
+            // Fetch overall accounting and Crackers ERP data for report cards
+            $totalCrackersSales = \App\Models\CrackersOrder::sum('grand_total');
+            $totalGst = \App\Models\CrackersOrder::sum('gst_amount');
+            $totalRevenue = \App\Models\Account\Revenue::sum('amount') + $totalCrackersSales;
+            $totalExpense = \App\Models\Account\Expense::sum('amount');
             $netProfit = $totalRevenue - $totalExpense;
             
-            $totalBankBalance = \App\Models\Account\BankAccount::where('created_by', $creatorId)->sum('current_balance') ?? 0;
-            $totalOutstandingLoans = \App\Models\LoanAccount::where('status', 'active')->sum('outstanding_amount') ?? 0;
-            $totalLoanDisbursed = \App\Models\LoanAccount::sum('disbursed_amount') ?? 0;
-            $totalAccountsCount = \App\Models\Account\ChartOfAccount::where('created_by', $creatorId)->count();
+            $totalBankBalance = \App\Models\Account\BankAccount::sum('current_balance') ?? 0;
+            $totalAccountsCount = \App\Models\Account\ChartOfAccount::count();
 
             return view('admin.account.reports.index', [
                 'financialYear' => $financialYear,
@@ -62,8 +62,8 @@ class ReportsController extends Controller
                     'totalBankBalance' => $totalBankBalance,
                     'totalRevenue' => $totalRevenue,
                     'totalExpense' => $totalExpense,
-                    'totalOutstandingLoans' => $totalOutstandingLoans,
-                    'totalLoanDisbursed' => $totalLoanDisbursed,
+                    'totalCrackersSales' => $totalCrackersSales,
+                    'totalGst' => $totalGst,
                     'totalAccountsCount' => $totalAccountsCount,
                 ]
             ]);
@@ -774,51 +774,49 @@ class ReportsController extends Controller
         return view('admin.account.reports.expense-category', ['pageTitle' => __('Expense Category Summary')]);
     }
 
-    public function outstandingLoans(Request $request)
+    public function salesOrdersReport(Request $request)
     {
-        $startDate = $request->get('start_date');
-        $endDate = $request->get('end_date');
+        $startDate = $request->get('start_date', date('Y-m-01'));
+        $endDate = $request->get('end_date', date('Y-m-t'));
 
-        $query = \App\Models\LoanAccount::with('client')
-            ->where('status', 'active');
+        $query = \App\Models\CrackersOrder::query();
 
         if ($startDate) {
-            $query->whereDate('disbursed_at', '>=', $startDate);
+            $query->whereDate('created_at', '>=', $startDate);
         }
         if ($endDate) {
-            $query->whereDate('disbursed_at', '<=', $endDate);
+            $query->whereDate('created_at', '<=', $endDate);
         }
 
-        $loans = $query->orderBy('disbursed_at', 'desc')->get();
+        $orders = $query->latest()->get();
 
-        return view('admin.account.reports.outstanding-loans', [
-            'pageTitle' => __('Outstanding Loans Report'),
-            'loans' => $loans,
+        return view('admin.account.reports.sales-orders', [
+            'pageTitle' => __('Crackers Store Sales Orders Report'),
+            'orders' => $orders,
             'startDate' => $startDate,
             'endDate' => $endDate,
         ]);
     }
 
-    public function loanDisbursement(Request $request)
+    public function gstTaxReport(Request $request)
     {
         $startDate = $request->get('start_date', date('Y-m-01'));
         $endDate = $request->get('end_date', date('Y-m-t'));
 
-        $query = \App\Models\LoanAccount::with('client')
-            ->whereNotNull('disbursed_at');
+        $query = \App\Models\CrackersOrder::query();
 
         if ($startDate) {
-            $query->whereDate('disbursed_at', '>=', $startDate);
+            $query->whereDate('created_at', '>=', $startDate);
         }
         if ($endDate) {
-            $query->whereDate('disbursed_at', '<=', $endDate);
+            $query->whereDate('created_at', '<=', $endDate);
         }
 
-        $loans = $query->orderBy('disbursed_at', 'desc')->get();
+        $orders = $query->latest()->get();
 
-        return view('admin.account.reports.loan-disbursement', [
-            'pageTitle' => __('Loan Disbursement Report'),
-            'loans' => $loans,
+        return view('admin.account.reports.gst-tax-report', [
+            'pageTitle' => __('GST Tax Liability Report'),
+            'orders' => $orders,
             'startDate' => $startDate,
             'endDate' => $endDate,
         ]);

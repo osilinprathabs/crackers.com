@@ -85,13 +85,13 @@
             });
         });
 
-        // ── Session flash via SweetAlert2 ───────────────────────────
+        // ── Session flash via SweetAlert2 (Modal Popup) ──────────────
         @if(session('success'))
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
                 text: {!! json_encode(session('success')) !!},
-                timer: 2500,
+                timer: 2200,
                 showConfirmButton: false,
                 position: 'center'
             });

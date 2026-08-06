@@ -64,6 +64,16 @@ class User extends Authenticatable
         return $this->hasOne(Client::class);
     }
 
+    public function customer()
+    {
+        return $this->hasOne(\App\Models\Account\Customer::class);
+    }
+
+    public function staff()
+    {
+        return $this->hasOne(Staff::class);
+    }
+
     public function agent()
     {
         return $this->hasOne(Agent::class);

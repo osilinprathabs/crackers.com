@@ -91,4 +91,6 @@ isset($configData['contentLayout']) && $configData['contentLayout'] === 'compact
         <div class="drag-target"></div>
     </div>
     <!-- / Layout wrapper -->
+    <!-- Low Stock Popup Alert Component -->
+    @include('layouts/sections/low_stock_alert')
     @endsection

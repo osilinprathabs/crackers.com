@@ -358,12 +358,12 @@
                         <i class="ri-team-line me-1"></i> Staff Management
                     </a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a href="{{ route('agent-management.index') }}" 
                        class="nav-link fw-bold px-4 py-2 active bg-success text-white shadow-sm rounded-pill" style="font-size: 14px;">
                         <i class="ri-user-star-line me-1"></i> Agent Management
                     </a>
-                </li>
+                </li> -->
             </ul>
         </div>
     </div>

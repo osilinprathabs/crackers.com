@@ -29,10 +29,18 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['web', 'auth', 'admin'])->prefix('account')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('account.index');
 
-    Route::get('loan-accounts', [LoanPortfolioController::class, 'loanAccounts'])->name('account.loan-accounts.index');
-    Route::get('loan-accounts/export', [LoanPortfolioController::class, 'loanAccountsExport'])->name('account.loan-accounts.export');
-    Route::get('emis', [LoanPortfolioController::class, 'emis'])->name('account.emis.index');
-    Route::get('emis/export', [LoanPortfolioController::class, 'emisExport'])->name('account.emis.export');
+    Route::get('loan-accounts', function () {
+        return redirect()->route('account.index');
+    })->name('account.loan-accounts.index');
+    Route::get('loan-accounts/export', function () {
+        return redirect()->route('account.index');
+    })->name('account.loan-accounts.export');
+    Route::get('emis', function () {
+        return redirect()->route('account.index');
+    })->name('account.emis.index');
+    Route::get('emis/export', function () {
+        return redirect()->route('account.index');
+    })->name('account.emis.export');
 
     Route::resource('customers', CustomerController::class, ['as' => 'account']);
     Route::get('customers/export', [CustomerController::class, 'export'])->name('account.customers.export');
@@ -184,8 +192,8 @@ Route::middleware(['web', 'auth', 'admin'])->prefix('account')->group(function (
         Route::get('/revenue-category', [ReportsController::class, 'revenueCategory'])->name('revenue-category');
         Route::get('/expense-category', [ReportsController::class, 'expenseCategory'])->name('expense-category');
         
-        Route::get('/outstanding-loans', [ReportsController::class, 'outstandingLoans'])->name('outstanding-loans');
-        Route::get('/loan-disbursement', [ReportsController::class, 'loanDisbursement'])->name('loan-disbursement');
+        Route::get('/sales-orders', [ReportsController::class, 'salesOrdersReport'])->name('sales-orders');
+        Route::get('/gst-tax-report', [ReportsController::class, 'gstTaxReport'])->name('gst-tax-report');
     
         });
 

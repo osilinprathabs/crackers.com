@@ -17,6 +17,7 @@ class Customer extends Model
         'company_name',
         'contact_person_name',
         'contact_person_email',
+        'customer_type',
         'contact_person_mobile',
         'tax_number',
         'payment_terms',
@@ -70,5 +71,10 @@ class Customer extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function crackersOrders()
+    {
+        return $this->hasMany(\App\Models\CrackersOrder::class, 'customer_id');
     }
 }

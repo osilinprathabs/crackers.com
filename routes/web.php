@@ -55,18 +55,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard/stats', [DashboardController::class, 'getStats'])->name('dashboard.stats');
 
 
-    //foreclosure
-    Route::post('/loan/foreclosure-config/update', [\App\Http\Controllers\LoanAccountsController::class, 'updateForeclosureConfig'])->name('foreclosure-config.update');
-    Route::get('/loan/loan-accounts/{id}/foreclosure-info', [\App\Http\Controllers\LoanAccountsController::class, 'foreclosureInfo'])->name('loan-account.foreclosure-info');
-    Route::post('/loan/loan-accounts/{id}/foreclose', [\App\Http\Controllers\LoanAccountsController::class, 'foreclose'])->name('loan-account.foreclose');
-
-    //prepayment
-    Route::get('/loan-accounts/{id}/prepayment-info', [\App\Http\Controllers\LoanAccountsController::class, 'prepaymentInfo'])->name('loan-account.prepayment-info');
-    Route::post('/loan-accounts/{id}/prepayment', [\App\Http\Controllers\LoanAccountsController::class, 'processPrepayment'])->name('loan-account.prepayment');
-
-    //support tickets
-    Route::post('/support/tickets/{id}/assign', [\App\Http\Controllers\SupportTicketController::class, 'assign'])->name('support-tickets.assign');
-    Route::delete('/support/tickets/{id}', [\App\Http\Controllers\SupportTicketController::class, 'destroy'])->name('support-tickets.destroy');
+    // Legacy loan / support routes disabled for Crackers.com
+    // Route::post('/loan/foreclosure-config/update', [\App\Http\Controllers\LoanAccountsController::class, 'updateForeclosureConfig'])->name('foreclosure-config.update');
+    // Route::get('/loan/loan-accounts/{id}/foreclosure-info', [\App\Http\Controllers\LoanAccountsController::class, 'foreclosureInfo'])->name('loan-account.foreclosure-info');
+    // Route::post('/loan/loan-accounts/{id}/foreclose', [\App\Http\Controllers\LoanAccountsController::class, 'foreclose'])->name('loan-account.foreclose');
+    // Route::get('/loan-accounts/{id}/prepayment-info', [\App\Http\Controllers\LoanAccountsController::class, 'prepaymentInfo'])->name('loan-account.prepayment-info');
+    // Route::post('/loan-accounts/{id}/prepayment', [\App\Http\Controllers\LoanAccountsController::class, 'processPrepayment'])->name('loan-account.prepayment');
+    // Route::post('/support/tickets/{id}/assign', [\App\Http\Controllers\SupportTicketController::class, 'assign'])->name('support-tickets.assign');
+    // Route::delete('/support/tickets/{id}', [\App\Http\Controllers\SupportTicketController::class, 'destroy'])->name('support-tickets.destroy');
 
     //website setup
     Route::get('/admin/homepage-setup', [\App\Http\Controllers\WebsiteSetupController::class, 'homepage'])->name('website-homepage');
@@ -115,17 +111,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/admin/notifications/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy'])->name('admin-notifications.destroy');
     Route::post('/admin/notifications/clear-read', [\App\Http\Controllers\NotificationController::class, 'clearRead'])->name('admin-notifications.clear-read');
 
-    //reports & analytics
-    Route::get('/reports/clients', [\App\Http\Controllers\ReportsAnalyticsController::class, 'clients'])->name('reports-clients');
-    Route::get('/reports/clients/export', [\App\Http\Controllers\ReportsAnalyticsController::class, 'exportClients'])->name('reports-clients-export');
-    Route::get('/reports/loans', [\App\Http\Controllers\ReportsAnalyticsController::class, 'loans'])->name('reports-loans');
-    Route::get('/reports/loans/export', [\App\Http\Controllers\ReportsAnalyticsController::class, 'exportLoans'])->name('reports-loans-export');
-    Route::get('/reports/applications', [\App\Http\Controllers\ReportsAnalyticsController::class, 'applications'])->name('reports-applications');
-    Route::get('/reports/applications/export', [\App\Http\Controllers\ReportsAnalyticsController::class, 'exportApplications'])->name('reports-applications-export');
-    Route::get('/reports/emi', [\App\Http\Controllers\ReportsAnalyticsController::class, 'emi'])->name('reports-emi');
-    Route::get('/reports/emi/export', [\App\Http\Controllers\ReportsAnalyticsController::class, 'exportEmi'])->name('reports-emi-export');
+    // Legacy loan reports (Disabled for Crackers.com)
+    // Route::get('/reports/clients', [\App\Http\Controllers\ReportsAnalyticsController::class, 'clients'])->name('reports-clients');
+    // Route::get('/reports/clients/export', [\App\Http\Controllers\ReportsAnalyticsController::class, 'exportClients'])->name('reports-clients-export');
+    // Route::get('/reports/loans', [\App\Http\Controllers\ReportsAnalyticsController::class, 'loans'])->name('reports-loans');
+    // Route::get('/reports/loans/export', [\App\Http\Controllers\ReportsAnalyticsController::class, 'exportLoans'])->name('reports-loans-export');
+    // Route::get('/reports/applications', [\App\Http\Controllers\ReportsAnalyticsController::class, 'applications'])->name('reports-applications');
+    // Route::get('/reports/applications/export', [\App\Http\Controllers\ReportsAnalyticsController::class, 'exportApplications'])->name('reports-applications-export');
+    // Route::get('/reports/emi', [\App\Http\Controllers\ReportsAnalyticsController::class, 'emi'])->name('reports-emi');
+    // Route::get('/reports/emi/export', [\App\Http\Controllers\ReportsAnalyticsController::class, 'exportEmi'])->name('reports-emi-export');
 
-    // Revenue Report
+    // Crackers Revenue Report
     Route::get('/reports/revenue', [\App\Http\Controllers\RevenueReportController::class, 'index'])->name('reports-revenue');
     Route::get('/reports/revenue/export', [\App\Http\Controllers\RevenueReportController::class, 'export'])->name('reports-revenue-export');
 
@@ -138,7 +134,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/setup-configuration/page-configuration/delete/{id}', [PageConfigurationController::class, 'destroy'])->name('page-configuration-delete');
 
     // loan document templates
-    Route::resource('/setup-configuration/loan-document-templates', \App\Http\Controllers\LoanDocumentTemplateController::class, ['names' => 'loan-document-templates']);
+    // Route::resource('/setup-configuration/loan-document-templates', \App\Http\Controllers\LoanDocumentTemplateController::class, ['names' => 'loan-document-templates']);
 
     //pages not added
 // Route::get('/pages/faq', [Faq::class, 'index'])->name('pages-faq');
@@ -167,17 +163,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // icons
     // Route::get('/icons/icons-ri', [RiIcons::class, 'index'])->name('icons-ri');
 
-    Route::get('loan/loan-types', [LoanTypeController::class, 'index'])->name('loan-types');
-    Route::resource('loan/loan-types', LoanTypeController::class);
-    Route::post('loan/loan-types/{id}/toggle-status', [LoanTypeController::class, 'toggleStatus'])->name('loan-types-toggle-status');
+    // Route::get('loan/loan-types', [LoanTypeController::class, 'index'])->name('loan-types');
+    // Route::resource('loan/loan-types', LoanTypeController::class);
+    // Route::post('loan/loan-types/{id}/toggle-status', [LoanTypeController::class, 'toggleStatus'])->name('loan-types-toggle-status');
 
     // Loan Configuration
-    Route::get('loan/loan-configuration', [LoanConfigurationController::class, 'index'])->name('loan-configuration');
-    Route::post('loan/loan-configuration/save-foreclosure', [LoanConfigurationController::class, 'saveForeclosureConfig'])->name('loan-configuration.save-foreclosure');
-    Route::post('loan/loan-configuration/save-prepayment', [LoanConfigurationController::class, 'savePrepaymentConfig'])->name('loan-configuration.save-prepayment');
-    Route::post('loan/loan-configuration/save-partial-payment', [LoanConfigurationController::class, 'savePartialPaymentConfig'])->name('loan-configuration.save-partial-payment');
-    Route::post('loan/loan-configuration/save-penalty', [LoanConfigurationController::class, 'savePenaltyConfig'])->name('loan-configuration.save-penalty');
-    Route::get('loan/loan-configuration/partial-payment-settings', [LoanConfigurationController::class, 'getPartialPaymentSettings'])->name('loan-configuration.partial-payment-settings');
+    // Route::get('loan/loan-configuration', [LoanConfigurationController::class, 'index'])->name('loan-configuration');
+    // Route::post('loan/loan-configuration/save-foreclosure', [LoanConfigurationController::class, 'saveForeclosureConfig'])->name('loan-configuration.save-foreclosure');
+    // Route::post('loan/loan-configuration/save-prepayment', [LoanConfigurationController::class, 'savePrepaymentConfig'])->name('loan-configuration.save-prepayment');
+    // Route::post('loan/loan-configuration/save-partial-payment', [LoanConfigurationController::class, 'savePartialPaymentConfig'])->name('loan-configuration.save-partial-payment');
+    // Route::post('loan/loan-configuration/save-penalty', [LoanConfigurationController::class, 'savePenaltyConfig'])->name('loan-configuration.save-penalty');
+    // Route::get('loan/loan-configuration/partial-payment-settings', [LoanConfigurationController::class, 'getPartialPaymentSettings'])->name('loan-configuration.partial-payment-settings');
 
     // feature activation
     Route::get('/setup-configuration/feature-activation', [SetupConfigurationController::class, 'index'])->name('feature-activation');
@@ -285,13 +281,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('/{type}/{id}', [LocationController::class, 'destroy'])->name('destroy');
     });
 
+    /*
     // Admin Payment Undo / Delete
     Route::post('/emi/payment/{emiId}/undo', [\App\Http\Controllers\EmiController::class, 'undoPayment'])->name('emi.payment.undo');
     Route::delete('/emi/collection/{collectionId}/delete', [\App\Http\Controllers\EmiController::class, 'deleteCollection'])->name('emi.collection.delete');
+    */
 
 });
 
 Route::middleware(['auth', 'adminOrStaff'])->group(function () {
+    /*
     Route::get('/clients/view/account/{id}', [ClientViewAccountController::class, 'index'])->name('client-view-account');
     Route::get('/clients/view/kyc/{id}', [KycVerificationController::class, 'view'])->name('client-view-kyc');
     Route::post('/clients/view/account/{id}/update', [ClientViewAccountController::class, 'update'])->name('client-view-account.update');
@@ -320,36 +319,37 @@ Route::middleware(['auth', 'adminOrStaff'])->group(function () {
     Route::post('/loan/loan-products/{id}/update', [LoanProductsController::class, 'update'])->name('loan-products.update');
     Route::delete('/loan/loan-products/{id}', [LoanProductsController::class, 'destroy'])->name('loan-products.destroy');
     Route::post('/loan/loan-products/{id}/toggle-status', [LoanProductsController::class, 'toggleStatus'])->name('loan-products.toggle-status');
+    */
 
-    // Agent Management Unified
+    // Agent Management Unified (handled by StaffManagementController)
     Route::prefix('app/agents')->name('agent-management.')->group(function () {
-        Route::get('/', [AgentManagementController::class, 'AgentManagement'])->name('index');
-        Route::get('/data', [AgentManagementController::class, 'data'])->name('data');
-        Route::post('/store', [AgentManagementController::class, 'store'])->name('store');
+        Route::get('/', function (\Illuminate\Http\Request $request) {
+            return redirect()->route('admin.staff.index', array_filter([
+                'tab' => 'agents',
+                'date' => $request->query('date'),
+                'month' => $request->query('month'),
+                'year' => $request->query('year'),
+                '_ts' => $request->query('_ts'),
+            ]));
+        })->name('index');
+        Route::get('/data', function () {
+            return response()->json(['data' => []]);
+        })->name('data');
+        Route::post('/store', [\App\Http\Controllers\StaffManagementController::class, 'store'])->name('store');
         
         // Attendance Features (Separate pages like Staff)
-        Route::get('/attendance', [AgentManagementController::class, 'attendance'])->name('attendance');
-        Route::post('/mark-attendance', [AgentManagementController::class, 'markAttendance'])->name('markAttendance');
-        Route::post('/bulk-mark-attendance', [AgentManagementController::class, 'bulkMarkAttendance'])->name('bulkMarkAttendance');
-        Route::get('/export-attendance', [AgentManagementController::class, 'exportAttendance'])->name('exportAttendance');
-        Route::get('/export-attendance-pdf', [AgentManagementController::class, 'exportAttendancePDF'])->name('exportAttendancePDF');
-        Route::get('/print-attendance', [AgentManagementController::class, 'printAttendanceReport'])->name('printAttendance');
+        Route::get('/attendance', [\App\Http\Controllers\StaffManagementController::class, 'attendance'])->name('attendance');
+        Route::post('/mark-attendance', [\App\Http\Controllers\StaffManagementController::class, 'markAttendance'])->name('markAttendance');
+        Route::post('/bulk-mark-attendance', [\App\Http\Controllers\StaffManagementController::class, 'bulkMarkAttendance'])->name('bulkMarkAttendance');
+        Route::get('/export-attendance', [\App\Http\Controllers\StaffManagementController::class, 'exportAttendance'])->name('exportAttendance');
+        Route::get('/export-attendance-pdf', [\App\Http\Controllers\StaffManagementController::class, 'exportAttendancePDF'])->name('exportAttendancePDF');
+        Route::get('/print-attendance', [\App\Http\Controllers\StaffManagementController::class, 'exportAttendance'])->name('printAttendance');
 
-        // Detailed views
-        Route::get('/view/{id}', [AgentManagementController::class, 'view'])->name('view');
-        Route::get('/view/{id}/work', [AgentManagementController::class, 'viewWork'])->name('view-work');
-        Route::get('/view/{id}/work/clients', [AgentManagementController::class, 'getAssignedClientsData'])->name('get-assigned-clients');
-        Route::get('/view/{id}/work/client/{clientId}', [AgentManagementController::class, 'viewAssignedClient'])->name('view-assigned-client');
-        Route::get('/view/{id}/visits', [AgentManagementController::class, 'viewVisits'])->name('view-visits');
-        Route::get('/view/{id}/visits/data', [AgentManagementController::class, 'getVisitData'])->name('visits.data');
-        Route::get('/visits/{visit_id}', [AgentManagementController::class, 'viewVisitDetails'])->name('visit-details');
+        Route::post('/add-expense', [\App\Http\Controllers\StaffManagementController::class, 'addExpense'])->name('addExpense');
+        Route::post('/add-advance', [\App\Http\Controllers\StaffManagementController::class, 'addAdvance'])->name('addAdvance');
         
-        Route::post('/add-expense', [AgentManagementController::class, 'addExpense'])->name('addExpense');
-        Route::post('/add-advance', [AgentManagementController::class, 'addAdvance'])->name('addAdvance');
-        
-        // Generic /{id} routes (must come last to avoid matching "attendance")
-        Route::post('/{id}/update', [AgentManagementController::class, 'updateAccount'])->name('update-account');
-        Route::delete('/{id}', [AgentManagementController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/update', [\App\Http\Controllers\StaffManagementController::class, 'update'])->name('update-account');
+        Route::delete('/{id}', [\App\Http\Controllers\StaffManagementController::class, 'destroy'])->name('destroy');
     });
 
     // Fallback for legacy Agent Attendance URL - now points to clean attendance route
@@ -357,9 +357,11 @@ Route::middleware(['auth', 'adminOrStaff'])->group(function () {
         return redirect()->route('agent-management.attendance');
     });
 
-    Route::get('/clients/{id}/info', [AgentManagementController::class, 'getClientInfo'])->name('client.info');
+    Route::get('/clients/{id}/info', function () {
+        return response()->json([]);
+    })->name('client.info');
 
-
+    /*
     // Agent Assignments
     Route::get('/app/agents/assignments', [\App\Http\Controllers\AgentAssignmentController::class, 'index'])->name('agent-assignments.index');
     Route::get('/app/agents/assignments/list', [\App\Http\Controllers\AgentAssignmentController::class, 'list'])->name('agent-assignments.list');
@@ -379,11 +381,13 @@ Route::middleware(['auth', 'adminOrStaff'])->group(function () {
     Route::post('/app/agents/agent-collections/{id}/verify', [AgentCollectionController::class, 'verify'])->name('agent-collections.verify');
     Route::post('/app/agents/agent-collections/{id}/repay', [AgentCollectionController::class, 'repay'])->name('agent-collections.repay');
     Route::post('/app/agents/agent-collections/bulk-verify', [AgentCollectionController::class, 'bulkVerify'])->name('agent-collections.bulk-verify');
+    */
 
 
 
 
 
+    /*
     Route::post('/loan/loan-applications/{application}/approve', [LoanApplicationsController::class, 'approve'])->name('loan-applications.approve');
     Route::post('/loan/loan-applications/{application}/reject', [LoanApplicationsController::class, 'reject'])->name('loan-applications.reject');
     Route::post('/loan/loan-applications/{application}/disburse', [LoanApplicationsController::class, 'disburse'])->name('loan-applications.disburse');
@@ -396,19 +400,19 @@ Route::middleware(['auth', 'adminOrStaff'])->group(function () {
     Route::get('/loan/loan-account/{id}', [\App\Http\Controllers\LoanAccountsController::class, 'view'])->name('loan-account-view');
     Route::post('/loan/loan-account/{id}/regenerate-documents', [\App\Http\Controllers\LoanAccountsController::class, 'regenerateDocuments'])->name('loan-account-regenerate-documents');
 
-
-
     // EMI Calculator
     Route::get('/emi/emi-calculator', [\App\Http\Controllers\EmiCalculatorController::class, 'index'])->name('emi-calculator');
     Route::post('/emi/calculate', [\App\Http\Controllers\EmiCalculatorController::class, 'calculate'])->name('emi-calculate');
     Route::post('/emi/repayments/bulk-pay', [\App\Http\Controllers\EmiController::class, 'bulkPay'])->name('emi-repayments-bulk-pay');
     Route::post('/emi/repayments/bulk-undo', [\App\Http\Controllers\EmiController::class, 'bulkUndo'])->name('emi-repayments-bulk-undo');
+    */
 
 }); // End of admin group
 
 // Shared routes for Admin, Staff, and Agents
 Route::middleware(['auth', 'adminStaffOrAgent'])->group(function () {
 
+    /*
     //emi repayments
     Route::get('/emi/repayments', [\App\Http\Controllers\EmiController::class, 'index'])->name('emi-repayments');
     Route::get('/emi/repayments/data', [\App\Http\Controllers\EmiController::class, 'getData'])->name('emi-repayments-data');
@@ -452,8 +456,9 @@ Route::middleware(['auth', 'adminStaffOrAgent'])->group(function () {
     Route::get('/loan-application', [LoanApplicationsController::class, 'index'])->name('loan-application-index');
     Route::post('/loan-application/quick-apply', [LoanApplicationsController::class, 'storeQuickApplication'])->name('loan-application-quick-apply');
     Route::post('/loan-application/check-eligibility', [LoanApplicationsController::class, 'checkLoanEligibility'])->name('loan-application-check-eligibility');
-    Route::post('/loan-application/preview-emi', [LoanApplicationsController::class, 'previewEmi'])->name('loan-application-preview-emi');
-    Route::get('/loan-application/view/{application}', [LoanApplicationsController::class, 'view'])->name('loan-application-view');
+    // Route::post('/loan-application/preview-emi', [LoanApplicationsController::class, 'previewEmi'])->name('loan-application-preview-emi');
+    // Route::get('/loan-application/view/{application}', [LoanApplicationsController::class, 'view'])->name('loan-application-view');
+    */
 
 }); // End of adminOrStaff group
 
@@ -605,16 +610,16 @@ Route::middleware(['auth', 'credit_access'])->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
-    Route::get('/verification/credit-score-history', [CreditScoreController::class, 'index'])->name('verification-credit-score-history');
-    Route::post('/verification/credit-score-history/fetch', [CreditScoreController::class, 'fetch'])->name('verification-credit-score-fetch');
-    Route::get('/verification/credit-score-history/{creditScoreHistory}', [CreditScoreController::class, 'show'])->name('verification-credit-score-show');
-    Route::delete('/verification/credit-score-history/{creditScoreHistory}', [CreditScoreController::class, 'destroy'])->name('verification-credit-score-destroy');
-    Route::get('/verification/credit-score-history/{creditScoreHistory}/pdf', [CreditScoreController::class, 'exportPdf'])->name('verification-credit-score-pdf');
-    Route::post('/verification/credit-score-history/{creditScoreHistory}/mail', [CreditScoreController::class, 'sendMail'])->name('verification-credit-score-mail');
-    Route::post('/verification/credit-score-history/{creditScoreHistory}/whatsapp', [CreditScoreController::class, 'sendWhatsapp'])->name('verification-credit-score-whatsapp');
+    // Route::get('/verification/credit-score-history', [CreditScoreController::class, 'index'])->name('verification-credit-score-history');
+    // Route::post('/verification/credit-score-history/fetch', [CreditScoreController::class, 'fetch'])->name('verification-credit-score-fetch');
+    // Route::get('/verification/credit-score-history/{creditScoreHistory}', [CreditScoreController::class, 'show'])->name('verification-credit-score-show');
+    // Route::delete('/verification/credit-score-history/{creditScoreHistory}', [CreditScoreController::class, 'destroy'])->name('verification-credit-score-destroy');
+    // Route::get('/verification/credit-score-history/{creditScoreHistory}/pdf', [CreditScoreController::class, 'exportPdf'])->name('verification-credit-score-pdf');
+    // Route::post('/verification/credit-score-history/{creditScoreHistory}/mail', [CreditScoreController::class, 'sendMail'])->name('verification-credit-score-mail');
+    // Route::post('/verification/credit-score-history/{creditScoreHistory}/whatsapp', [CreditScoreController::class, 'sendWhatsapp'])->name('verification-credit-score-whatsapp');
 });
 
-Route::get('/loan/{loanAccountId}/document/{type}', [App\Http\Controllers\LoanDocumentTemplateController::class, 'generate']);
+// Route::get('/loan/{loanAccountId}/document/{type}', [App\Http\Controllers\LoanDocumentTemplateController::class, 'generate']);
 
 
 
@@ -634,25 +639,28 @@ Route::post('system/database-backup/auto-config/save', function (Illuminate\Http
 })->name('system-backup-auto-config-save');
 
 // Public Policy Pages (accessible without authentication)
-Route::get('/privacy-policy', [PageConfigurationController::class, 'show'])->defaults('slug', 'privacy-policy')->name('public.privacy-policy');
-Route::get('/terms-and-conditions', [PageConfigurationController::class, 'show'])->defaults('slug', 'terms-and-conditions')->name('public.terms-and-conditions');
-Route::get('/page/{slug}', [PageConfigurationController::class, 'show'])->name('public.page');
+// Route::get('/privacy-policy', [PageConfigurationController::class, 'show'])->defaults('slug', 'privacy-policy')->name('public.privacy-policy');
+// Route::get('/terms-and-conditions', [PageConfigurationController::class, 'show'])->defaults('slug', 'terms-and-conditions')->name('public.terms-and-conditions');
+// Route::get('/page/{slug}', [PageConfigurationController::class, 'show'])->name('public.page');
 
 // Repayment Schedule Public Link
-Route::get('/view-schedule/{token}', [PublicLoanController::class, 'viewSchedule'])->name('public.view-schedule');
+// Route::get('/view-schedule/{token}', [PublicLoanController::class, 'viewSchedule'])->name('public.view-schedule');
 
 // Public Credit Check & KYC
+/*
 Route::prefix('credit-check')->name('public.credit-check.')->group(function () {
     Route::post('/send-otp', [\App\Http\Controllers\PublicCreditCheckController::class, 'sendOtp'])->name('send-otp');
     Route::post('/verify', [\App\Http\Controllers\PublicCreditCheckController::class, 'verifyAndFetch'])->name('verify');
     Route::get('/report/{creditScoreHistory}', [\App\Http\Controllers\PublicCreditCheckController::class, 'downloadReport'])->name('report');
 });
+*/
 
 // Account Deletion Page (required for Play Store compliance)
 Route::get('/account-deletion', function () {
     return view('public.account-deletion');
 })->name('public.account-deletion');
 
+/*
 // CLIENT PORTAL ROUTES
 Route::prefix('client')->name('client.')->group(function () {
     // Public OTP Routes (Moved out of guest to allow testing while logged in as admin)
@@ -669,9 +677,91 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::post('/logout', [App\Http\Controllers\Auth\ClientAuthController::class, 'logout'])->name('logout');
     });
 });
+*/
 
 // Accounting module (integrated from ERPSoftware / WorkDo Account — see app/Modules/Account)
 require __DIR__ . '/account.php';
 
 // authentication - handled by auth.php
 require __DIR__ . '/auth.php';
+
+// CRACKERS STOREFRONT PUBLIC & CUSTOMER ROUTES
+Route::get('/', [\App\Http\Controllers\CrackersStoreController::class, 'index'])->name('crackers.storefront');
+Route::get('/crackers', [\App\Http\Controllers\CrackersStoreController::class, 'index']);
+Route::get('/crackers/checkout', [\App\Http\Controllers\CrackersStoreController::class, 'checkout'])->name('crackers.checkout-page');
+Route::get('/crackers/policy/{type}', [\App\Http\Controllers\CrackersStoreController::class, 'showPolicy'])->name('crackers.policy');
+Route::post('/crackers/place-order', [\App\Http\Controllers\CrackersStoreController::class, 'placeOrder'])->name('crackers.place-order');
+Route::get('/crackers/order-success/{orderNumber}', [\App\Http\Controllers\CrackersStoreController::class, 'orderSuccess'])->name('crackers.order-success');
+Route::get('/crackers/order/{orderNumber}/invoice', [\App\Http\Controllers\CrackersStoreController::class, 'downloadInvoice'])->name('crackers.order-invoice');
+Route::post('/crackers/order/{orderNumber}/upload-payment-proof', [\App\Http\Controllers\CrackersStoreController::class, 'uploadPaymentProof'])->name('crackers.upload-payment-proof');
+
+
+
+Route::get('/login', [\App\Http\Controllers\CustomerStoreAuthController::class, 'showLoginForm'])->name('login');
+Route::get('/crackers/login', [\App\Http\Controllers\CustomerStoreAuthController::class, 'showLoginForm'])->name('crackers.login-page');
+Route::post('/crackers/login', [\App\Http\Controllers\CustomerStoreAuthController::class, 'login'])->name('crackers.login');
+Route::get('/crackers/register', [\App\Http\Controllers\CustomerStoreAuthController::class, 'showRegisterForm'])->name('crackers.register-page');
+Route::post('/crackers/register', [\App\Http\Controllers\CustomerStoreAuthController::class, 'register'])->name('crackers.register');
+Route::post('/crackers/logout', [\App\Http\Controllers\CustomerStoreAuthController::class, 'logout'])->name('crackers.logout');
+Route::get('/crackers/my-orders', [\App\Http\Controllers\CustomerStoreAuthController::class, 'myOrders'])->name('crackers.my-orders');
+Route::get('/crackers/profile', [\App\Http\Controllers\CustomerStoreAuthController::class, 'showProfile'])->name('crackers.profile');
+Route::post('/crackers/profile', [\App\Http\Controllers\CustomerStoreAuthController::class, 'updateProfile'])->name('crackers.profile.update');
+
+
+
+// ADMIN CUSTOMER & ORDER MANAGEMENT ROUTES
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    // Customers Management
+    Route::get('/customers', [\App\Http\Controllers\Admin\CustomerAdminController::class, 'index'])->name('admin.customers.index');
+    Route::post('/customers/store', [\App\Http\Controllers\Admin\CustomerAdminController::class, 'store'])->name('admin.customers.store');
+    Route::get('/customers/{id}', [\App\Http\Controllers\Admin\CustomerAdminController::class, 'show'])->name('admin.customers.show');
+    Route::post('/customers/{id}/login-as', [\App\Http\Controllers\Admin\CustomerAdminController::class, 'loginAsCustomer'])->name('admin.customers.login-as');
+    Route::delete('/customers/{id}', [\App\Http\Controllers\Admin\CustomerAdminController::class, 'destroy'])->name('admin.customers.destroy');
+
+    // Categories Management
+    Route::get('/categories', [\App\Http\Controllers\Admin\CrackersCategoryAdminController::class, 'index'])->name('admin.categories.index');
+    Route::post('/categories/store', [\App\Http\Controllers\Admin\CrackersCategoryAdminController::class, 'store'])->name('admin.categories.store');
+    Route::put('/categories/{id}', [\App\Http\Controllers\Admin\CrackersCategoryAdminController::class, 'update'])->name('admin.categories.update');
+    Route::patch('/categories/{id}/toggle-status', [\App\Http\Controllers\Admin\CrackersCategoryAdminController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
+    Route::delete('/categories/{id}', [\App\Http\Controllers\Admin\CrackersCategoryAdminController::class, 'destroy'])->name('admin.categories.destroy');
+
+    // Products Management
+    Route::get('/products', [\App\Http\Controllers\Admin\CrackersProductAdminController::class, 'index'])->name('admin.products.index');
+    Route::post('/products/store', [\App\Http\Controllers\Admin\CrackersProductAdminController::class, 'store'])->name('admin.products.store');
+    Route::put('/products/{id}', [\App\Http\Controllers\Admin\CrackersProductAdminController::class, 'update'])->name('admin.products.update');
+    Route::patch('/products/{id}/toggle-status', [\App\Http\Controllers\Admin\CrackersProductAdminController::class, 'toggleStatus'])->name('admin.products.toggle-status');
+    Route::delete('/products/{id}', [\App\Http\Controllers\Admin\CrackersProductAdminController::class, 'destroy'])->name('admin.products.destroy');
+
+    // Inventory Management
+    Route::get('/inventory', [\App\Http\Controllers\Admin\CrackersInventoryAdminController::class, 'index'])->name('admin.inventory.index');
+    Route::get('/inventory/low-stock-alerts', [\App\Http\Controllers\Admin\CrackersInventoryAdminController::class, 'lowStockAlerts'])->name('admin.inventory.low-stock-alerts');
+    Route::post('/inventory/{id}/adjust', [\App\Http\Controllers\Admin\CrackersInventoryAdminController::class, 'adjustStock'])->name('admin.inventory.adjust');
+    Route::post('/inventory/{id}/quick-update', [\App\Http\Controllers\Admin\CrackersInventoryAdminController::class, 'quickUpdateStock'])->name('admin.inventory.quick-update');
+    Route::get('/inventory/{id}/logs', [\App\Http\Controllers\Admin\CrackersInventoryAdminController::class, 'logs'])->name('admin.inventory.logs');
+
+    // Payment & GST Settings
+    Route::get('/payment-settings', [\App\Http\Controllers\Admin\CrackersSettingAdminController::class, 'edit'])->name('admin.payment-settings.edit');
+    Route::put('/payment-settings/update', [\App\Http\Controllers\Admin\CrackersSettingAdminController::class, 'update'])->name('admin.payment-settings.update');
+    Route::post('/payment-settings/bank/store', [\App\Http\Controllers\Admin\CrackersSettingAdminController::class, 'storeBank'])->name('admin.payment-settings.bank.store');
+    Route::put('/payment-settings/bank/{id}', [\App\Http\Controllers\Admin\CrackersSettingAdminController::class, 'updateBank'])->name('admin.payment-settings.bank.update');
+    Route::patch('/payment-settings/bank/{id}/toggle', [\App\Http\Controllers\Admin\CrackersSettingAdminController::class, 'toggleBankStatus'])->name('admin.payment-settings.bank.toggle');
+    Route::delete('/payment-settings/bank/{id}', [\App\Http\Controllers\Admin\CrackersSettingAdminController::class, 'destroyBank'])->name('admin.payment-settings.bank.destroy');
+
+    // Orders Management
+    Route::get('/orders', [\App\Http\Controllers\Admin\CrackersOrderAdminController::class, 'index'])->name('admin.orders.index');
+    Route::patch('/orders/{id}/update-status', [\App\Http\Controllers\Admin\CrackersOrderAdminController::class, 'updateStatus'])->name('admin.orders.update-status');
+    Route::patch('/orders/{id}/update-payment', [\App\Http\Controllers\Admin\CrackersOrderAdminController::class, 'updatePaymentStatus'])->name('admin.orders.update-payment');
+    Route::delete('/orders/{id}', [\App\Http\Controllers\Admin\CrackersOrderAdminController::class, 'destroy'])->name('admin.orders.destroy');
+
+    // POS Counter Billing (Walk-In Sales)
+    Route::get('/pos', [\App\Http\Controllers\Admin\CrackersPosAdminController::class, 'index'])->name('admin.pos.index');
+    Route::post('/pos/store', [\App\Http\Controllers\Admin\CrackersPosAdminController::class, 'store'])->name('admin.pos.store');
+    Route::get('/pos/receipt/{id}', [\App\Http\Controllers\Admin\CrackersPosAdminController::class, 'receipt'])->name('admin.pos.receipt');
+
+    // Dynamic Hero Banners (Homepage Setup)
+    Route::post('/homepage-setup/banner/store', [\App\Http\Controllers\WebsiteSetupController::class, 'storeBanner'])->name('admin.homepage-banner.store');
+    Route::put('/homepage-setup/banner/{id}', [\App\Http\Controllers\WebsiteSetupController::class, 'updateBanner'])->name('admin.homepage-banner.update');
+    Route::delete('/homepage-setup/banner/{id}', [\App\Http\Controllers\WebsiteSetupController::class, 'destroyBanner'])->name('admin.homepage-banner.destroy');
+});
+
+

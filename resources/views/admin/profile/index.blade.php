@@ -103,6 +103,7 @@
                   <input type="password" class="form-control @error('current_password') is-invalid @enderror" 
                          id="current_password" name="current_password" 
                          placeholder="Enter current password" required>
+                  <span class="input-group-text cursor-pointer" onclick="togglePass('current_password', 'icon_curr')"><i class="ri ri-eye-line" id="icon_curr"></i></span>
                   @error('current_password')
                     <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
@@ -117,6 +118,7 @@
                   <input type="password" class="form-control @error('new_password') is-invalid @enderror" 
                          id="new_password" name="new_password" 
                          placeholder="Enter new password" required>
+                  <span class="input-group-text cursor-pointer" onclick="togglePass('new_password', 'icon_new')"><i class="ri ri-eye-line" id="icon_new"></i></span>
                   @error('new_password')
                     <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
@@ -132,6 +134,7 @@
                   <input type="password" class="form-control" 
                          id="new_password_confirmation" name="new_password_confirmation" 
                          placeholder="Confirm new password" required>
+                  <span class="input-group-text cursor-pointer" onclick="togglePass('new_password_confirmation', 'icon_conf')"><i class="ri ri-eye-line" id="icon_conf"></i></span>
                 </div>
               </div>
 
@@ -143,6 +146,19 @@
                 </button>
               </div>
             </form>
+            <script>
+              function togglePass(inputId, iconId) {
+                const inp = document.getElementById(inputId);
+                const ico = document.getElementById(iconId);
+                if (inp.type === 'password') {
+                  inp.type = 'text';
+                  ico.className = 'ri ri-eye-off-line';
+                } else {
+                  inp.type = 'password';
+                  ico.className = 'ri ri-eye-line';
+                }
+              }
+            </script>
           </div>
         </div>
       </div>

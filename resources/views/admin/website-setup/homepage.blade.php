@@ -22,6 +22,148 @@
 </div>
 @endif
 
+<!-- DYNAMIC HERO BANNERS & SLIDER MANAGEMENT (ADD 1-BY-1) -->
+<div class="card mb-4 shadow-sm border-0">
+  <div class="card-header d-flex justify-content-between align-items-center bg-white border-bottom py-3">
+    <div>
+      <h5 class="mb-0 fw-bold text-dark"><i class="ri-slideshow-3-line text-warning me-2 fs-4"></i>Homepage Dynamic Hero Banners (Slider)</h5>
+      <small class="text-muted">Manage store hero slider banners. Add multiple banners 1-by-1 to display dynamically on the homepage carousel.</small>
+    </div>
+    <button type="button" class="btn btn-warning rounded-pill fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#addBannerModal">
+      <i class="ri-add-line me-1"></i> Add New Hero Banner
+    </button>
+  </div>
+  <div class="card-body pt-4">
+    <div class="row g-4">
+      @forelse($heroBanners as $banner)
+        <div class="col-md-6 col-lg-4">
+          <div class="card border h-100 shadow-sm rounded-3 overflow-hidden position-relative">
+            <img src="{{ asset($banner->image_path) }}" class="card-img-top" style="height: 160px; object-fit: cover;" alt="{{ $banner->title }}">
+            <div class="card-body p-3 d-flex flex-column justify-content-between">
+              <div>
+                <h6 class="fw-bold mb-1 text-dark">
+                  {{ $banner->title ?: '[Image-Only Graphical Banner]' }}
+                </h6>
+                <p class="small text-muted mb-2 text-truncate-2">{{ $banner->description ?: 'Full graphical festive banner slide' }}</p>
+                <span class="badge bg-label-info font-monospace small"><i class="ri-link me-1"></i>Target: {{ $banner->link ?: '#catalog' }}</span>
+              </div>
+              <div class="mt-3 pt-2 border-top d-flex justify-content-between align-items-center">
+                <small class="text-muted">{{ $banner->created_at ? $banner->created_at->format('d M Y') : '' }}</small>
+                <div class="d-flex gap-1">
+                  <button type="button" class="btn btn-sm btn-outline-warning rounded-pill px-2" data-bs-toggle="modal" data-bs-target="#editBannerModal-{{ $banner->id }}">
+                    <i class="ri-edit-box-line me-1"></i> Edit
+                  </button>
+                  <form action="{{ route('admin.homepage-banner.destroy', $banner->id) }}" method="POST" onsubmit="return confirm('Delete this hero banner?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2">
+                      <i class="ri-delete-bin-line me-1"></i> Delete
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EDIT HERO BANNER MODAL -->
+        <div class="modal fade" id="editBannerModal-{{ $banner->id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+              <div class="modal-header bg-warning text-dark py-3">
+                <h5 class="modal-title fw-bold text-dark"><i class="ri-edit-box-line me-2"></i>Edit Hero Banner</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form action="{{ route('admin.homepage-banner.update', $banner->id) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <div class="modal-body p-4">
+                  <div class="mb-3 text-center bg-light p-2 rounded">
+                    <label class="form-label fw-bold d-block small text-muted">Current Banner Image</label>
+                    <img src="{{ asset($banner->image_path) }}" class="img-fluid rounded" style="max-height: 120px; object-fit: cover;">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">Banner Headline / Title (Optional)</label>
+                    <input type="text" name="title" class="form-control" value="{{ $banner->title }}" placeholder="Leave blank if uploading full graphical banner with embedded text">
+                    <small class="text-muted">If blank, full banner image will be displayed without text overlay.</small>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">Banner Subtitle / Description</label>
+                    <textarea name="description" class="form-control" rows="2" placeholder="e.g. Purely Premium Firecrackers, Sparklers, Flower Pots & Gift Boxes...">{{ $banner->description }}</textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">Banner Background Image URL</label>
+                    <input type="url" name="image_url" class="form-control" value="{{ \Illuminate\Support\Str::startsWith($banner->image_path, 'http') ? $banner->image_path : '' }}" placeholder="https://images.unsplash.com/photo-1514525253161-7a46d19cd819">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">Or Upload New Banner Image File</label>
+                    <input type="file" name="image" class="form-control" accept="image/*">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">Button Target Link</label>
+                    <input type="text" name="link" class="form-control" value="{{ $banner->link ?: '#catalog' }}" placeholder="e.g. #catalog or /crackers">
+                  </div>
+                </div>
+                <div class="modal-footer bg-light">
+                  <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-warning rounded-pill px-4 fw-bold shadow-sm">Update Hero Banner</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      @empty
+        <div class="col-12 text-center py-4 text-muted">
+          <i class="ri-image-line fs-1 d-block mb-2 text-warning"></i>
+          <p class="mb-0 fw-semibold">No custom hero banners added yet. Default festive banner is currently active.</p>
+        </div>
+      @endforelse
+    </div>
+  </div>
+</div>
+
+<!-- ADD HERO BANNER MODAL -->
+<div class="modal fade" id="addBannerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg rounded-4">
+      <div class="modal-header bg-warning text-dark py-3">
+        <h5 class="modal-title fw-bold text-dark"><i class="ri-slideshow-line me-2"></i>Add New Hero Banner</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="{{ route('admin.homepage-banner.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Banner Headline / Title (Optional)</label>
+            <input type="text" name="title" class="form-control" placeholder="Leave blank if uploading full graphical banner with embedded text">
+            <small class="text-muted">If blank, full banner image will be displayed without text overlay.</small>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Banner Subtitle / Description</label>
+            <textarea name="description" class="form-control" rows="2" placeholder="e.g. Purely Premium Firecrackers, Sparklers, Flower Pots & Gift Boxes..."></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Banner Background Image URL (Optional)</label>
+            <input type="url" name="image_url" class="form-control" placeholder="https://images.unsplash.com/photo-1514525253161-7a46d19cd819">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Or Upload Banner Image File</label>
+            <input type="file" name="image" class="form-control" accept="image/*">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Button Target Link</label>
+            <input type="text" name="link" class="form-control" value="#catalog" placeholder="e.g. #catalog or /crackers">
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-warning rounded-pill px-4 fw-bold shadow-sm">Save Hero Banner</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <div class="row">
   <div class="col-12">
     <div class="card">

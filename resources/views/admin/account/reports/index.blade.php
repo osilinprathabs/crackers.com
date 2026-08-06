@@ -492,7 +492,7 @@
     </li>
     <li class="nav-item" role="presentation">
       <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-loans" aria-controls="navs-loans" aria-selected="false">
-        <i class="ri-hand-coin-line me-1"></i> {{ __('Loans & Advances') }}
+        <i class="ri-fire-line me-1"></i> {{ __('Crackers Store Sales & GST') }}
       </button>
     </li>
   </ul>
@@ -606,16 +606,16 @@
       </div>
     </div>
 
-    <!-- Tab 4: Loans & Advances -->
+    <!-- Tab 4: Crackers Store Sales & GST Reports -->
     <div class="tab-pane fade" id="navs-loans" role="tabpanel">
       <div class="row g-4">
         @php
-          $loanReports = [
-            ['title' => 'Outstanding Loans Report', 'icon' => 'ri-safe-2-line', 'color' => '#8b5cf6', 'desc' => 'Overview of all active loans and outstanding balances.', 'route' => route('account.reports.outstanding-loans'), 'value' => formatIndianCurrency($reportStats['totalOutstandingLoans'] ?? 0), 'valueLabel' => 'Outstanding'],
-            ['title' => 'Loan Disbursement Report', 'icon' => 'ri-exchange-dollar-line', 'color' => '#ec4899', 'desc' => 'Detailed list of loan disbursements and collections.', 'route' => route('account.reports.loan-disbursement'), 'value' => formatIndianCurrency($reportStats['totalLoanDisbursed'] ?? 0), 'valueLabel' => 'Disbursed']
+          $storeReports = [
+            ['title' => 'Crackers Store Sales Orders', 'icon' => 'ri-shopping-bag-3-line', 'color' => '#8b5cf6', 'desc' => 'Detailed analytics and breakdown of all store orders and POS sales.', 'route' => route('account.reports.sales-orders'), 'value' => formatIndianCurrency($reportStats['totalCrackersSales'] ?? 0), 'valueLabel' => 'Total Sales'],
+            ['title' => 'GST Tax Liability Report', 'icon' => 'ri-government-line', 'color' => '#ec4899', 'desc' => 'Comprehensive tax report detailing GST collected on order checkouts.', 'route' => route('account.reports.gst-tax-report'), 'value' => formatIndianCurrency($reportStats['totalGst'] ?? 0), 'valueLabel' => 'Tax Collected']
           ];
         @endphp
-        @foreach($loanReports as $report)
+        @foreach($storeReports as $report)
         <div class="col-md-6 col-xl-4">
           <div class="card premium-report-card h-100">
             <div class="card-body d-flex flex-column">
@@ -625,7 +625,7 @@
                 </div>
                 @if(isset($report['value']))
                 <div class="text-end">
-                   <div class="fw-bold text-heading" style="font-size: 1.1rem;">{{ $report['value'] }}</div>
+                   <div class="fw-bold text-heading" style="font-size: 1.1rem;">₹{{ $report['value'] }}</div>
                    <div class="text-muted" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">{{ __($report['valueLabel']) }}</div>
                 </div>
                 @endif
@@ -634,7 +634,7 @@
                  <h5 class="premium-title mb-1">{{ __($report['title']) }}</h5>
                  <p class="premium-subtitle mb-0" style="font-size: 0.85rem;">{{ __($report['desc']) }}</p>
               </div>
-              <a href="{{ $report['route'] }}" class="btn btn-outline-secondary w-100">{{ __('View Report') }}</a>
+              <a href="{{ $report['route'] }}" class="btn btn-outline-primary rounded-pill w-100 fw-bold">{{ __('View Report') }}</a>
             </div>
           </div>
         </div>

@@ -16,14 +16,14 @@
   @endif
   @if ($editUrl)
     <a href="{{ $editUrl }}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill" title="{{ __('Edit') }}" aria-label="{{ __('Edit') }}">
-      <i class="icon-base ri ri-pencil-line icon-18px text-primary"></i>
+      <i class="icon-base ri ri-edit-box-line icon-22px text-primary"></i>
     </a>
   @endif
   @if ($approveUrl)
     <form action="{{ $approveUrl }}" method="post" class="d-inline">
       @csrf
       <button type="submit" class="btn btn-sm btn-icon btn-text-secondary rounded-pill border-0 bg-transparent" title="{{ __('Approve') }}" aria-label="{{ __('Approve') }}">
-        <i class="icon-base ri ri-checkbox-circle-line icon-18px text-success"></i>
+        <i class="icon-base ri ri-checkbox-circle-line icon-22px text-success"></i>
       </button>
     </form>
   @endif
@@ -31,7 +31,7 @@
     <form action="{{ $postUrl }}" method="post" class="d-inline">
       @csrf
       <button type="submit" class="btn btn-sm btn-icon btn-text-secondary rounded-pill border-0 bg-transparent" title="{{ __('Post') }}" aria-label="{{ __('Post') }}">
-        <i class="icon-base ri ri-send-plane-line icon-18px text-primary"></i>
+        <i class="icon-base ri ri-send-plane-line icon-22px text-primary"></i>
       </button>
     </form>
   @endif
@@ -46,7 +46,7 @@
               aria-label="{{ __('Delete') }}"
               data-form-id="{{ $formId }}"
               data-confirm="{{ $confirm }}">
-        <i class="icon-base ri ri-delete-bin-6-line icon-18px text-danger"></i>
+        <i class="icon-base ri ri-delete-bin-7-line icon-22px text-danger"></i>
       </button>
     </form>
   @endif

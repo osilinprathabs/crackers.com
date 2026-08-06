@@ -1,100 +1,64 @@
-<div class="table-responsive">
-  <table class="table table-hover align-middle table-striped">
+<div class="table-responsive text-nowrap">
+  <table class="table table-hover align-middle border">
     <thead class="table-light">
       <tr>
-        <th scope="col" class="text-center" style="width: 60px;">S.No</th>
-        <th scope="col">Customer Name</th>
-        <th scope="col">Account No / Code</th>
-        <th scope="col" class="text-center">Loan Type</th>
-        <th scope="col" class="text-end">EMI / Cycle Amount</th>
-        <th scope="col" class="text-end">Processing Fee</th>
-        <th scope="col" class="text-end">Doc Charges</th>
-        <th scope="col" class="text-end">Other Charges</th>
-        <th scope="col" class="text-end">Interest Collected</th>
-        <th scope="col" class="text-end">Foreclose Revenue</th>
-        <th scope="col" class="text-end">Penalty Amount</th>
-        <th scope="col" class="text-end">Total Revenue</th>
-        <th scope="col" class="text-center" style="width: 80px;">Action</th>
+        <th>Order Number</th>
+        <th>Customer</th>
+        <th>Phone</th>
+        <th class="text-end">Subtotal (₹)</th>
+        <th class="text-end">GST (₹)</th>
+        <th class="text-end">Grand Total (₹)</th>
+        <th class="text-center">Payment Method</th>
+        <th class="text-center">Payment Status</th>
+        <th>Date</th>
       </tr>
     </thead>
     <tbody>
-      @php
-        $pageProcessingFee = 0;
-        $pageDocCharges = 0;
-        $pageOtherCharges = 0;
-        $pageInterestCollected = 0;
-        $pageForeclosureRevenue = 0;
-        $pagePenaltyAmount = 0;
-        $pageTotalRevenue = 0;
-      @endphp
-      @forelse($loans as $index => $loan)
-        @php
-          $pageProcessingFee += $loan->processing_fee;
-          $pageDocCharges += $loan->document_charges;
-          $pageOtherCharges += $loan->other_charges;
-          $pageInterestCollected += $loan->interest_collected;
-          $pageForeclosureRevenue += $loan->foreclosure_revenue;
-          $pagePenaltyAmount += $loan->penalty_collected;
-          $pageTotalRevenue += $loan->total_revenue;
-
-          $typeColor = $loan->loan_mode === 'interest_only' ? 'bg-label-info' : 'bg-label-primary';
-          $typeLabel = $loan->loan_mode === 'interest_only' ? 'Open Loan' : 'Standard EMI';
-        @endphp
+      @forelse($orders as $order)
         <tr>
-          <td class="text-center">{{ $loans->firstItem() + $index }}</td>
           <td>
-            <div class="fw-semibold text-dark">{{ $loan->client->user->name ?? $loan->client->client_name ?? 'N/A' }}</div>
-            <small class="text-muted">ID: {{ $loan->client->client_code ?? 'N/A' }}</small>
+            <strong class="text-primary">{{ $order->order_number }}</strong>
+            <small class="d-block text-muted">{{ $order->items->count() }} item(s)</small>
           </td>
           <td>
-            <div class="fw-semibold text-primary">{{ $loan->account_number ?? $loan->id }}</div>
-            <small class="text-muted">{{ $loan->loan_code }}</small>
+            <strong class="text-dark">{{ $order->customer_name }}</strong>
+            @if($order->customer_email)
+              <small class="d-block text-muted">{{ $order->customer_email }}</small>
+            @endif
+          </td>
+          <td>{{ $order->customer_phone }}</td>
+          <td class="text-end">₹{{ number_format($order->subtotal, 2) }}</td>
+          <td class="text-end text-warning fw-semibold">₹{{ number_format($order->gst_amount, 2) }} ({{ $order->gst_rate }}%)</td>
+          <td class="text-end text-success fw-bold">₹{{ number_format($order->grand_total, 2) }}</td>
+          <td class="text-center">
+            <span class="badge bg-label-info text-uppercase">{{ str_replace('_', ' ', $order->payment_method) }}</span>
           </td>
           <td class="text-center">
-            <span class="badge {{ $typeColor }} rounded-pill text-uppercase">{{ $typeLabel }}</span>
+            @if($order->payment_status === 'paid')
+              <span class="badge bg-label-success px-3 py-2 rounded-pill"><i class="ri-checkbox-circle-line me-1"></i> Paid</span>
+            @elseif($order->payment_status === 'failed')
+              <span class="badge bg-label-danger px-3 py-2 rounded-pill"><i class="ri-close-circle-line me-1"></i> Failed</span>
+            @else
+              <span class="badge bg-label-warning px-3 py-2 rounded-pill"><i class="ri-time-line me-1"></i> Pending</span>
+            @endif
           </td>
-          <td class="text-end fw-medium text-dark">₹{{ number_format($loan->emi_amount, 2) }}</td>
-          <td class="text-end text-secondary">₹{{ number_format($loan->processing_fee, 2) }}</td>
-          <td class="text-end text-secondary">₹{{ number_format($loan->document_charges, 2) }}</td>
-          <td class="text-end text-secondary">₹{{ number_format($loan->other_charges, 2) }}</td>
-          <td class="text-end text-success fw-medium">₹{{ number_format($loan->interest_collected, 2) }}</td>
-          <td class="text-end text-warning fw-medium">₹{{ number_format($loan->foreclosure_revenue, 2) }}</td>
-          <td class="text-end text-danger fw-medium">₹{{ number_format($loan->penalty_collected, 2) }}</td>
-          <td class="text-end text-primary fw-bold">₹{{ number_format($loan->total_revenue, 2) }}</td>
-          <td class="text-center">
-            <a href="{{ route('loan-account-view', $loan->id) }}" class="btn btn-sm btn-icon btn-outline-primary" title="View details">
-              <i class="ri-eye-line"></i>
-            </a>
-          </td>
+          <td><small>{{ $order->created_at ? $order->created_at->format('d M Y, h:i A') : '-' }}</small></td>
         </tr>
       @empty
         <tr>
-          <td colspan="13" class="text-center text-muted py-5">
-            <i class="ri-file-search-line ri-36px d-block mb-2 text-secondary"></i>
-            No revenue records found matching the selected filters.
+          <td colspan="9" class="text-center py-5">
+            <div class="text-muted">
+              <i class="ri-inbox-line fs-1 d-block mb-2 text-secondary"></i>
+              <h5>No revenue records found.</h5>
+              <p class="mb-0">Try adjusting your date or search filters.</p>
+            </div>
           </td>
         </tr>
       @endforelse
     </tbody>
-    @if($loans->isNotEmpty())
-      <tfoot class="table-light border-top-2">
-        <tr class="fw-bold text-dark">
-          <td colspan="4" class="text-end">Total (This Page):</td>
-          <td class="text-end"></td>
-          <td class="text-end text-secondary">₹{{ number_format($pageProcessingFee, 2) }}</td>
-          <td class="text-end text-secondary">₹{{ number_format($pageDocCharges, 2) }}</td>
-          <td class="text-end text-secondary">₹{{ number_format($pageOtherCharges, 2) }}</td>
-          <td class="text-end text-success">₹{{ number_format($pageInterestCollected, 2) }}</td>
-          <td class="text-end text-warning">₹{{ number_format($pageForeclosureRevenue, 2) }}</td>
-          <td class="text-end text-danger">₹{{ number_format($pagePenaltyAmount, 2) }}</td>
-          <td class="text-end text-primary">₹{{ number_format($pageTotalRevenue, 2) }}</td>
-          <td></td>
-        </tr>
-      </tfoot>
-    @endif
   </table>
 </div>
 
-<div class="mt-4">
-  {{ $loans->links('pagination::bootstrap-5') }}
+<div class="d-flex justify-content-end mt-4">
+  {{ $orders->links('pagination::bootstrap-5') }}
 </div>

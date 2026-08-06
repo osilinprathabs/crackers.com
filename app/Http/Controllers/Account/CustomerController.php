@@ -22,6 +22,14 @@ class CustomerController extends Controller
             $customers = Customer::query()
                 ->with('user:id,name,email')
                 ->where(function($q) {
+                    $q->whereNull('user_id')
+                      ->orWhereDoesntHave('user', function($uq) {
+                          $uq->whereHas('roles', function($rq) {
+                              $rq->whereIn('name', ['Admin', 'Agent', 'Staff', 'Super Admin']);
+                          });
+                      });
+                })
+                ->where(function($q) {
                     if(Auth::user()->can('manage-any-customers')) {
                         $q->where('created_by', creatorId());
                     } elseif (Auth::user()->can('manage-own-customers')) {

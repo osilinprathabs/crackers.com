@@ -78,7 +78,7 @@ class ExpenseController extends Controller
                 $query->latest();
             }
 
-            $expenses = $query->paginate($request->per_page ?? 10)->withQueryString();
+            $expenses = $query->paginate($request->per_page ?? 20)->withQueryString();
 
             $categories = ExpenseCategories::where('created_by', creatorId())
                 ->where('is_active', true)

@@ -3,6 +3,9 @@
   $configData = Helper::appClasses();
   $user = auth()->user();
   $userRoles = $user ? $user->getRoleNames()->toArray() : [];
+  if ($user && !empty($user->user_type)) {
+      $userRoles[] = ucfirst($user->user_type);
+  }
 
   // For Accounting menus only: JSON uses hard-coded roles, but we want staff access by permissions.
   $accountPermissionCandidatesFromSlug = function ($slug): array {

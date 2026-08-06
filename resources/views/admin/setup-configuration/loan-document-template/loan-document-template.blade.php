@@ -48,15 +48,15 @@
               </span>
             </td>
             <td>
-              <div class="d-flex gap-4 p-4 p-sm-2 py-sm-0 pt-0 ms-4 ms-sm-0">
-                <a href="{{ route('loan-document-templates.show', ['loan_document_template' => $template->id]) }}" title="View">
-                  <i class="icon-base ri ri-eye-line icon-18px text-info"></i>
+              <div class="d-flex align-items-center gap-1">
+                <a href="{{ route('loan-document-templates.show', ['loan_document_template' => $template->id]) }}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill" title="View">
+                  <i class="icon-base ri ri-eye-line icon-22px text-info"></i>
                 </a>
-                <a href="{{ route('loan-document-templates.edit', ['loan_document_template' => $template->id]) }}" title="Edit">
-                  <i class="icon-base ri ri-pencil-line icon-18px text-primary"></i>
+                <a href="{{ route('loan-document-templates.edit', ['loan_document_template' => $template->id]) }}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill" title="Edit">
+                  <i class="icon-base ri ri-edit-box-line icon-22px text-primary"></i>
                 </a>
-                <a href="javascript:void(0);" class="delete-template" data-id="{{ $template->id }}" data-name="{{ $template->title }}" title="Delete">
-                  <i class="icon-base ri ri-delete-bin-6-line icon-18px text-danger"></i>
+                <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-text-danger rounded-pill delete-template" data-id="{{ $template->id }}" data-name="{{ $template->title }}" title="Delete">
+                  <i class="icon-base ri ri-delete-bin-7-line icon-22px text-danger"></i>
                 </a>
               </div>
             </td>

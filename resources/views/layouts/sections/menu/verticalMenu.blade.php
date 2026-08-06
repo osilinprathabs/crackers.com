@@ -4,7 +4,10 @@
   $configData = Helper::appClasses();
   $adminTitle = SettingsHelper::get('admin_title', config('variables.templateName'));
   $user = auth()->user();
-  $userRoles = $user->getRoleNames()->toArray();
+  $userRoles = $user ? $user->getRoleNames()->toArray() : [];
+  if ($user && !empty($user->user_type)) {
+      $userRoles[] = ucfirst($user->user_type);
+  }
   $accountPermissionCandidatesFromSlug = function ($slug): array {
       if (!is_string($slug) || !str_starts_with($slug, 'account.')) {
           return [];

@@ -146,7 +146,7 @@ class AccountModuleDemoSeeder extends Seeder
             $glRevenue = ChartOfAccount::firstOrCreate(
                 ['account_code' => '4100', 'created_by' => $uid],
                 [
-                    'account_name' => 'Consultancy income',
+                    'account_name' => 'Retail Store Fireworks Revenue',
                     'account_type_id' => $typeRev->id,
                     'parent_account_id' => null,
                     'level' => 1,
@@ -155,7 +155,7 @@ class AccountModuleDemoSeeder extends Seeder
                     'current_balance' => 0,
                     'is_active' => true,
                     'is_system_account' => false,
-                    'description' => 'Revenue from consulting and advisory',
+                    'description' => 'Revenue from retail firecrackers sales',
                     'creator_id' => $uid,
                 ]
             );

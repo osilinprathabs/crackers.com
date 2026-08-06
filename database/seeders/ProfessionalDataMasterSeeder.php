@@ -104,7 +104,7 @@ class ProfessionalDataMasterSeeder extends Seeder
             'account_name' => 'ICICI Operational Account', 'account_type_id' => $typeBank->id, 'opening_balance' => 1000000, 'current_balance' => 1000000, 'is_active' => true, 'created_by' => $this->uid
         ]);
         $glRevenue = ChartOfAccount::firstOrCreate(['account_code' => '4101'], [
-            'account_name' => 'Interest & Processing Income', 'account_type_id' => $typeRev->id, 'opening_balance' => 0, 'current_balance' => 0, 'is_active' => true, 'created_by' => $this->uid
+            'account_name' => 'Wholesale & Bulk Orders Revenue', 'account_type_id' => $typeRev->id, 'opening_balance' => 0, 'current_balance' => 0, 'is_active' => true, 'created_by' => $this->uid
         ]);
         $glExpense = ChartOfAccount::firstOrCreate(['account_code' => '5101'], [
             'account_name' => 'Business Operational Costs', 'account_type_id' => $typeExp->id, 'opening_balance' => 0, 'current_balance' => 0, 'is_active' => true, 'created_by' => $this->uid
@@ -117,10 +117,10 @@ class ProfessionalDataMasterSeeder extends Seeder
 
         // Categories (Revenue/Expense)
         $revIntCat = RevenueCategories::firstOrCreate(['category_code' => 'PRO_INT'], [
-            'category_name' => 'Loan Interest Revenue', 'is_active' => true, 'gl_account_id' => $glRevenue->id, 'created_by' => $this->uid
+            'category_name' => 'Wholesale Sales Revenue', 'is_active' => true, 'gl_account_id' => $glRevenue->id, 'created_by' => $this->uid
         ]);
         $revProcCat = RevenueCategories::firstOrCreate(['category_code' => 'PRO_PROC'], [
-            'category_name' => 'Loan Processing Fee', 'is_active' => true, 'gl_account_id' => $glRevenue->id, 'created_by' => $this->uid
+            'category_name' => 'Retail Store Sales', 'is_active' => true, 'gl_account_id' => $glRevenue->id, 'created_by' => $this->uid
         ]);
         $expRentCat = ExpenseCategories::firstOrCreate(['category_code' => 'PRO_RENT'], [
             'category_name' => 'Office Space Rental', 'is_active' => true, 'gl_account_id' => $glExpense->id, 'created_by' => $this->uid
@@ -129,7 +129,7 @@ class ProfessionalDataMasterSeeder extends Seeder
             'category_name' => 'Employee Salaries', 'is_active' => true, 'gl_account_id' => $glExpense->id, 'created_by' => $this->uid
         ]);
         $expDisbCat = ExpenseCategories::firstOrCreate(['category_code' => 'PRO_DISB'], [
-            'category_name' => 'Professional Loan Disbursement', 'is_active' => true, 'gl_account_id' => $glExpense->id, 'created_by' => $this->uid
+            'category_name' => 'Inventory Sourcing & Logistics', 'is_active' => true, 'gl_account_id' => $glExpense->id, 'created_by' => $this->uid
         ]);
 
         return compact('bank', 'glBank', 'glRevenue', 'glExpense', 'revIntCat', 'revProcCat', 'expRentCat', 'expSalCat', 'expDisbCat');
