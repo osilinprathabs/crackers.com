@@ -13,8 +13,33 @@ class CrackersOrderAdminController extends Controller
         $search = $request->query('search');
         $status = $request->query('status');
         $orderType = $request->query('order_type');
+        $dateFilter = $request->query('date_filter', 'today'); // Default: Today (Daily)
+        $dateFrom = $request->query('date_from');
+        $dateTo = $request->query('date_to');
 
         $query = CrackersOrder::with('items');
+
+        // Helper to apply date constraints
+        $applyDateFilter = function(&$q) use ($dateFilter, $dateFrom, $dateTo) {
+            if ($dateFilter === 'today') {
+                $q->whereDate('created_at', \Carbon\Carbon::today());
+            } elseif ($dateFilter === 'yesterday') {
+                $q->whereDate('created_at', \Carbon\Carbon::yesterday());
+            } elseif ($dateFilter === 'this_week') {
+                $q->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()]);
+            } elseif ($dateFilter === 'this_month') {
+                $q->whereMonth('created_at', \Carbon\Carbon::now()->month)->whereYear('created_at', \Carbon\Carbon::now()->year);
+            } elseif ($dateFilter === 'custom') {
+                if (!empty($dateFrom)) {
+                    $q->whereDate('created_at', '>=', $dateFrom);
+                }
+                if (!empty($dateTo)) {
+                    $q->whereDate('created_at', '<=', $dateTo);
+                }
+            }
+        };
+
+        $applyDateFilter($query);
 
         if (!empty($status)) {
             $query->where('status', $status);
@@ -41,9 +66,45 @@ class CrackersOrderAdminController extends Controller
             });
         }
 
+        // Calculate status counts (respecting date filter, search and order_type)
+        $statusCountsQuery = CrackersOrder::query();
+        $applyDateFilter($statusCountsQuery);
+
+        if ($orderType === 'pos') {
+            $statusCountsQuery->where(function($q) {
+                $q->where('order_number', 'like', 'CRK-POS-%')
+                  ->orWhere('city', 'In-Store');
+            });
+        } elseif ($orderType === 'online') {
+            $statusCountsQuery->where('order_number', 'not like', 'CRK-POS-%')
+                  ->where(function($q) {
+                      $q->whereNull('city')
+                        ->orWhere('city', '!=', 'In-Store');
+                  });
+        }
+
+        if (!empty($search)) {
+            $statusCountsQuery->where(function($q) use ($search) {
+                $q->where('order_number', 'like', '%' . $search . '%')
+                  ->orWhere('customer_name', 'like', '%' . $search . '%')
+                  ->orWhere('customer_phone', 'like', '%' . $search . '%');
+            });
+        }
+
+        $statusCounts = [
+            'all' => (clone $statusCountsQuery)->count(),
+            'pending' => (clone $statusCountsQuery)->where('status', 'pending')->count(),
+            'processing' => (clone $statusCountsQuery)->where('status', 'processing')->count(),
+            'dispatched' => (clone $statusCountsQuery)->where('status', 'dispatched')->count(),
+            'delivered' => (clone $statusCountsQuery)->where('status', 'delivered')->count(),
+            'cancelled' => (clone $statusCountsQuery)->where('status', 'cancelled')->count(),
+        ];
+
+        $totalPeriodRevenue = (clone $query)->where('status', '!=', 'cancelled')->sum('grand_total');
+
         $orders = $query->latest()->paginate(20)->withQueryString();
 
-        return view('admin.orders.index', compact('orders', 'search', 'status', 'orderType'));
+        return view('admin.orders.index', compact('orders', 'search', 'status', 'orderType', 'statusCounts', 'dateFilter', 'dateFrom', 'dateTo', 'totalPeriodRevenue'));
     }
 
     public function updateStatus(Request $request, $id)

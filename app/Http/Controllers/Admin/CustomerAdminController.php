@@ -16,7 +16,7 @@ class CustomerAdminController extends Controller
     public function index(Request $request)
     {
         $search = $request->query('search');
-        $status = $request->query('status');
+        $type = $request->query('type', 'all');
 
         $query = Customer::with(['user', 'crackersOrders'])
             ->where(function($q) {
@@ -28,6 +28,15 @@ class CustomerAdminController extends Controller
                   });
             });
 
+        if ($type === 'wholesale') {
+            $query->where('customer_type', 'wholesale');
+        } elseif ($type === 'retail') {
+            $query->where(function($q) {
+                $q->whereNull('customer_type')
+                  ->orWhere('customer_type', '!=', 'wholesale');
+            });
+        }
+
         if (!empty($search)) {
             $query->where(function($q) use ($search) {
                 $q->where('company_name', 'like', '%' . $search . '%')
@@ -38,9 +47,24 @@ class CustomerAdminController extends Controller
             });
         }
 
+        // KPI Counts & Revenue Calculations
+        $allBaseCustomers = Customer::all();
+        $totalCustomersCount = $allBaseCustomers->count();
+        $wholesaleCount = $allBaseCustomers->where('customer_type', 'wholesale')->count();
+        $retailCount = $totalCustomersCount - $wholesaleCount;
+        $totalRevenue = CrackersOrder::where('payment_status', 'paid')->sum('grand_total');
+
         $customers = $query->latest()->paginate(20)->withQueryString();
 
-        return view('admin.customers.index', compact('customers', 'search', 'status'));
+        return view('admin.customers.index', compact(
+            'customers', 
+            'search', 
+            'type', 
+            'totalCustomersCount', 
+            'wholesaleCount', 
+            'retailCount', 
+            'totalRevenue'
+        ));
     }
 
     public function show($id)
@@ -79,6 +103,7 @@ class CustomerAdminController extends Controller
 
     public function loginAsCustomer($id)
     {
+        $adminId = Auth::id();
         $customer = Customer::findOrFail($id);
 
         $user = null;
@@ -102,8 +127,24 @@ class CustomerAdminController extends Controller
         }
 
         Auth::login($user);
+        session(['impersonator_admin_id' => $adminId]);
 
-        return redirect()->route('crackers.my-orders')->with('success', "Successfully logged in as customer: {$user->name}");
+        return redirect()->route('crackers.my-orders')->with('success', "Logged in as customer: {$user->name}");
+    }
+
+    public function stopImpersonating()
+    {
+        if (session()->has('impersonator_admin_id')) {
+            $adminId = session('impersonator_admin_id');
+            session()->forget('impersonator_admin_id');
+            $adminUser = User::find($adminId);
+            if ($adminUser) {
+                Auth::login($adminUser);
+                return redirect()->route('admin.customers.index')->with('success', 'Returned to Admin Panel.');
+            }
+        }
+
+        return redirect()->route('admin.customers.index');
     }
 
     public function store(Request $request)
@@ -112,6 +153,7 @@ class CustomerAdminController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20|unique:customers,contact_person_mobile',
             'email' => 'nullable|email|max:255',
+            'customer_type' => 'nullable|string|in:retail,wholesale',
             'address' => 'nullable|string',
             'tax_number' => 'nullable|string',
         ]);
@@ -122,12 +164,13 @@ class CustomerAdminController extends Controller
         $customer->contact_person_name = $validated['name'];
         $customer->contact_person_mobile = $validated['phone'];
         $customer->contact_person_email = $validated['email'] ?? '';
+        $customer->customer_type = $validated['customer_type'] ?? 'retail';
         $customer->tax_number = $validated['tax_number'] ?? null;
         $customer->billing_address = ['address' => $validated['address'] ?? ''];
         $customer->shipping_address = ['address' => $validated['address'] ?? ''];
         $customer->save();
 
-        return redirect()->route('admin.customers.index')->with('success', 'Customer created successfully.');
+        return redirect()->route('admin.customers.index')->with('success', 'CRM Customer profile created successfully.');
     }
 
     public function destroy($id)

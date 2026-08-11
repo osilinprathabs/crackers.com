@@ -214,43 +214,7 @@
             </div>
         </div>
 
-        <!-- Bank Details & Payment QR Code Section -->
-        @if($activeBanks->count() > 0)
-            <div class="bank-box mt-4">
-                <div class="row align-items-center g-3">
-                    <div class="col-sm-8">
-                        <h6 class="fw-bold text-dark mb-2"><i class="ri-bank-card-line text-warning me-1"></i> Bank Account / UPI Transfer Details</h6>
-                        <p class="small text-muted mb-2">Scan the QR code or transfer directly to any of our official bank accounts below:</p>
-                        <div class="row g-2 small">
-                            @foreach($activeBanks as $bank)
-                                <div class="col-12 col-md-6">
-                                    <div class="p-2 bg-white rounded border">
-                                        <strong class="d-block text-primary">{{ $bank->bank_name }}</strong>
-                                        A/C: <strong>{{ $bank->account_number }}</strong><br>
-                                        IFSC: <strong>{{ $bank->ifsc_code }}</strong><br>
-                                        Holder: {{ $bank->account_holder_name }}
-                                        @if($bank->upi_id)
-                                            <br>UPI ID: <span class="badge bg-light text-dark border">{{ $bank->upi_id }}</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                    <div class="col-sm-4 text-center">
-                        @php
-                            $primaryBank = $activeBanks->first();
-                            $upiId = $primaryBank->upi_id ?? 'crackers@upi';
-                            $qrData = "upi://pay?pa={$upiId}&pn=CrackersStore&am={$order->grand_total}&cu=INR&tn=Order_{$order->order_number}";
-                            $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . urlencode($qrData);
-                        @endphp
-                        <img src="{{ $qrUrl }}" alt="UPI QR Code" class="qr-code-img mb-2">
-                        <div class="small fw-bold text-dark">Scan to Pay via UPI</div>
-                        <small class="text-muted d-block" style="font-size: 0.75rem;">Instant GPay / PhonePe / Paytm</small>
-                    </div>
-                </div>
-            </div>
-        @endif
+
 
         <!-- Footer Terms -->
         <div class="text-center mt-5 pt-3 border-top text-muted small">

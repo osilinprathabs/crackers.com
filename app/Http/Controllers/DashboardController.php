@@ -24,21 +24,31 @@ class DashboardController extends Controller
         // Base Query
         $query = CrackersOrder::query();
 
-        if (!empty($fromDate) && !empty($toDate)) {
-            $query->whereBetween('created_at', [
-                Carbon::parse($fromDate)->startOfDay(),
-                Carbon::parse($toDate)->endOfDay()
-            ]);
+        if ($period === 'custom' || !empty($fromDate) || !empty($toDate)) {
+            $period = 'custom';
+            if (!empty($fromDate)) {
+                $query->whereDate('created_at', '>=', Carbon::parse($fromDate)->startOfDay());
+            }
+            if (!empty($toDate)) {
+                $query->whereDate('created_at', '<=', Carbon::parse($toDate)->endOfDay());
+            }
         } else {
             switch ($period) {
+                case 'today':
                 case 'daily':
                     $query->whereDate('created_at', Carbon::today());
+                    break;
+                case 'yesterday':
+                    $query->whereDate('created_at', Carbon::yesterday());
                     break;
                 case 'weekly':
                     $query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
                     break;
                 case 'yearly':
                     $query->whereYear('created_at', Carbon::now()->year);
+                    break;
+                case 'all':
+                    // No date restriction
                     break;
                 case 'monthly':
                 default:
@@ -61,8 +71,39 @@ class DashboardController extends Controller
         $pendingOrdersCount = CrackersOrder::where('status', 'pending')->count();
         $totalCategories = CrackersCategory::where('status', true)->count();
 
-        // Group Recent Orders Day-Wise
-        $recentOrdersGrouped = (clone $query)->with('items')->latest()->take(20)->get()->groupBy(function($order) {
+        // Group Recent Orders Day-Wise (with card-level filters if applied)
+        $orderStatus = $request->get('order_status');
+        $orderType = $request->get('order_type');
+        $orderSearch = $request->get('order_search');
+
+        $dayOrdersQuery = (clone $query)->with('items');
+
+        if (!empty($orderStatus)) {
+            $dayOrdersQuery->where('status', $orderStatus);
+        }
+
+        if ($orderType === 'pos') {
+            $dayOrdersQuery->where(function($q) {
+                $q->where('order_number', 'like', 'CRK-POS-%')
+                  ->orWhere('city', 'In-Store');
+            });
+        } elseif ($orderType === 'online') {
+            $dayOrdersQuery->where('order_number', 'not like', 'CRK-POS-%')
+                  ->where(function($q) {
+                      $q->whereNull('city')
+                        ->orWhere('city', '!=', 'In-Store');
+                  });
+        }
+
+        if (!empty($orderSearch)) {
+            $dayOrdersQuery->where(function($q) use ($orderSearch) {
+                $q->where('order_number', 'like', '%' . $orderSearch . '%')
+                  ->orWhere('customer_name', 'like', '%' . $orderSearch . '%')
+                  ->orWhere('customer_phone', 'like', '%' . $orderSearch . '%');
+            });
+        }
+
+        $recentOrdersGrouped = $dayOrdersQuery->latest()->take(50)->get()->groupBy(function($order) {
             if ($order->created_at->isToday()) {
                 return 'Today (' . $order->created_at->format('d M Y') . ')';
             } elseif ($order->created_at->isYesterday()) {
@@ -72,23 +113,53 @@ class DashboardController extends Controller
             }
         });
 
-        if ($recentOrdersGrouped->isEmpty()) {
-            $recentOrdersGrouped = CrackersOrder::with('items')->latest()->take(20)->get()->groupBy(function($order) {
-                if ($order->created_at->isToday()) {
-                    return 'Today (' . $order->created_at->format('d M Y') . ')';
-                } elseif ($order->created_at->isYesterday()) {
-                    return 'Yesterday (' . $order->created_at->format('d M Y') . ')';
-                } else {
-                    return $order->created_at->format('d M Y (l)');
-                }
-            });
-        }
-
         $featuredProducts = CrackersProduct::where('status', true)->where('is_featured', true)->take(4)->get();
         $totalStaff = \App\Models\Staff::count();
         $totalUsers = \App\Models\User::count();
-        $totalRevenues = \Illuminate\Support\Facades\Schema::hasTable('revenues') ? \App\Models\Account\Revenue::sum('amount') : 0;
-        $totalExpenses = \Illuminate\Support\Facades\Schema::hasTable('expenses') ? \App\Models\Account\Expense::sum('amount') : 0;
+
+        // Period Filtered Revenues and Expenses
+        $revenuesQuery = \Illuminate\Support\Facades\Schema::hasTable('revenues') ? \App\Models\Account\Revenue::query() : null;
+        $expensesQuery = \Illuminate\Support\Facades\Schema::hasTable('expenses') ? \App\Models\Account\Expense::query() : null;
+
+        if ($revenuesQuery) {
+            if ($period === 'custom') {
+                if (!empty($fromDate)) $revenuesQuery->whereDate('revenue_date', '>=', $fromDate);
+                if (!empty($toDate)) $revenuesQuery->whereDate('revenue_date', '<=', $toDate);
+            } elseif ($period === 'today' || $period === 'daily') {
+                $revenuesQuery->whereDate('revenue_date', Carbon::today());
+            } elseif ($period === 'yesterday') {
+                $revenuesQuery->whereDate('revenue_date', Carbon::yesterday());
+            } elseif ($period === 'weekly') {
+                $revenuesQuery->whereBetween('revenue_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+            } elseif ($period === 'monthly') {
+                $revenuesQuery->whereMonth('revenue_date', Carbon::now()->month)->whereYear('revenue_date', Carbon::now()->year);
+            } elseif ($period === 'yearly') {
+                $revenuesQuery->whereYear('revenue_date', Carbon::now()->year);
+            }
+            $totalRevenues = $revenuesQuery->sum('amount');
+        } else {
+            $totalRevenues = 0;
+        }
+
+        if ($expensesQuery) {
+            if ($period === 'custom') {
+                if (!empty($fromDate)) $expensesQuery->whereDate('expense_date', '>=', $fromDate);
+                if (!empty($toDate)) $expensesQuery->whereDate('expense_date', '<=', $toDate);
+            } elseif ($period === 'today' || $period === 'daily') {
+                $expensesQuery->whereDate('expense_date', Carbon::today());
+            } elseif ($period === 'yesterday') {
+                $expensesQuery->whereDate('expense_date', Carbon::yesterday());
+            } elseif ($period === 'weekly') {
+                $expensesQuery->whereBetween('expense_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+            } elseif ($period === 'monthly') {
+                $expensesQuery->whereMonth('expense_date', Carbon::now()->month)->whereYear('expense_date', Carbon::now()->year);
+            } elseif ($period === 'yearly') {
+                $expensesQuery->whereYear('expense_date', Carbon::now()->year);
+            }
+            $totalExpenses = $expensesQuery->sum('amount');
+        } else {
+            $totalExpenses = 0;
+        }
 
         // 1. Sales Trend Graph Data
         $chartGroupFormat = match($period) {

@@ -11,10 +11,6 @@
     "file": "assets/index-eQWVPmsa.js",
     "name": "index"
   },
-  "_index-xsH4HHeE.js": {
-    "file": "assets/index-xsH4HHeE.js",
-    "name": "index"
-  },
   "_jquery-BQXThELV.js": {
     "file": "assets/jquery-BQXThELV.js",
     "name": "jquery"
@@ -398,12 +394,12 @@
     "isEntry": true
   },
   "resources/assets/custom-js/app.js": {
-    "file": "assets/app-BM9oQkvv.js",
+    "file": "assets/app-CWKHw6oL.js",
     "name": "app",
     "src": "resources/assets/custom-js/app.js",
     "isEntry": true,
     "imports": [
-      "_index-xsH4HHeE.js"
+      "resources/assets/custom-js/bootstrap.js"
     ]
   },
   "resources/assets/custom-js/appearance.js": {
@@ -413,13 +409,10 @@
     "isEntry": true
   },
   "resources/assets/custom-js/bootstrap.js": {
-    "file": "assets/bootstrap-BM9oQkvv.js",
+    "file": "assets/bootstrap-T1DpEqax.js",
     "name": "bootstrap",
     "src": "resources/assets/custom-js/bootstrap.js",
-    "isEntry": true,
-    "imports": [
-      "_index-xsH4HHeE.js"
-    ]
+    "isEntry": true
   },
   "resources/assets/custom-js/client-form-validation.js": {
     "file": "assets/client-form-validation-171B9eT-.js",

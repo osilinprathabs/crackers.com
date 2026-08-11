@@ -18,47 +18,76 @@
   </div>
 </div>
 
-<!-- Date & Period Filter Card -->
-<div class="card mb-4 border-0 shadow-sm">
-  <div class="card-body py-3">
-    <form method="GET" action="{{ route('dashboard') }}" class="row g-3 align-items-center">
-      <!-- Preset Time Periods -->
-      <div class="col-lg-6 col-md-12 d-flex align-items-center flex-wrap gap-2">
-        <span class="fw-bold me-2 text-dark"><i class="ri-filter-3-line text-primary me-1"></i> Period Filter:</span>
-        <a href="{{ route('dashboard', ['period' => 'daily']) }}" class="btn btn-sm {{ $period === 'daily' && empty($fromDate) ? 'btn-primary' : 'btn-outline-secondary' }} rounded-pill px-3">
-          Daily
-        </a>
-        <a href="{{ route('dashboard', ['period' => 'weekly']) }}" class="btn btn-sm {{ $period === 'weekly' && empty($fromDate) ? 'btn-primary' : 'btn-outline-secondary' }} rounded-pill px-3">
-          Weekly
-        </a>
-        <a href="{{ route('dashboard', ['period' => 'monthly']) }}" class="btn btn-sm {{ ($period === 'monthly' || empty($period)) && empty($fromDate) ? 'btn-primary' : 'btn-outline-secondary' }} rounded-pill px-3">
-          Monthly
-        </a>
-        <a href="{{ route('dashboard', ['period' => 'yearly']) }}" class="btn btn-sm {{ $period === 'yearly' && empty($fromDate) ? 'btn-primary' : 'btn-outline-secondary' }} rounded-pill px-3">
-          Yearly
-        </a>
+<!-- Day-Wise & Custom Date Filter Card -->
+<div class="card mb-4 border-0 shadow-sm rounded-3">
+  <div class="card-body py-3 bg-white rounded-3">
+    <form method="GET" action="{{ route('dashboard') }}" class="row g-2 align-items-center">
+      <!-- Quick Period Select Dropdown -->
+      <div class="col-lg-5 col-md-12 d-flex align-items-center flex-wrap gap-2">
+        <span class="fw-bold text-primary small me-1"><i class="ri-calendar-event-line fs-5 me-1"></i> Date Filter:</span>
+        <select name="period" id="dashboardPeriodSelect" class="form-select form-select-sm fw-semibold border-primary-subtle" style="max-width: 190px;" onchange="toggleDashboardCustomDates(this.value)">
+          <option value="today" {{ $period === 'today' || $period === 'daily' ? 'selected' : '' }}>📅 Today (Daily)</option>
+          <option value="yesterday" {{ $period === 'yesterday' ? 'selected' : '' }}>⏮️ Yesterday</option>
+          <option value="weekly" {{ $period === 'weekly' ? 'selected' : '' }}>📆 This Week</option>
+          <option value="monthly" {{ $period === 'monthly' ? 'selected' : '' }}>🗓️ This Month</option>
+          <option value="yearly" {{ $period === 'yearly' ? 'selected' : '' }}>📊 This Year</option>
+          <option value="custom" {{ $period === 'custom' || (!empty($fromDate) || !empty($toDate)) ? 'selected' : '' }}>🎯 Custom Date Range</option>
+          <option value="all" {{ $period === 'all' ? 'selected' : '' }}>🌐 All Time</option>
+        </select>
+        @if($period !== 'custom' && empty($fromDate) && empty($toDate))
+          <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold">
+            <i class="ri-filter-line me-1"></i> Filter
+          </button>
+        @endif
       </div>
 
-      <!-- Custom From-To Date Filter -->
-      <div class="col-lg-6 col-md-12 d-flex align-items-center gap-2 flex-wrap justify-content-lg-end">
-        <div class="input-group input-group-sm" style="max-width: 170px;">
-          <span class="input-group-text bg-light"><i class="ri-calendar-line"></i> From</span>
+      <!-- Custom From & To Date Range Inputs -->
+      <div class="col-lg-7 col-md-12 d-flex align-items-center gap-2 flex-wrap justify-content-lg-end {{ ($period === 'custom' || !empty($fromDate) || !empty($toDate)) ? '' : 'd-none' }}" id="dashboardCustomDates">
+        <div class="input-group input-group-sm" style="max-width: 180px;">
+          <span class="input-group-text bg-light text-muted fw-semibold">From</span>
           <input type="date" name="from_date" class="form-control" value="{{ $fromDate }}">
         </div>
-        <div class="input-group input-group-sm" style="max-width: 170px;">
-          <span class="input-group-text bg-light"><i class="ri-calendar-line"></i> To</span>
+        <div class="input-group input-group-sm" style="max-width: 180px;">
+          <span class="input-group-text bg-light text-muted fw-semibold">To</span>
           <input type="date" name="to_date" class="form-control" value="{{ $toDate }}">
         </div>
-        <button type="submit" class="btn btn-primary btn-sm px-3 rounded-pill fw-bold">
-          <i class="ri-filter-fill me-1"></i> Apply Filter
+        <button type="submit" class="btn btn-primary btn-sm px-3 rounded-pill fw-bold shadow-sm">
+          <i class="ri-filter-3-line me-1"></i> Apply Filter
         </button>
-        @if(!empty($fromDate) || !empty($toDate))
-          <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-2" title="Clear Filter">
-            <i class="ri-close-circle-line"></i> Reset
+        @if(!empty($fromDate) || !empty($toDate) || ($period && $period !== 'monthly'))
+          <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-2" title="Reset Filters">
+            <i class="ri-refresh-line"></i> Reset
           </a>
         @endif
       </div>
     </form>
+
+    <!-- Active Filter Status Badge -->
+    <div class="mt-2 pt-2 border-top d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <span class="badge bg-label-primary px-3 py-2 rounded-pill font-monospace">
+        <i class="ri-time-line me-1"></i> Viewing Data For: 
+        @if(!empty($fromDate) || !empty($toDate))
+          Custom Date Range ({{ $fromDate ?: 'Beginning' }} to {{ $toDate ?: 'Today' }})
+        @elseif($period === 'today' || $period === 'daily')
+          Today ({{ now()->format('d M Y') }})
+        @elseif($period === 'yesterday')
+          Yesterday ({{ \Carbon\Carbon::yesterday()->format('d M Y') }})
+        @elseif($period === 'weekly')
+          This Week
+        @elseif($period === 'yearly')
+          This Year ({{ now()->format('Y') }})
+        @elseif($period === 'all')
+          All Time
+        @else
+          This Month ({{ now()->format('F Y') }})
+        @endif
+      </span>
+      
+      <div class="d-flex align-items-center gap-3 small">
+        <span><strong class="text-dark">Filtered Orders:</strong> <span class="badge bg-primary text-white rounded-pill">{{ number_format($filteredOrdersCount) }}</span></span>
+        <span><strong class="text-dark">Filtered Sales Revenue:</strong> <span class="badge bg-success text-white rounded-pill">₹{{ number_format($filteredSalesRevenue, 2) }}</span></span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -251,10 +280,55 @@
 </div>
 
 <!-- Recent Orders Table Section (Day-Wise Grouped) -->
-<div class="card mb-4 border-0 shadow-sm">
-  <div class="card-header d-flex align-items-center justify-content-between">
-    <h5 class="mb-0 fw-bold"><i class="ri-calendar-check-line me-2 text-primary"></i>Day-Wise Cracker Orders</h5>
+<div class="card mb-4 border-0 shadow-sm" id="dayWiseOrdersSection">
+  <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2 bg-white py-3 border-bottom">
+    <div class="d-flex align-items-center gap-2">
+      <h5 class="mb-0 fw-bold text-primary"><i class="ri-calendar-check-line me-2 text-primary"></i>Day-Wise Cracker Orders</h5>
+      <span class="badge bg-label-primary font-monospace">{{ $recentOrdersGrouped->flatten()->count() }} Orders Shown</span>
+    </div>
     <a href="{{ route('admin.orders.index') }}" class="btn btn-sm btn-outline-primary fw-bold">View All Orders <i class="ri-arrow-right-line ms-1"></i></a>
+  </div>
+
+  <!-- Day-Wise Cracker Orders Card Filter Bar -->
+  <div class="card-body bg-light py-2 px-3 border-bottom">
+    <form method="GET" action="{{ route('dashboard') }}#dayWiseOrdersSection" class="row g-2 align-items-center">
+      @if(request('period')) <input type="hidden" name="period" value="{{ request('period') }}"> @endif
+      @if(request('from_date')) <input type="hidden" name="from_date" value="{{ request('from_date') }}"> @endif
+      @if(request('to_date')) <input type="hidden" name="to_date" value="{{ request('to_date') }}"> @endif
+
+      <div class="col-md-4 col-lg-3">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white"><i class="ri-search-2-line"></i></span>
+          <input type="text" name="order_search" class="form-control" placeholder="Search Order #, Name, Mobile..." value="{{ request('order_search') }}">
+        </div>
+      </div>
+
+      <div class="col-md-3 col-lg-2">
+        <select name="order_type" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All Types (Online & POS)</option>
+          <option value="online" {{ request('order_type') === 'online' ? 'selected' : '' }}>🌐 Online Orders</option>
+          <option value="pos" {{ request('order_type') === 'pos' ? 'selected' : '' }}>🏪 Walk-In POS</option>
+        </select>
+      </div>
+
+      <div class="col-md-3 col-lg-2">
+        <select name="order_status" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All Statuses</option>
+          <option value="pending" {{ request('order_status') === 'pending' ? 'selected' : '' }}>⏳ Pending</option>
+          <option value="processing" {{ request('order_status') === 'processing' ? 'selected' : '' }}>⚙️ Processing</option>
+          <option value="dispatched" {{ request('order_status') === 'dispatched' ? 'selected' : '' }}>🚚 Dispatched</option>
+          <option value="delivered" {{ request('order_status') === 'delivered' ? 'selected' : '' }}>✅ Delivered</option>
+          <option value="cancelled" {{ request('order_status') === 'cancelled' ? 'selected' : '' }}>❌ Cancelled</option>
+        </select>
+      </div>
+
+      <div class="col-md-2 col-lg-2 d-flex gap-1">
+        <button type="submit" class="btn btn-sm btn-primary fw-bold w-100"><i class="ri-filter-3-line me-1"></i> Filter</button>
+        @if(request('order_search') || request('order_type') || request('order_status'))
+          <a href="{{ route('dashboard', request()->except(['order_search', 'order_type', 'order_status'])) }}#dayWiseOrdersSection" class="btn btn-sm btn-outline-secondary" title="Reset Filters"><i class="ri-refresh-line"></i></a>
+        @endif
+      </div>
+    </form>
   </div>
   <div class="table-responsive text-nowrap">
     <table class="table table-hover align-middle mb-0">
@@ -435,6 +509,17 @@
     const donutChart = new ApexCharts(document.querySelector('#categorySalesDonutChart'), donutOptions);
     donutChart.render();
   });
+
+  function toggleDashboardCustomDates(val) {
+      let box = document.getElementById('dashboardCustomDates');
+      if (box) {
+          if (val === 'custom') {
+              box.classList.remove('d-none');
+          } else {
+              box.classList.add('d-none');
+          }
+      }
+  }
 </script>
 @endsection
 @endsection

@@ -133,7 +133,6 @@
                   <th>{{ __('Number') }}</th>
                   <th>{{ __('Category') }}</th>
                   <th>{{ __('Bank') }}</th>
-                  <th>{{ __('GL') }}</th>
                   <th class="text-end">{{ __('Amount') }}</th>
                   <th>{{ __('Status') }}</th>
                 </tr>
@@ -144,12 +143,11 @@
                     <td><code>{{ $r->revenue_number }}</code></td>
                     <td>{{ $r->category?->category_name ?? '—' }}</td>
                     <td>{{ $r->bankAccount?->account_name ?? '—' }}</td>
-                    <td><small>{{ $r->chartOfAccount?->account_code ?? '—' }}</small></td>
                     <td class="text-end">₹{{ number_format((float) ($r->amount ?? 0), 2) }}</td>
                     <td><span class="badge bg-label-{{ $r->status === 'posted' ? 'success' : ($r->status === 'approved' ? 'info' : 'warning') }}">{{ $r->status }}</span></td>
                   </tr>
                 @empty
-                  <tr><td colspan="6" class="text-center text-muted py-4">{{ __('No revenue found for this day.') }}</td></tr>
+                  <tr><td colspan="5" class="text-center text-muted py-4">{{ __('No revenue found for this day.') }}</td></tr>
                 @endforelse
               </tbody>
             </table>
@@ -169,7 +167,6 @@
                   <th>{{ __('Number') }}</th>
                   <th>{{ __('Category') }}</th>
                   <th>{{ __('Bank') }}</th>
-                  <th>{{ __('GL') }}</th>
                   <th class="text-end">{{ __('Amount') }}</th>
                   <th>{{ __('Status') }}</th>
                 </tr>
@@ -180,12 +177,11 @@
                     <td><code>{{ $e->expense_number }}</code></td>
                     <td>{{ $e->category?->category_name ?? '—' }}</td>
                     <td>{{ $e->bankAccount?->account_name ?? '—' }}</td>
-                    <td><small>{{ $e->chartOfAccount?->account_code ?? '—' }}</small></td>
                     <td class="text-end">₹{{ number_format((float) ($e->amount ?? 0), 2) }}</td>
                     <td><span class="badge bg-label-{{ $e->status === 'posted' ? 'success' : ($e->status === 'approved' ? 'info' : 'warning') }}">{{ $e->status }}</span></td>
                   </tr>
                 @empty
-                  <tr><td colspan="6" class="text-center text-muted py-4">{{ __('No expense found for this day.') }}</td></tr>
+                  <tr><td colspan="5" class="text-center text-muted py-4">{{ __('No expense found for this day.') }}</td></tr>
                 @endforelse
               </tbody>
             </table>

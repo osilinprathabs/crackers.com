@@ -163,6 +163,30 @@
                                     </div>
                                 </div>
 
+                                <div class="col-12 mb-4">
+                                    <div class="card border p-3 bg-light">
+                                        <h6 class="fw-bold text-primary mb-3"><i class="ri-money-dollar-circle-line me-1"></i> Minimum Order Amount Rules (Retail vs Wholesale)</h6>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold"><i class="ri-shopping-bag-3-line text-info me-1"></i> Retail Store Minimum Order Amount (₹)</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">₹</span>
+                                                    <input type="number" step="0.01" min="0" name="min_retail_order_amount" class="form-control" value="{{ old('min_retail_order_amount', $settings->min_retail_order_amount) }}" placeholder="e.g. 1000">
+                                                </div>
+                                                <small class="text-muted">Minimum cart subtotal required for placing a Retail order.</small>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold"><i class="ri-store-3-line text-warning me-1"></i> Wholesale Bulk Minimum Order Amount (₹)</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">₹</span>
+                                                    <input type="number" step="0.01" min="0" name="min_wholesale_order_amount" class="form-control" value="{{ old('min_wholesale_order_amount', $settings->min_wholesale_order_amount) }}" placeholder="e.g. 5000">
+                                                </div>
+                                                <small class="text-muted">Minimum cart subtotal required for placing a Wholesale order.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="col-md-6 mb-4">
                                     <div class="card border p-3">
                                         <div class="d-flex align-items-center justify-content-between mb-2">

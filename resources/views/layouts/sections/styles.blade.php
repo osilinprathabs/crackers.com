@@ -29,28 +29,31 @@
 @vite(['resources/css/app.css'])
 <!-- END: app CSS-->
 
-<!-- Custom High-Contrast Visible Green for Admin Panel -->
+<!-- Custom Normal Solid Green for Admin & Storefront -->
 <style>
   .bg-label-success, 
   [data-bs-theme=light] .bg-label-success,
   [data-bs-theme=dark] .bg-label-success {
-      background-color: #dcfce7 !important;
-      color: #15803d !important;
-      border: 1px solid rgba(22, 163, 74, 0.35) !important;
+      background-color: #16a34a !important;
+      color: #ffffff !important;
+      border: 1px solid #15803d !important;
       font-weight: 700 !important;
   }
-  .badge.bg-success {
+  .badge.bg-success, .badge.bg-label-success {
       background-color: #16a34a !important;
       color: #ffffff !important;
       font-weight: 700 !important;
   }
   .text-success {
-      color: #15803d !important;
-      font-weight: 600 !important;
+      color: #16a34a !important;
+      font-weight: 700 !important;
   }
   .alert-success {
-      background-color: #f0fdf4 !important;
-      border-left: 5px solid #16a34a !important;
-      color: #14532d !important;
+      background-color: #16a34a !important;
+      border-left: 5px solid #14532d !important;
+      color: #ffffff !important;
+  }
+  .alert-success .btn-close, .alert-success a, .alert-success span, .alert-success div, .alert-success strong {
+      color: #ffffff !important;
   }
 </style>

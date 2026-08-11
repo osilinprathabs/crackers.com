@@ -41,6 +41,8 @@ class CrackersProductAdminController extends Controller
             'price' => 'required|numeric|min:0',
             'discount_price' => 'nullable|numeric|min:0',
             'wholesale_price' => 'nullable|numeric|min:0',
+            'wholesale_min_qty' => 'nullable|integer|min:1',
+            'wholesale_max_qty' => 'nullable|integer|min:1',
             'stock' => 'required|integer|min:0',
             'low_stock_threshold' => 'nullable|integer|min:0',
             'unit' => 'required|string|max:50',
@@ -60,6 +62,8 @@ class CrackersProductAdminController extends Controller
         $product->price = $validated['price'];
         $product->discount_price = $validated['discount_price'] ?? null;
         $product->wholesale_price = $validated['wholesale_price'] ?? null;
+        $product->wholesale_min_qty = !empty($validated['wholesale_min_qty']) ? intval($validated['wholesale_min_qty']) : null;
+        $product->wholesale_max_qty = !empty($validated['wholesale_max_qty']) ? intval($validated['wholesale_max_qty']) : null;
         $product->stock = $validated['stock'];
         $product->low_stock_threshold = isset($validated['low_stock_threshold']) ? intval($validated['low_stock_threshold']) : 10;
         $product->unit = $validated['unit'];
@@ -110,6 +114,8 @@ class CrackersProductAdminController extends Controller
             'price' => 'required|numeric|min:0',
             'discount_price' => 'nullable|numeric|min:0',
             'wholesale_price' => 'nullable|numeric|min:0',
+            'wholesale_min_qty' => 'nullable|integer|min:1',
+            'wholesale_max_qty' => 'nullable|integer|min:1',
             'stock' => 'required|integer|min:0',
             'low_stock_threshold' => 'nullable|integer|min:0',
             'unit' => 'required|string|max:50',
@@ -125,6 +131,8 @@ class CrackersProductAdminController extends Controller
         $product->price = $validated['price'];
         $product->discount_price = $validated['discount_price'] ?? null;
         $product->wholesale_price = $validated['wholesale_price'] ?? null;
+        $product->wholesale_min_qty = !empty($validated['wholesale_min_qty']) ? intval($validated['wholesale_min_qty']) : null;
+        $product->wholesale_max_qty = !empty($validated['wholesale_max_qty']) ? intval($validated['wholesale_max_qty']) : null;
         $product->stock = $validated['stock'];
         $product->low_stock_threshold = isset($validated['low_stock_threshold']) ? intval($validated['low_stock_threshold']) : 10;
         $product->unit = $validated['unit'];

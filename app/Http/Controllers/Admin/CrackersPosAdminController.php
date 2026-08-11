@@ -53,6 +53,8 @@ class CrackersPosAdminController extends Controller
             'customer_email' => 'nullable|email|max:255',
             'payment_method' => 'required|string',
             'amount_tendered' => 'nullable|numeric|min:0',
+            'discount_type' => 'nullable|string|in:amount,percent',
+            'discount_value' => 'nullable|numeric|min:0',
             'discount' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
@@ -63,7 +65,6 @@ class CrackersPosAdminController extends Controller
         try {
             return DB::transaction(function() use ($request, $validated) {
                 $settings = CrackersSetting::getSettings();
-                $discount = floatval($validated['discount'] ?? 0);
 
                 // 1. Customer Handling
                 $customerId = null;
@@ -119,6 +120,18 @@ class CrackersPosAdminController extends Controller
                         'total_price' => $lineTotal,
                     ];
                 }
+
+                // Calculate Discount (Amount or Percentage)
+                $discountType = $validated['discount_type'] ?? 'amount';
+                $discountVal = floatval($validated['discount_value'] ?? $validated['discount'] ?? 0);
+
+                if ($discountType === 'percent') {
+                    $calculatedDiscount = round(($subtotal * $discountVal) / 100, 2);
+                } else {
+                    $calculatedDiscount = floatval($discountVal);
+                }
+
+                $discount = min($subtotal, max(0, $calculatedDiscount));
 
                 // 3. Tax & Total Calculations
                 $taxableSubtotal = max(0, $subtotal - $discount);

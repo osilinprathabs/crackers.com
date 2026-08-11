@@ -12,7 +12,7 @@
     {
       "icon": "menu-icon icon-base ri ri-user-star-line",
       "url": "admin/customers",
-      "name": "Customers",
+      "name": "CRM Management",
       "slug": "admin.customers",
       "roles": [
         "Admin"

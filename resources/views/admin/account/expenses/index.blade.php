@@ -93,7 +93,6 @@
             <th>{{ __('Date') }}</th>
             <th>{{ __('Category') }}</th>
             <th>{{ __('Bank') }}</th>
-            <th>{{ __('GL') }}</th>
             <th class="text-end">{{ __('Amount') }}</th>
             <th>{{ __('Status') }}</th>
             <th class="text-end">{{ __('Actions') }}</th>
@@ -106,7 +105,6 @@
               <td>{{ $e->expense_date?->format('Y-m-d') }}</td>
               <td>{{ $e->category?->category_name ?? '—' }}</td>
               <td>{{ $e->bankAccount?->account_name ?? '—' }}</td>
-              <td><small>{{ $e->chartOfAccount?->account_code ?? '—' }}</small></td>
               <td class="text-end">₹{{ number_format((float) $e->amount, 2) }}</td>
               <td><span class="badge bg-label-{{ $e->status === 'posted' ? 'success' : ($e->status === 'approved' ? 'info' : 'warning') }}">{{ $e->status }}</span></td>
               <td class="text-end">
@@ -114,13 +112,13 @@
                   'viewUrl' => route('account.expenses.show', $e),
                   'approveUrl' => $e->status === 'draft' ? route('account.expenses.approve', $e) : null,
                   'postUrl' => $e->status === 'approved' ? route('account.expenses.post', $e) : null,
-                  'deleteRoute' => $e->status === 'draft' ? route('account.expenses.destroy', $e) : null,
-                  'deleteConfirm' => __('Delete this draft?'),
+                  'deleteRoute' => route('account.expenses.destroy', $e),
+                  'deleteConfirm' => __('Delete this expense entry?'),
                 ])
               </td>
             </tr>
           @empty
-            <tr><td colspan="8" class="text-center text-muted py-5">{{ __('No expenses yet.') }}</td></tr>
+            <tr><td colspan="7" class="text-center text-muted py-5">{{ __('No expenses yet.') }}</td></tr>
           @endforelse
         </tbody>
       </table>

@@ -314,7 +314,10 @@ class ExpenseController extends Controller
             $expense->expense_date = $validated['expense_date'];
             $expense->category_id = $validated['category_id'];
             $expense->bank_account_id = $validated['bank_account_id'];
-            $expense->chart_of_account_id = $validated['chart_of_account_id'];
+            $defaultGl = ChartOfAccount::where('created_by', creatorId())
+                ->whereHas('accountType.category', function($q) { $q->where('type', 'expense'); })
+                ->first();
+            $expense->chart_of_account_id = !empty($validated['chart_of_account_id']) ? $validated['chart_of_account_id'] : ($defaultGl ? $defaultGl->id : null);
             $expense->amount = $validated['amount'];
             $expense->description = $validated['description'];
             $expense->reference_number = $validated['reference_number'];
@@ -367,10 +370,6 @@ class ExpenseController extends Controller
         }
 
         if(Auth::user()->can('delete-expenses') && $expense->created_by == creatorId()){
-            if ($expense->status != 'draft') {
-                return back()->with('error', __('Cannot delete posted expense.'));
-            }
-
             DestroyExpense::dispatch($expense);
             $expense->delete();
 

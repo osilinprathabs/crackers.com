@@ -307,7 +307,10 @@ class RevenueController extends Controller
             $revenue->revenue_date = $validated['revenue_date'];
             $revenue->category_id = $validated['category_id'];
             $revenue->bank_account_id = $validated['bank_account_id'];
-            $revenue->chart_of_account_id = $validated['chart_of_account_id'] ?? null;
+            $defaultGl = ChartOfAccount::where('created_by', creatorId())
+                ->whereHas('accountType.category', function($q) { $q->where('type', 'revenue'); })
+                ->first();
+            $revenue->chart_of_account_id = !empty($validated['chart_of_account_id']) ? $validated['chart_of_account_id'] : ($defaultGl ? $defaultGl->id : null);
             $revenue->amount = $validated['amount'];
             $revenue->description = $validated['description'];
             $revenue->reference_number = $validated['reference_number'];
@@ -360,10 +363,6 @@ class RevenueController extends Controller
         }
 
         if(Auth::user()->can('delete-revenues') && $revenue->created_by == creatorId()){
-            if ($revenue->status != 'draft') {
-                return back()->with('error', __('Cannot delete posted revenue.'));
-            }
-
             DestroyRevenue::dispatch($revenue);
             $revenue->delete();
 

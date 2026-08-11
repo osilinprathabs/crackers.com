@@ -19,6 +19,8 @@ class CrackersProduct extends Model
         'price',
         'discount_price',
         'wholesale_price',
+        'wholesale_min_qty',
+        'wholesale_max_qty',
         'image',
         'images',
         'stock',

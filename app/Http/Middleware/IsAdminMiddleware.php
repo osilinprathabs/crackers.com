@@ -21,6 +21,15 @@ class IsAdminMiddleware
       }
 
       if (!Auth::user()->hasRole('Admin')) {
+          if (session()->has('impersonator_admin_id')) {
+              $adminUser = \App\Models\User::find(session('impersonator_admin_id'));
+              if ($adminUser && $adminUser->hasRole('Admin')) {
+                  Auth::login($adminUser);
+                  session()->forget('impersonator_admin_id');
+                  return $next($request);
+              }
+          }
+
           abort(403, 'Only Admin can access this section.');
       }
 

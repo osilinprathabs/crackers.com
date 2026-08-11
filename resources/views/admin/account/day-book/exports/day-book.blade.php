@@ -8,14 +8,13 @@
 
 @if ($mode === 'csv')
 <table>
-  <tr><th colspan="9">{{ __('Day Book') }} — {{ $day }} ({{ $status }})</th></tr>
+  <tr><th colspan="8">{{ __('Day Book') }} — {{ $day }} ({{ $status }})</th></tr>
   <tr>
     <th>{{ __('Type') }}</th>
     <th>{{ __('Number') }}</th>
     <th>{{ __('Date') }}</th>
     <th>{{ __('Category') }}</th>
     <th>{{ __('Bank') }}</th>
-    <th>{{ __('GL') }}</th>
     <th>{{ __('Status') }}</th>
     <th>{{ __('Description') }}</th>
     <th class="num">{{ __('Amount') }}</th>
@@ -28,7 +27,6 @@
       <td>{{ $row['date'] ?? '—' }}</td>
       <td>{{ $row['category'] ?? '—' }}</td>
       <td>{{ $row['bank'] ?? '—' }}</td>
-      <td>{{ $row['gl'] ?? '—' }}</td>
       <td>{{ $row['status'] ?? '—' }}</td>
       <td>{{ $row['description'] ?? '' }}</td>
       <td>{{ number_format((float) ($row['amount'] ?? 0), 2) }}</td>
@@ -38,21 +36,21 @@
   <tr>
     <td>{{ __('TOTAL') }}</td>
     <td>{{ __('Revenue') }}</td>
-    <td colspan="5"></td>
+    <td colspan="4"></td>
     <td>{{ __('Total revenue') }}</td>
     <td>{{ number_format((float) ($totals['total_revenue'] ?? 0), 2) }}</td>
   </tr>
   <tr>
     <td>{{ __('TOTAL') }}</td>
     <td>{{ __('Expense') }}</td>
-    <td colspan="5"></td>
+    <td colspan="4"></td>
     <td>{{ __('Total expense') }}</td>
     <td>{{ number_format((float) ($totals['total_expense'] ?? 0), 2) }}</td>
   </tr>
   <tr>
     <td>{{ __('TOTAL') }}</td>
     <td>{{ __('Net') }}</td>
-    <td colspan="5"></td>
+    <td colspan="4"></td>
     <td>{{ __('Revenue - Expense') }}</td>
     <td>{{ number_format((float) ($totals['net_profit'] ?? 0), 2) }}</td>
   </tr>
@@ -84,7 +82,6 @@
         <th>{{ __('Date') }}</th>
         <th>{{ __('Category') }}</th>
         <th>{{ __('Bank') }}</th>
-        <th>{{ __('GL') }}</th>
         <th>{{ __('Status') }}</th>
         <th>{{ __('Description') }}</th>
         <th class="num">{{ __('Amount') }}</th>
@@ -98,13 +95,12 @@
           <td>{{ $row['date'] ?? '—' }}</td>
           <td>{{ $row['category'] ?? '—' }}</td>
           <td>{{ $row['bank'] ?? '—' }}</td>
-          <td>{{ $row['gl'] ?? '—' }}</td>
           <td>{{ $row['status'] ?? '—' }}</td>
           <td>{{ $row['description'] ?? '' }}</td>
           <td class="num">{{ number_format((float) ($row['amount'] ?? 0), 2) }}</td>
         </tr>
       @empty
-        <tr><td colspan="9" style="text-align:center;">{{ __('No data') }}</td></tr>
+        <tr><td colspan="8" style="text-align:center;">{{ __('No data') }}</td></tr>
       @endforelse
 
       <tr>

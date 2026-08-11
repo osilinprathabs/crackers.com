@@ -36,14 +36,19 @@ class CrackersStoreController extends Controller
         }
 
         $customerType = 'retail';
-        if (auth()->check()) {
+        if ($request->has('type')) {
+            $customerType = $request->query('type') === 'wholesale' ? 'wholesale' : 'retail';
+            session(['store_mode' => $customerType, 'customer_type' => $customerType]);
+        } elseif (session()->has('store_mode')) {
+            $customerType = session('store_mode');
+        } elseif (session()->has('customer_type')) {
+            $customerType = session('customer_type');
+        } elseif (auth()->check()) {
             $cust = Customer::where('user_id', auth()->id())->first();
             if ($cust && !empty($cust->customer_type)) {
                 $customerType = $cust->customer_type;
+                session(['store_mode' => $customerType, 'customer_type' => $customerType]);
             }
-        }
-        if ($request->has('type')) {
-            $customerType = $request->query('type') === 'wholesale' ? 'wholesale' : 'retail';
         }
 
         $products = $query->orderBy('is_featured', 'desc')->latest()->get();
@@ -70,7 +75,15 @@ class CrackersStoreController extends Controller
                 $customer = \App\Models\Account\Customer::where('contact_person_mobile', $user->phone)->first();
             }
         }
-        return view('crackers.checkout', compact('settings', 'activeBanks', 'user', 'customer'));
+        $customerType = session('store_mode', session('customer_type', 'retail'));
+        if ($user && $customer && !empty($customer->customer_type) && !session()->has('store_mode')) {
+            $customerType = $customer->customer_type;
+        }
+
+        $appearance = \App\Models\Appearance::where('type', 'web')->first();
+        $websiteColor = $appearance?->data['header_color'] ?? '#fb8500';
+
+        return view('crackers.checkout', compact('settings', 'activeBanks', 'user', 'customer', 'appearance', 'websiteColor', 'customerType'));
     }
 
     public function showPolicy($type)
@@ -100,25 +113,46 @@ class CrackersStoreController extends Controller
     public function placeOrder(Request $request)
     {
         if ($request->has('items_json') && is_string($request->input('items_json'))) {
-            $request->merge(['items' => json_decode($request->input('items_json'), true)]);
+            $decoded = json_decode($request->input('items_json'), true);
+            if (is_array($decoded)) {
+                $request->merge(['items' => $decoded]);
+            }
         }
 
-        $validated = $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'customer_phone' => 'required|string|max:20',
-            'customer_email' => 'nullable|email|max:255',
-            'delivery_address' => 'required|string',
-            'city' => 'nullable|string|max:100',
-            'pincode' => 'nullable|string|max:20',
-            'payment_method' => 'required|string',
-            'notes' => 'nullable|string',
-            'payment_proof' => 'nullable|image|max:5120',
-            'items' => 'required|array|min:1',
-            'items.*.id' => 'required|exists:crackers_products,id',
-            'items.*.quantity' => 'required|integer|min:1',
-        ]);
+        try {
+            $validated = $request->validate([
+                'customer_name' => 'required|string|max:255',
+                'customer_phone' => 'required|string|max:20',
+                'customer_email' => 'nullable|email|max:255',
+                'delivery_address' => 'required|string',
+                'city' => 'nullable|string|max:100',
+                'pincode' => 'nullable|string|max:20',
+                'payment_method' => 'nullable|string',
+                'notes' => 'nullable|string',
+                'payment_proof' => 'nullable|image|max:5120',
+                'items' => 'required|array|min:1',
+                'items.*.id' => 'required|exists:crackers_products,id',
+                'items.*.quantity' => 'required|integer|min:1',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $ve) {
+            $firstError = collect($ve->errors())->flatten()->first();
+            return response()->json([
+                'success' => false,
+                'message' => $firstError ?: 'Please fill out all required checkout fields.',
+                'errors' => $ve->errors()
+            ], 422);
+        }
 
         $paymentProofPath = null;
+        $paymentMethod = $validated['payment_method'] ?? 'COD';
+        if ($paymentMethod !== 'COD' && !$request->hasFile('payment_proof')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment proof screenshot is mandatory. Order will only be taken after uploading payment receipt image!',
+                'errors' => ['payment_proof' => ['Payment proof image is mandatory.']]
+            ], 422);
+        }
+
         if ($request->hasFile('payment_proof')) {
             $file = $request->file('payment_proof');
             $fileName = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $file->getClientOriginalName());
@@ -130,11 +164,19 @@ class CrackersStoreController extends Controller
             return DB::transaction(function() use ($validated, $paymentProofPath) {
                 $settings = CrackersSetting::getSettings();
 
-                // Validate stock levels before proceeding
+                $orderType = session('customer_type', 'retail');
+
+                // Validate stock levels & Wholesale min qty before proceeding
                 foreach ($validated['items'] as $itemData) {
-                    $product = CrackersProduct::where('id', $itemData['id'])->lockForUpdate()->firstOrFail();
+                    $product = CrackersProduct::where('id', $itemData['id'])->lockForUpdate()->first();
+                    if (!$product) {
+                        throw new \Exception("One of the selected products no longer exists.");
+                    }
                     if ($product->stock < $itemData['quantity']) {
                         throw new \Exception("Insufficient stock for '{$product->name}'. Only {$product->stock} {$product->unit}(s) available.");
+                    }
+                    if ($orderType === 'wholesale' && !empty($product->wholesale_min_qty) && $itemData['quantity'] < $product->wholesale_min_qty) {
+                        throw new \Exception("Wholesale minimum order requirement for '{$product->name}' is {$product->wholesale_min_qty} {$product->unit}(s). You ordered {$itemData['quantity']}.");
                     }
                 }
 
@@ -184,6 +226,19 @@ class CrackersStoreController extends Controller
                 $gstAmount = round($subtotal * ($gstRate / 100), 2);
                 $grandTotal = $subtotal + $gstAmount;
 
+                // Enforce Minimum Order Amount Rules
+                $minRetail = floatval($settings->min_retail_order_amount ?? 0);
+                $minWholesale = floatval($settings->min_wholesale_order_amount ?? 0);
+                $orderType = session('customer_type', 'retail');
+
+                if ($orderType === 'wholesale' && $minWholesale > 0 && $subtotal < $minWholesale) {
+                    throw new \Exception("Minimum order amount for Wholesale Bulk orders is ₹" . number_format($minWholesale, 2) . ". Your current subtotal is ₹" . number_format($subtotal, 2) . ".");
+                }
+
+                if ($orderType === 'retail' && $minRetail > 0 && $subtotal < $minRetail) {
+                    throw new \Exception("Minimum order amount for Retail orders is ₹" . number_format($minRetail, 2) . ". Your current subtotal is ₹" . number_format($subtotal, 2) . ".");
+                }
+
                 $order = CrackersOrder::create([
                     'order_number' => CrackersOrder::generateOrderNumber(),
                     'customer_id' => $customer->id,
@@ -198,9 +253,9 @@ class CrackersStoreController extends Controller
                     'gst_amount' => $gstAmount,
                     'discount' => 0,
                     'grand_total' => $grandTotal,
-                    'payment_method' => $validated['payment_method'],
+                    'payment_method' => $validated['payment_method'] ?? 'COD',
                     'payment_proof' => $paymentProofPath,
-                    'payment_status' => $paymentProofPath ? 'pending' : 'pending',
+                    'payment_status' => 'pending',
                     'status' => 'pending',
                     'notes' => $validated['notes'] ?? null,
                 ]);
@@ -239,9 +294,10 @@ class CrackersStoreController extends Controller
                 ]);
             });
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Order Placement Exception: " . $e->getMessage(), ['exception' => $e]);
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage() ?: 'An error occurred while placing your order.'
             ], 422);
         }
     }

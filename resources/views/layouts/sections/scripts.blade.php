@@ -91,7 +91,7 @@
                 icon: 'success',
                 title: 'Success!',
                 text: {!! json_encode(session('success')) !!},
-                timer: 2200,
+                timer: 5000,
                 showConfirmButton: false,
                 position: 'center'
             });
@@ -191,6 +191,51 @@
 
   // Update every second
   setInterval(updateClock, 1000);
+})();
+</script>
+
+<script>
+// Auto-hide success alert messages and banners after 5 seconds (5000ms)
+(function() {
+    function setupAutoHideAlerts() {
+        setTimeout(function() {
+            // Auto hide Bootstrap alerts (success/info/primary)
+            var alerts = document.querySelectorAll('.alert-success, .alert-info, .alert-primary');
+            alerts.forEach(function(alert) {
+                alert.style.transition = 'opacity 0.6s ease, max-height 0.6s ease, margin 0.6s ease, padding 0.6s ease';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
+                        var bsAlert = bootstrap.Alert.getInstance(alert);
+                        if (bsAlert) {
+                            bsAlert.close();
+                            return;
+                        }
+                    }
+                    alert.style.display = 'none';
+                }, 600);
+            });
+
+            // Auto hide success modals if open
+            var successModal = document.getElementById('successModal');
+            if (successModal) {
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    var bsModal = bootstrap.Modal.getInstance(successModal);
+                    if (bsModal) {
+                        bsModal.hide();
+                    }
+                } else if (typeof jQuery !== 'undefined' && jQuery(successModal).modal) {
+                    jQuery(successModal).modal('hide');
+                }
+            }
+        }, 5000);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupAutoHideAlerts);
+    } else {
+        setupAutoHideAlerts();
+    }
 })();
 </script>
 

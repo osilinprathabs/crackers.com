@@ -93,7 +93,6 @@
             <th>{{ __('Date') }}</th>
             <th>{{ __('Category') }}</th>
             <th>{{ __('Bank') }}</th>
-            <th>{{ __('GL') }}</th>
             <th class="text-end">{{ __('Amount') }}</th>
             <th>{{ __('Status') }}</th>
             <th class="text-end">{{ __('Actions') }}</th>
@@ -106,7 +105,6 @@
               <td>{{ $r->revenue_date?->format('Y-m-d') }}</td>
               <td>{{ $r->category?->category_name ?? '—' }}</td>
               <td>{{ $r->bankAccount?->account_name ?? '—' }}</td>
-              <td><small>{{ $r->chartOfAccount?->account_code ?? '—' }}</small></td>
               <td class="text-end">₹{{ number_format((float) $r->amount, 2) }}</td>
               <td><span class="badge bg-label-{{ $r->status === 'posted' ? 'success' : ($r->status === 'approved' ? 'info' : 'warning') }}">{{ $r->status }}</span></td>
               <td class="text-end">
@@ -114,13 +112,13 @@
                   'viewUrl' => route('account.revenues.show', $r),
                   'approveUrl' => $r->status === 'draft' ? route('account.revenues.approve', $r) : null,
                   'postUrl' => $r->status === 'approved' ? route('account.revenues.post', $r) : null,
-                  'deleteRoute' => $r->status === 'draft' ? route('account.revenues.destroy', $r) : null,
-                  'deleteConfirm' => __('Delete this draft?'),
+                  'deleteRoute' => route('account.revenues.destroy', $r),
+                  'deleteConfirm' => __('Delete this revenue entry?'),
                 ])
               </td>
             </tr>
           @empty
-            <tr><td colspan="8" class="text-center text-muted py-5">{{ __('No revenues yet.') }}</td></tr>
+            <tr><td colspan="7" class="text-center text-muted py-5">{{ __('No revenues yet.') }}</td></tr>
           @endforelse
         </tbody>
       </table>

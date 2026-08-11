@@ -18,6 +18,77 @@
             --primary-amber: #fb8500;
             --text-main: #0f172a;
             --text-muted: #64748b;
+            --card-border: rgba(148, 163, 184, 0.18);
+        }
+
+        /* Dynamic UI Color Theme Presets */
+        [data-profile-theme="blue"] {
+            --primary-amber: #2563eb;
+            --gold-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+            --hero-gradient: linear-gradient(135deg, #eff6ff 0%, #dbeafe 60%, #bfdbfe 100%);
+        }
+
+        [data-profile-theme="emerald"] {
+            --primary-amber: #10b981;
+            --gold-gradient: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%);
+            --hero-gradient: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 60%, #a7f3d0 100%);
+        }
+
+        [data-profile-theme="purple"] {
+            --primary-amber: #8b5cf6;
+            --gold-gradient: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #7c3aed 100%);
+            --hero-gradient: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 60%, #ddd6fe 100%);
+        }
+
+        [data-profile-theme="crimson"] {
+            --primary-amber: #ef4444;
+            --gold-gradient: linear-gradient(135deg, #f87171 0%, #ef4444 50%, #dc2626 100%);
+            --hero-gradient: linear-gradient(135deg, #fef2f2 0%, #fee2e2 60%, #fecaca 100%);
+        }
+
+        [data-profile-theme="dark"] {
+            --primary-amber: #f59e0b;
+            --gold-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --hero-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --bg-light: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --card-border: rgba(255, 255, 255, 0.1);
+        }
+
+        .ecom-profile-hero {
+            background: var(--hero-gradient) !important;
+            border: 1px solid var(--primary-amber) !important;
+        }
+
+        .avatar-circle-lg {
+            background: var(--gold-gradient) !important;
+        }
+
+        .ecom-sidebar-card, .ecom-main-card {
+            background-color: var(--bg-card) !important;
+            color: var(--text-main) !important;
+            border-color: var(--card-border) !important;
+        }
+
+        .sidebar-menu-btn.active {
+            background: var(--gold-gradient) !important;
+            color: #ffffff !important;
+        }
+
+        .btn-save-ecom {
+            background: var(--gold-gradient) !important;
+            color: #ffffff !important;
+        }
+
+        .input-group-text {
+            color: var(--primary-amber) !important;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-amber) !important;
+            box-shadow: 0 0 0 0.25rem rgba(251, 133, 0, 0.15);
         }
 
         body {
@@ -171,6 +242,18 @@
     </style>
 </head>
 <body>
+
+@if(session()->has('impersonator_admin_id'))
+    <div class="bg-warning text-dark py-2 px-3 text-center font-monospace fw-bold sticky-top shadow-sm border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2" style="z-index: 9999;">
+        <div>
+            <i class="ri-user-shared-line me-1 fs-5 align-middle"></i>
+            <span class="align-middle">Impersonating Customer Account: <strong>{{ auth()->check() ? auth()->user()->name : 'Customer' }}</strong></span>
+        </div>
+        <a href="{{ route('admin.stop-impersonating') }}" class="btn btn-sm btn-dark rounded-pill px-3 py-1 fw-bold shadow-sm">
+            <i class="ri-arrow-left-line me-1"></i> Return to Admin Panel
+        </a>
+    </div>
+@endif
 
     <!-- Header Navbar -->
     <nav class="navbar navbar-expand-lg navbar-festive mb-4">
@@ -336,11 +419,24 @@
 
                         <!-- Section 1: Personal Details -->
                         <div class="mb-4 pb-2">
-                            <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="p-2 bg-light text-warning rounded-3 border"><i class="ri-user-3-line fs-4"></i></div>
-                                <div>
-                                    <h5 class="fw-bold mb-0 text-dark" style="font-family: 'Outfit', sans-serif;">Personal Profile Details</h5>
-                                    <small class="text-muted">Manage your full legal name, phone number, and primary email address.</small>
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="p-2 bg-light text-warning rounded-3 border"><i class="ri-user-3-line fs-4"></i></div>
+                                    <div>
+                                        <h5 class="fw-bold mb-0 text-dark" style="font-family: 'Outfit', sans-serif;">Personal Profile Details</h5>
+                                        <small class="text-muted">Manage your full legal name, phone number, and primary email address.</small>
+                                    </div>
+                                </div>
+
+                                <!-- Dynamic UI Color Theme Switcher -->
+                                <div class="d-flex align-items-center gap-2 bg-light p-2 rounded-pill border shadow-sm">
+                                    <span class="fw-bold small text-muted px-1" style="font-size: 11px;"><i class="ri-palette-line text-warning me-1"></i> UI Color Theme:</span>
+                                    <button type="button" class="btn p-0 rounded-circle theme-color-dot active" data-theme="amber" style="width: 22px; height: 22px; background: #fb8500; border: 2px solid #ffffff;" onclick="setProfileTheme('amber')" title="Festive Amber (Default)"></button>
+                                    <button type="button" class="btn p-0 rounded-circle theme-color-dot" data-theme="blue" style="width: 22px; height: 22px; background: #2563eb; border: 2px solid #ffffff;" onclick="setProfileTheme('blue')" title="Sapphire Blue"></button>
+                                    <button type="button" class="btn p-0 rounded-circle theme-color-dot" data-theme="emerald" style="width: 22px; height: 22px; background: #10b981; border: 2px solid #ffffff;" onclick="setProfileTheme('emerald')" title="Emerald Green"></button>
+                                    <button type="button" class="btn p-0 rounded-circle theme-color-dot" data-theme="purple" style="width: 22px; height: 22px; background: #8b5cf6; border: 2px solid #ffffff;" onclick="setProfileTheme('purple')" title="Amethyst Purple"></button>
+                                    <button type="button" class="btn p-0 rounded-circle theme-color-dot" data-theme="crimson" style="width: 22px; height: 22px; background: #ef4444; border: 2px solid #ffffff;" onclick="setProfileTheme('crimson')" title="Ruby Crimson"></button>
+                                    <button type="button" class="btn p-0 rounded-circle theme-color-dot" data-theme="dark" style="width: 22px; height: 22px; background: #0f172a; border: 2px solid #ffffff;" onclick="setProfileTheme('dark')" title="Midnight Dark Mode"></button>
                                 </div>
                             </div>
 
@@ -473,6 +569,31 @@
                 icon.className = 'ri-eye-line';
             }
         }
+
+        function setProfileTheme(themeKey) {
+            document.documentElement.setAttribute('data-profile-theme', themeKey);
+            try {
+                localStorage.setItem('crackers_profile_theme', themeKey);
+            } catch(e) {}
+
+            document.querySelectorAll('.theme-color-dot').forEach(dot => {
+                if (dot.getAttribute('data-theme') === themeKey) {
+                    dot.classList.add('active');
+                    dot.style.boxShadow = '0 0 0 2.5px #000';
+                } else {
+                    dot.classList.remove('active');
+                    dot.style.boxShadow = 'none';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let savedTheme = 'amber';
+            try {
+                savedTheme = localStorage.getItem('crackers_profile_theme') || 'amber';
+            } catch(e) {}
+            setProfileTheme(savedTheme);
+        });
     </script>
 </body>
 </html>

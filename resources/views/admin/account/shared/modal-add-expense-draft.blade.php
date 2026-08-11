@@ -40,15 +40,6 @@
               </select>
             </div>
             <div class="col-md-6">
-              <label class="form-label">{{ __('Expense GL') }} <span class="text-danger">*</span></label>
-              <select name="chart_of_account_id" class="form-select" required>
-                <option value="">{{ __('Select') }}</option>
-                @foreach ($expenseGlAccounts as $g)
-                  <option value="{{ $g->id }}">{{ $g->account_code }} — {{ $g->account_name }}</option>
-                @endforeach
-              </select>
-            </div>
-            <div class="col-md-6">
               <label class="form-label">{{ __('Reference #') }}</label>
               <input type="text" name="reference_number" class="form-control" placeholder="{{ __('Optional') }}">
             </div>

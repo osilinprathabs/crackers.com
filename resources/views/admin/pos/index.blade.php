@@ -33,15 +33,15 @@
         <div class="col-lg-7 col-xl-8">
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-body p-3">
-                    <!-- Search & Filter Controls -->
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-7">
+                    <!-- Search & Filter Controls with View Switcher -->
+                    <div class="row g-2 mb-3 align-items-center">
+                        <div class="col-md-5">
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0"><i class="ri-search-2-line"></i></span>
                                 <input type="text" id="posSearchInput" class="form-control border-start-0 bg-light" placeholder="Search product name or code..." onkeyup="filterProducts()">
                             </div>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <select id="posCategorySelect" class="form-select bg-light" onchange="filterProducts()">
                                 <option value="all">All Categories ({{ $categories->count() }})</option>
                                 @foreach($categories as $cat)
@@ -49,9 +49,19 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-md-3">
+                            <div class="btn-group w-100 shadow-sm" role="group" aria-label="POS Layout View Switcher">
+                                <button type="button" class="btn btn-primary active px-2 py-1 fw-bold" id="btnPosViewGrid" onclick="setPosView('grid')" title="Card Grid View">
+                                    <i class="ri-grid-fill me-1"></i> Card
+                                </button>
+                                <button type="button" class="btn btn-outline-primary px-2 py-1 fw-bold" id="btnPosViewList" onclick="setPosView('list')" title="List View">
+                                    <i class="ri-list-check-2 me-1"></i> List
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Products Grid -->
+                    <!-- CARD GRID VIEW CONTAINER -->
                     <div class="row g-3 overflow-auto" id="posProductGrid" style="max-height: calc(100vh - 270px); min-height: 450px;">
                         @forelse($products as $product)
                             @php
@@ -117,6 +127,87 @@
                                 <p class="mt-2">No active products available in catalog.</p>
                             </div>
                         @endforelse
+                    </div>
+
+                    <!-- COMPACT LIST VIEW CONTAINER -->
+                    <div class="table-responsive overflow-auto d-none border rounded" id="posProductListContainer" style="max-height: calc(100vh - 270px); min-height: 450px;">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light sticky-top" style="z-index: 2;">
+                                <tr class="small text-muted text-uppercase">
+                                    <th style="width: 50px;">Img</th>
+                                    <th>Product Details</th>
+                                    <th>Category</th>
+                                    <th class="text-center">Stock</th>
+                                    <th class="text-end">Price</th>
+                                    <th class="text-end" style="width: 90px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="posProductListBody">
+                                @forelse($products as $product)
+                                    @php
+                                        $unitPrice = $product->discount_price ?: $product->price;
+                                        $hasDiscount = $product->discount_price && $product->discount_price < $product->price;
+                                        $isOutOfStock = $product->stock <= 0;
+                                    @endphp
+                                    <tr class="product-list-item {{ $isOutOfStock ? 'opacity-50 bg-light' : '' }}"
+                                        data-name="{{ strtolower($product->name) }}"
+                                        data-code="{{ strtolower($product->code) }}"
+                                        data-category="{{ strtolower($product->category) }}">
+                                        <td>
+                                            @if($product->image)
+                                                <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="rounded border" style="width: 36px; height: 36px; object-fit: cover;">
+                                            @else
+                                                <div class="d-flex align-items-center justify-content-center bg-light rounded border" style="width: 36px; height: 36px;">
+                                                    <i class="ri-sparkles-line text-warning"></i>
+                                                </div>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold text-dark mb-0">{{ $product->name }}</div>
+                                            @if($product->code)
+                                                <small class="text-muted font-monospace me-2">Code: {{ $product->code }}</small>
+                                            @endif
+                                            <small class="text-muted">({{ $product->unit }})</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border">{{ $product->category ?: 'Crackers' }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge {{ $isOutOfStock ? 'bg-danger' : ($product->stock <= 10 ? 'bg-warning text-dark' : 'bg-success') }}">
+                                                {{ $isOutOfStock ? 'OUT' : $product->stock . ' ' . $product->unit }}
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            <span class="fw-bold text-success">₹{{ number_format($unitPrice, 2) }}</span>
+                                            @if($hasDiscount)
+                                                <small class="text-muted text-decoration-line-through d-block" style="font-size: 10px;">₹{{ number_format($product->price, 2) }}</small>
+                                            @endif
+                                        </td>
+                                        <td class="text-end">
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold add-to-cart-btn" 
+                                                    {{ $isOutOfStock ? 'disabled' : '' }}
+                                                    onclick="addToCart({{ json_encode([
+                                                        'id' => $product->id,
+                                                        'name' => $product->name,
+                                                        'price' => floatval($unitPrice),
+                                                        'stock' => $product->stock,
+                                                        'unit' => $product->unit
+                                                    ]) }})">
+                                                <i class="ri-add-line me-1"></i> Add
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center py-5 text-muted">
+                                            <i class="ri-inbox-line display-4 d-block mb-2 opacity-50"></i>
+                                            No active products available in catalog.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -198,9 +289,22 @@
                             <span id="posSubtotalVal" class="fw-bold text-dark">₹0.00</span>
                         </div>
 
-                        <div class="d-flex justify-content-between text-muted small mb-2 align-items-center">
-                            <span>Discount (₹):</span>
-                            <input type="number" id="posDiscountInput" class="form-control form-control-sm text-end" style="width: 100px;" value="0" min="0" step="any" oninput="calculateTotals()">
+                        <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded border">
+                            <div class="d-flex align-items-center gap-1">
+                                <span class="fw-bold small text-muted me-1"><i class="ri-percent-line text-primary"></i> Discount:</span>
+                                <select id="posDiscountTypeSelect" class="form-select form-select-sm fw-bold border-primary text-primary py-0" style="width: 105px; font-size: 12px;" onchange="calculateTotals()">
+                                    <option value="amount" selected>₹ Fixed</option>
+                                    <option value="percent">% Percent</option>
+                                </select>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-1">
+                                <span class="text-danger fw-bold small d-none" id="posDiscountCalcDisplay" style="font-size: 11px;">-₹0.00</span>
+                                <div class="input-group input-group-sm" style="width: 95px;">
+                                    <span class="input-group-text bg-white px-2 font-monospace fw-bold text-primary" id="posDiscountSymbol">₹</span>
+                                    <input type="number" id="posDiscountInput" class="form-control form-control-sm text-end fw-bold px-1" value="0" min="0" step="any" oninput="calculateTotals()" placeholder="0">
+                                </div>
+                            </div>
                         </div>
 
                         <div class="d-flex justify-content-between text-muted small mb-2">
@@ -214,8 +318,8 @@
                         </div>
 
                         <!-- Payment Method Selector -->
-                        <div class="row g-2 mb-3">
-                            <div class="col-6">
+                        <div class="row g-2 mb-2">
+                            <div class="col-6" id="paymentMethodCol">
                                 <label class="form-label fw-bold small mb-1">Payment Method</label>
                                 <select id="posPaymentMethod" class="form-select form-select-sm" onchange="handlePaymentMethodChange()">
                                     <option value="Cash" selected>💵 Cash</option>
@@ -232,14 +336,57 @@
                         </div>
 
                         <!-- Cash Change Display Box -->
-                        <div id="cashChangeDisplayBox" class="p-2 rounded bg-light border mb-3 d-flex justify-content-between align-items-center">
+                        <div id="cashChangeDisplayBox" class="p-2 rounded bg-light border mb-2 d-flex justify-content-between align-items-center">
                             <span class="small fw-bold text-muted">Change to Return:</span>
                             <span id="posChangeVal" class="fw-bold text-primary fs-6">₹0.00</span>
                         </div>
 
-                        <!-- Submit Order Button -->
-                        <button type="button" id="posSubmitBtn" class="btn btn-warning btn-lg w-100 rounded-pill fw-bold shadow-lg py-3 text-dark border-0 text-uppercase" style="background: linear-gradient(135deg, #ffb703 0%, #fb8500 100%); font-size: 1.1rem; letter-spacing: 0.5px;" onclick="submitPosSale()" disabled>
-                            <i class="ri-printer-line fs-5 me-1 align-middle"></i> <span class="align-middle">COMPLETE SALE & PRINT RECEIPT</span>
+                        <!-- UPI / QR Details Display Box -->
+                        <div id="upiDetailsDisplayBox" class="p-2 rounded bg-light border border-info mb-2 d-none">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <span class="small fw-bold text-info"><i class="ri-qr-code-line me-1"></i> UPI / QR Payment Details</span>
+                                <span class="badge bg-info text-white font-monospace" style="font-size: 9px;">Scan & Pay</span>
+                            </div>
+                            @if(!empty($settings->upi_qr_code))
+                                <div class="text-center my-1">
+                                    <img src="{{ asset($settings->upi_qr_code) }}" alt="UPI QR Code" class="img-fluid rounded border bg-white p-1" style="max-height: 110px;">
+                                </div>
+                            @endif
+                            <div class="bg-white p-2 rounded border text-center font-monospace small">
+                                <div class="text-muted" style="font-size: 10px;">UPI ID / VPA:</div>
+                                <strong class="text-dark fs-6">{{ $settings->upi_id ?: 'crackers@upi' }}</strong>
+                            </div>
+                        </div>
+
+                        <!-- Bank Transfer Details Display Box -->
+                        <div id="bankDetailsDisplayBox" class="p-2 rounded bg-light border border-primary mb-2 d-none">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <span class="small fw-bold text-primary"><i class="ri-bank-line me-1"></i> Bank Transfer Details</span>
+                                <span class="badge bg-primary text-white font-monospace" style="font-size: 9px;">NEFT / RTGS</span>
+                            </div>
+                            <div class="bg-white p-2 rounded border font-monospace small">
+                                <div class="d-flex justify-content-between text-muted mb-1" style="font-size: 11px;">
+                                    <span>Bank:</span>
+                                    <strong class="text-dark">{{ $settings->bank_name ?: 'N/A' }}</strong>
+                                </div>
+                                <div class="d-flex justify-content-between text-muted mb-1" style="font-size: 11px;">
+                                    <span>Account No:</span>
+                                    <strong class="text-dark">{{ $settings->account_number ?: 'N/A' }}</strong>
+                                </div>
+                                <div class="d-flex justify-content-between text-muted mb-1" style="font-size: 11px;">
+                                    <span>IFSC Code:</span>
+                                    <strong class="text-dark">{{ $settings->ifsc_code ?: 'N/A' }}</strong>
+                                </div>
+                                <div class="d-flex justify-content-between text-muted" style="font-size: 11px;">
+                                    <span>Holder:</span>
+                                    <strong class="text-dark text-truncate" style="max-width: 140px;">{{ $settings->account_holder ?: 'N/A' }}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Compact Submit Order Button -->
+                        <button type="button" id="posSubmitBtn" class="btn btn-warning btn-md w-100 rounded-pill fw-bold shadow-sm py-2 text-dark border-0 text-uppercase" style="background: linear-gradient(135deg, #ffb703 0%, #fb8500 100%); font-size: 0.9rem; letter-spacing: 0.3px;" onclick="submitPosSale()" disabled>
+                            <i class="ri-printer-line me-1 align-middle fs-6"></i> <span class="align-middle">Complete Sale & Print Receipt</span>
                         </button>
                     </div>
                 </div>
@@ -356,9 +503,31 @@
 
     function calculateTotals() {
         let subtotal = posCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        let discount = parseFloat(document.getElementById('posDiscountInput').value) || 0;
+        let discountType = document.getElementById('posDiscountTypeSelect')?.value || 'amount';
+        let discountVal = parseFloat(document.getElementById('posDiscountInput').value) || 0;
         
-        let taxableSubtotal = Math.max(0, subtotal - discount);
+        let discountAmount = 0;
+        let symbolEl = document.getElementById('posDiscountSymbol');
+        let calcDispEl = document.getElementById('posDiscountCalcDisplay');
+
+        if (discountType === 'percent') {
+            symbolEl.innerText = '%';
+            discountAmount = (subtotal * discountVal) / 100;
+            if (discountVal > 0 && subtotal > 0) {
+                calcDispEl.innerText = '-₹' + discountAmount.toFixed(2);
+                calcDispEl.classList.remove('d-none');
+            } else {
+                calcDispEl.classList.add('d-none');
+            }
+        } else {
+            symbolEl.innerText = '₹';
+            discountAmount = discountVal;
+            calcDispEl.classList.add('d-none');
+        }
+
+        discountAmount = Math.min(subtotal, Math.max(0, discountAmount));
+        
+        let taxableSubtotal = Math.max(0, subtotal - discountAmount);
         let gstAmount = taxableSubtotal * (gstRate / 100);
         let grandTotal = taxableSubtotal + gstAmount;
 
@@ -396,21 +565,67 @@
         let method = document.getElementById('posPaymentMethod').value;
         let cashBox = document.getElementById('cashTenderedBox');
         let changeBox = document.getElementById('cashChangeDisplayBox');
+        let upiBox = document.getElementById('upiDetailsDisplayBox');
+        let bankBox = document.getElementById('bankDetailsDisplayBox');
+        let paymentCol = document.getElementById('paymentMethodCol');
+
+        // Reset display states
+        cashBox.classList.add('d-none');
+        changeBox.classList.add('d-none');
+        if (upiBox) upiBox.classList.add('d-none');
+        if (bankBox) bankBox.classList.add('d-none');
 
         if (method === 'Cash') {
+            paymentCol.className = 'col-6';
             cashBox.classList.remove('d-none');
             changeBox.classList.remove('d-none');
         } else {
-            cashBox.classList.add('d-none');
-            changeBox.classList.add('d-none');
+            paymentCol.className = 'col-12';
+            if (method === 'UPI / QR' && upiBox) {
+                upiBox.classList.remove('d-none');
+            } else if (method === 'Bank Transfer' && bankBox) {
+                bankBox.classList.remove('d-none');
+            }
         }
+    }
+
+    function setPosView(mode) {
+        const gridEl = document.getElementById('posProductGrid');
+        const listEl = document.getElementById('posProductListContainer');
+        const btnGrid = document.getElementById('btnPosViewGrid');
+        const btnList = document.getElementById('btnPosViewList');
+
+        if (mode === 'list') {
+            gridEl.classList.add('d-none');
+            listEl.classList.remove('d-none');
+
+            btnGrid.classList.remove('btn-primary', 'active');
+            btnGrid.classList.add('btn-outline-primary');
+
+            btnList.classList.remove('btn-outline-primary');
+            btnList.classList.add('btn-primary', 'active');
+
+            try { localStorage.setItem('pos_view_mode', 'list'); } catch(e) {}
+        } else {
+            gridEl.classList.remove('d-none');
+            listEl.classList.add('d-none');
+
+            btnList.classList.remove('btn-primary', 'active');
+            btnList.classList.add('btn-outline-primary');
+
+            btnGrid.classList.remove('btn-outline-primary');
+            btnGrid.classList.add('btn-primary', 'active');
+
+            try { localStorage.setItem('pos_view_mode', 'grid'); } catch(e) {}
+        }
+        filterProducts();
     }
 
     function filterProducts() {
         let search = document.getElementById('posSearchInput').value.toLowerCase().trim();
         let cat = document.getElementById('posCategorySelect').value;
 
-        document.querySelectorAll('.product-card-item').forEach(el => {
+        document.querySelectorAll('.product-card-item, .product-list-item').forEach(el => {
             let name = el.getAttribute('data-name');
             let code = el.getAttribute('data-code');
             let category = el.getAttribute('data-category');
@@ -426,6 +641,12 @@
         });
     }
 
+    document.addEventListener('DOMContentLoaded', function() {
+        let savedMode = 'grid';
+        try { savedMode = localStorage.getItem('pos_view_mode') || 'grid'; } catch(e) {}
+        setPosView(savedMode);
+    });
+
     function submitPosSale() {
         if (posCart.length === 0) {
             Swal.fire('Empty Cart', 'Please add products before submitting sale.', 'warning');
@@ -437,7 +658,11 @@
         let customerName = document.getElementById('posCustomerName').value;
         let customerPhone = document.getElementById('posCustomerPhone').value;
         let paymentMethod = document.getElementById('posPaymentMethod').value;
-        let discount = parseFloat(document.getElementById('posDiscountInput').value) || 0;
+        let discountType = document.getElementById('posDiscountTypeSelect')?.value || 'amount';
+        let discountVal = parseFloat(document.getElementById('posDiscountInput').value) || 0;
+        let subtotal = posCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        let calculatedDiscount = discountType === 'percent' ? (subtotal * discountVal) / 100 : discountVal;
+        let discountAmount = Math.min(subtotal, Math.max(0, calculatedDiscount));
         let amountTendered = parseFloat(document.getElementById('posAmountTendered').value) || 0;
 
         if (customerType === 'existing' && !customerId) {
@@ -462,7 +687,9 @@
                 customer_name: customerName,
                 customer_phone: customerPhone,
                 payment_method: paymentMethod,
-                discount: discount,
+                discount_type: discountType,
+                discount_value: discountVal,
+                discount: discountAmount,
                 amount_tendered: amountTendered,
                 items: posCart.map(i => ({ id: i.id, quantity: i.quantity }))
             })

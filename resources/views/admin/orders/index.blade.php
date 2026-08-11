@@ -16,36 +16,148 @@
             </div>
         @endif
 
-        <form method="GET" action="{{ route('admin.orders.index') }}" class="mb-4">
-            <div class="row g-3">
-                <div class="col-md-5">
-                    <input type="text" name="search" class="form-control" placeholder="Search by Order #, Customer Name or Phone..." value="{{ request('search') }}">
-                </div>
-                <div class="col-md-3">
-                    <select name="order_type" class="form-select">
-                        <option value="">All Order Types (Online & POS)</option>
-                        <option value="online" {{ request('order_type') === 'online' ? 'selected' : '' }}>🌐 Online Website Orders</option>
-                        <option value="pos" {{ request('order_type') === 'pos' ? 'selected' : '' }}>🏪 Walk-In POS Orders</option>
+        <!-- Status Filter Tabs -->
+        <ul class="nav nav-pills card-header-pills mb-4 gap-2 flex-wrap" role="tablist">
+            @php
+                $currentStatus = request('status', '');
+            @endphp
+
+            <li class="nav-item">
+                <a class="nav-link rounded-pill px-3 py-2 fw-semibold {{ $currentStatus === '' ? 'active bg-primary text-white shadow-sm' : 'bg-light text-dark' }}" 
+                   href="{{ route('admin.orders.index', array_merge(request()->except(['status', 'page']), [])) }}">
+                   <i class="ri-list-check-2 me-1"></i> All Orders
+                   <span class="badge {{ $currentStatus === '' ? 'bg-white text-primary' : 'bg-secondary text-white' }} ms-1 rounded-pill">{{ $statusCounts['all'] ?? 0 }}</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link rounded-pill px-3 py-2 fw-semibold {{ $currentStatus === 'pending' ? 'active bg-warning text-dark shadow-sm' : 'bg-light text-dark' }}" 
+                   href="{{ route('admin.orders.index', array_merge(request()->except(['status', 'page']), ['status' => 'pending'])) }}">
+                   <i class="ri-time-line me-1 text-warning"></i> Pending
+                   <span class="badge {{ $currentStatus === 'pending' ? 'bg-dark text-warning' : 'bg-warning text-dark' }} ms-1 rounded-pill">{{ $statusCounts['pending'] ?? 0 }}</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link rounded-pill px-3 py-2 fw-semibold {{ $currentStatus === 'processing' ? 'active bg-info text-white shadow-sm' : 'bg-light text-dark' }}" 
+                   href="{{ route('admin.orders.index', array_merge(request()->except(['status', 'page']), ['status' => 'processing'])) }}">
+                   <i class="ri-loader-4-line me-1 text-info"></i> Processing
+                   <span class="badge {{ $currentStatus === 'processing' ? 'bg-white text-info' : 'bg-info text-white' }} ms-1 rounded-pill">{{ $statusCounts['processing'] ?? 0 }}</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link rounded-pill px-3 py-2 fw-semibold {{ $currentStatus === 'dispatched' ? 'active bg-primary text-white shadow-sm' : 'bg-light text-dark' }}" 
+                   href="{{ route('admin.orders.index', array_merge(request()->except(['status', 'page']), ['status' => 'dispatched'])) }}">
+                   <i class="ri-truck-line me-1 text-primary"></i> Dispatched
+                   <span class="badge {{ $currentStatus === 'dispatched' ? 'bg-white text-primary' : 'bg-primary text-white' }} ms-1 rounded-pill">{{ $statusCounts['dispatched'] ?? 0 }}</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link rounded-pill px-3 py-2 fw-semibold {{ $currentStatus === 'delivered' ? 'active bg-success text-white shadow-sm' : 'bg-light text-dark' }}" 
+                   href="{{ route('admin.orders.index', array_merge(request()->except(['status', 'page']), ['status' => 'delivered'])) }}">
+                   <i class="ri-checkbox-circle-line me-1 text-success"></i> Delivered
+                   <span class="badge {{ $currentStatus === 'delivered' ? 'bg-white text-success' : 'bg-success text-white' }} ms-1 rounded-pill">{{ $statusCounts['delivered'] ?? 0 }}</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link rounded-pill px-3 py-2 fw-semibold {{ $currentStatus === 'cancelled' ? 'active bg-danger text-white shadow-sm' : 'bg-light text-dark' }}" 
+                   href="{{ route('admin.orders.index', array_merge(request()->except(['status', 'page']), ['status' => 'cancelled'])) }}">
+                   <i class="ri-close-circle-line me-1 text-danger"></i> Cancelled
+                   <span class="badge {{ $currentStatus === 'cancelled' ? 'bg-white text-danger' : 'bg-danger text-white' }} ms-1 rounded-pill">{{ $statusCounts['cancelled'] ?? 0 }}</span>
+                </a>
+            </li>
+        </ul>
+
+        <!-- Day-Wise & Custom Date Range Filter Bar -->
+        <form method="GET" action="{{ route('admin.orders.index') }}" class="mb-4 bg-light p-3 rounded border shadow-sm">
+            @if(request('status'))
+                <input type="hidden" name="status" value="{{ request('status') }}">
+            @endif
+            <div class="row g-2 align-items-end">
+                <div class="col-md-3 col-lg-2">
+                    <label class="form-label small fw-bold mb-1"><i class="ri-calendar-event-line text-primary me-1"></i> Date Filter</label>
+                    <select name="date_filter" id="dateFilterSelect" class="form-select form-select-sm fw-semibold" onchange="toggleCustomDateInputs(this.value)">
+                        <option value="today" {{ $dateFilter === 'today' ? 'selected' : '' }}>📅 Today (Daily Default)</option>
+                        <option value="yesterday" {{ $dateFilter === 'yesterday' ? 'selected' : '' }}>⏮️ Yesterday</option>
+                        <option value="this_week" {{ $dateFilter === 'this_week' ? 'selected' : '' }}>📆 This Week</option>
+                        <option value="this_month" {{ $dateFilter === 'this_month' ? 'selected' : '' }}>🗓️ This Month</option>
+                        <option value="custom" {{ $dateFilter === 'custom' ? 'selected' : '' }}>🎯 Custom Date Range</option>
+                        <option value="all" {{ $dateFilter === 'all' ? 'selected' : '' }}>🌐 All Time</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <select name="status" class="form-select">
-                        <option value="">All Statuses</option>
-                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="processing" {{ request('status') === 'processing' ? 'selected' : '' }}>Processing</option>
-                        <option value="dispatched" {{ request('status') === 'dispatched' ? 'selected' : '' }}>Dispatched</option>
-                        <option value="delivered" {{ request('status') === 'delivered' ? 'selected' : '' }}>Delivered</option>
-                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+
+                <div class="col-md-4 col-lg-3 {{ $dateFilter === 'custom' ? '' : 'd-none' }}" id="customDateInputs">
+                    <label class="form-label small fw-bold mb-1"><i class="ri-calendar-2-line me-1"></i> Custom Range</label>
+                    <div class="input-group input-group-sm">
+                        <input type="date" name="date_from" value="{{ $dateFrom }}" class="form-control" placeholder="From">
+                        <span class="input-group-text">to</span>
+                        <input type="date" name="date_to" value="{{ $dateTo }}" class="form-control" placeholder="To">
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-lg-2">
+                    <label class="form-label small fw-bold mb-1"><i class="ri-store-2-line me-1"></i> Order Type</label>
+                    <select name="order_type" class="form-select form-select-sm">
+                        <option value="">All Types (Online & POS)</option>
+                        <option value="online" {{ request('order_type') === 'online' ? 'selected' : '' }}>🌐 Online Website</option>
+                        <option value="pos" {{ request('order_type') === 'pos' ? 'selected' : '' }}>🏪 Walk-In POS</option>
                     </select>
                 </div>
-                <div class="col-md-2 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary w-100"><i class="ri-search-line me-1"></i> Filter</button>
-                    @if(request('search') || request('order_type') || request('status'))
-                        <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary" title="Reset Filters"><i class="ri-refresh-line"></i></a>
+
+                <div class="col-md-4 col-lg-3">
+                    <label class="form-label small fw-bold mb-1"><i class="ri-search-2-line me-1"></i> Search Order</label>
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Order #, Name, Mobile..." value="{{ request('search') }}">
+                </div>
+
+                <div class="col-md-2 col-lg-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-sm btn-primary fw-bold w-100"><i class="ri-filter-line me-1"></i> Filter</button>
+                    @if(request('search') || request('order_type') || request('status') || request('date_filter') !== 'today' || request('date_from') || request('date_to'))
+                        <a href="{{ route('admin.orders.index', ['date_filter' => 'today']) }}" class="btn btn-sm btn-outline-secondary" title="Reset Filters"><i class="ri-refresh-line"></i></a>
                     @endif
                 </div>
             </div>
         </form>
+
+        <!-- Summary Metric Card Banner -->
+        <div class="alert bg-primary bg-opacity-10 border border-primary-subtle text-primary p-3 rounded-3 mb-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-2">
+                <div class="avatar avatar-md bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="ri-calendar-check-line fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold text-primary">
+                        @if($dateFilter === 'today')
+                            📅 Today's Day-Wise Orders ({{ now()->format('d M Y') }})
+                        @elseif($dateFilter === 'yesterday')
+                            ⏮️ Yesterday's Day-Wise Orders ({{ \Carbon\Carbon::yesterday()->format('d M Y') }})
+                        @elseif($dateFilter === 'this_week')
+                            📆 This Week's Day-Wise Orders
+                        @elseif($dateFilter === 'this_month')
+                            🗓️ This Month's Day-Wise Orders ({{ now()->format('F Y') }})
+                        @elseif($dateFilter === 'custom')
+                            🎯 Custom Date Range Orders ({{ $dateFrom ?: 'Start' }} to {{ $dateTo ?: 'End' }})
+                        @else
+                            🌐 All Time Orders
+                        @endif
+                    </h6>
+                    <small class="text-muted">Filtered results for selected date period</small>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-4">
+                <div class="text-end">
+                    <small class="text-muted d-block fw-semibold">Filtered Orders</small>
+                    <span class="fs-5 fw-bold text-dark">{{ $statusCounts['all'] ?? 0 }} Orders</span>
+                </div>
+                <div class="text-end border-start ps-4">
+                    <small class="text-muted d-block fw-semibold">Period Total Sales</small>
+                    <span class="fs-4 fw-bold text-success font-monospace">₹{{ number_format($totalPeriodRevenue, 2) }}</span>
+                </div>
+            </div>
+        </div>
 
         <div class="table-responsive text-nowrap">
             <table class="table table-hover align-middle">
@@ -85,7 +197,7 @@
                             <td><strong class="text-success fs-6">₹{{ number_format($order->grand_total, 2) }}</strong></td>
                             <td>
                                 <div>
-                                    <span class="badge {{ $order->payment_status === 'paid' ? 'bg-label-success' : 'bg-label-warning' }} fw-bold">
+                                    <span class="badge {{ $order->payment_status === 'paid' ? 'bg-success text-white' : 'bg-warning text-dark' }} fw-bold">
                                         <i class="{{ $order->payment_status === 'paid' ? 'ri-checkbox-circle-line' : 'ri-time-line' }} me-1"></i>
                                         {{ ucfirst($order->payment_status) }}
                                     </span>
@@ -121,26 +233,44 @@
 
                                     <!-- Status / Actions Dropdown -->
                                     <div class="dropdown">
-                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ri-more-2-line"></i></button>
-                                        <div class="dropdown-menu">
-                                            <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="status" value="processing">
-                                                <button type="submit" class="dropdown-item"><i class="ri-refresh-line me-1 text-info"></i> Mark Processing</button>
-                                            </form>
-                                            <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="status" value="dispatched">
-                                                <button type="submit" class="dropdown-item"><i class="ri-truck-line me-1 text-primary"></i> Mark Dispatched</button>
-                                            </form>
-                                            <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="status" value="delivered">
-                                                <button type="submit" class="dropdown-item"><i class="ri-checkbox-circle-line me-1 text-success"></i> Mark Delivered</button>
-                                            </form>
+                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ri-more-2-line fs-5 text-muted"></i></button>
+                                        <div class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            @if($order->status === 'pending')
+                                                <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input type="hidden" name="status" value="processing">
+                                                    <button type="submit" class="dropdown-item"><i class="ri-refresh-line me-1 text-info"></i> Mark Processing</button>
+                                                </form>
+                                            @endif
+
+                                            @if($order->status === 'pending' || $order->status === 'processing')
+                                                <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input type="hidden" name="status" value="dispatched">
+                                                    <button type="submit" class="dropdown-item"><i class="ri-truck-line me-1 text-primary"></i> Mark Dispatched</button>
+                                                </form>
+                                            @endif
+
+                                            @if($order->status !== 'delivered' && $order->status !== 'cancelled')
+                                                <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input type="hidden" name="status" value="delivered">
+                                                    <button type="submit" class="dropdown-item"><i class="ri-checkbox-circle-line me-1 text-success"></i> Mark Delivered</button>
+                                                </form>
+                                            @endif
+
+                                            @if($order->status !== 'delivered' && $order->status !== 'cancelled')
+                                                <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input type="hidden" name="status" value="cancelled">
+                                                    <button type="submit" class="dropdown-item text-warning"><i class="ri-close-circle-line me-1"></i> Mark Cancelled</button>
+                                                </form>
+                                            @endif
+
                                             <div class="dropdown-divider"></div>
                                             <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Delete this order?');">
                                                 @csrf
@@ -211,6 +341,21 @@
         <div class="mt-3">
             {{ $orders->links() }}
         </div>
-    </div>
 </div>
+</div>
+@endsection
+
+@section('page-script')
+<script>
+function toggleCustomDateInputs(val) {
+    let customBox = document.getElementById('customDateInputs');
+    if (customBox) {
+        if (val === 'custom') {
+            customBox.classList.remove('d-none');
+        } else {
+            customBox.classList.add('d-none');
+        }
+    }
+}
+</script>
 @endsection

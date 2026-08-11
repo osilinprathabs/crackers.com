@@ -44,6 +44,18 @@
 </head>
 <body>
 
+@if(session()->has('impersonator_admin_id'))
+    <div class="bg-warning text-dark py-2 px-3 text-center font-monospace fw-bold sticky-top shadow-sm border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2" style="z-index: 9999;">
+        <div>
+            <i class="ri-user-shared-line me-1 fs-5 align-middle"></i>
+            <span class="align-middle">Impersonating Customer Account: <strong>{{ auth()->check() ? auth()->user()->name : 'Customer' }}</strong></span>
+        </div>
+        <a href="{{ route('admin.stop-impersonating') }}" class="btn btn-sm btn-dark rounded-pill px-3 py-1 fw-bold shadow-sm">
+            <i class="ri-arrow-left-line me-1"></i> Return to Admin Panel
+        </a>
+    </div>
+@endif
+
     <!-- Header Navbar -->
     <nav class="navbar navbar-expand-lg navbar-festive mb-4">
         <div class="container">

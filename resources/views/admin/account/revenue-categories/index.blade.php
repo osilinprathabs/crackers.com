@@ -74,7 +74,6 @@
           <tr>
             <th>{{ __('Code') }}</th>
             <th>{{ __('Name') }}</th>
-            <th>{{ __('GL') }}</th>
             <th>{{ __('Active') }}</th>
             <th class="text-end">{{ __('Actions') }}</th>
           </tr>
@@ -84,7 +83,6 @@
             <tr>
               <td><code>{{ $r->category_code }}</code></td>
               <td>{{ $r->category_name }}</td>
-              <td>{{ $r->gl_account?->account_name ?? '—' }}</td>
               <td>{{ $r->is_active ? __('Yes') : __('No') }}</td>
               <td class="text-end">
                 @include('admin.account.shared.table-actions', [
@@ -94,7 +92,7 @@
               </td>
             </tr>
           @empty
-            <tr><td colspan="5" class="text-center text-muted py-4">{{ __('No categories yet.') }}</td></tr>
+            <tr><td colspan="4" class="text-center text-muted py-4">{{ __('No categories yet.') }}</td></tr>
           @endforelse
         </tbody>
       </table>

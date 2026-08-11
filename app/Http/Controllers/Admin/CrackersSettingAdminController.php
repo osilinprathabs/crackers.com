@@ -21,6 +21,8 @@ class CrackersSettingAdminController extends Controller
     {
         $validated = $request->validate([
             'gst_percentage' => 'required|numeric|min:0|max:100',
+            'min_retail_order_amount' => 'nullable|numeric|min:0',
+            'min_wholesale_order_amount' => 'nullable|numeric|min:0',
             'upi_id' => 'nullable|string|max:255',
             'upi_qr_code' => 'nullable|image|max:2048',
             'support_phone' => 'nullable|string|max:255',
@@ -39,6 +41,8 @@ class CrackersSettingAdminController extends Controller
 
         $settings = CrackersSetting::getSettings();
         $settings->gst_percentage = $validated['gst_percentage'];
+        $settings->min_retail_order_amount = $request->input('min_retail_order_amount', 0);
+        $settings->min_wholesale_order_amount = $request->input('min_wholesale_order_amount', 0);
         $settings->enable_cod = $request->has('enable_cod');
         $settings->enable_upi = $request->has('enable_upi');
         $settings->upi_id = $validated['upi_id'] ?? null;

@@ -84,7 +84,6 @@
             <th>{{ __('Bank') }}</th>
             <th>{{ __('Branch') }}</th>
             <th>{{ __('Type') }}</th>
-            <th>{{ __('GL') }}</th>
             <th class="text-end">{{ __('Opening') }}</th>
             <th class="text-end">{{ __('Current') }}</th>
             <th>{{ __('Active') }}</th>
@@ -99,14 +98,6 @@
               <td>{{ $ba->bank_name }}</td>
               <td>{{ $ba->branch_name ?? '—' }}</td>
               <td>{{ $ba->account_type }}</td>
-              <td>
-                @if ($ba->gl_account)
-                  <small>{{ $ba->gl_account->account_code }}</small><br>
-                  <span class="text-muted">{{ $ba->gl_account->account_name }}</span>
-                @else
-                  —
-                @endif
-              </td>
               <td class="text-end">₹{{ number_format((float) $ba->opening_balance, 2) }}</td>
               <td class="text-end">₹{{ number_format((float) $ba->current_balance, 2) }}</td>
               <td>{{ $ba->is_active ? __('Yes') : __('No') }}</td>
@@ -120,7 +111,7 @@
             </tr>
           @empty
             <tr>
-              <td colspan="10" class="text-center text-muted py-5">{{ __('No bank accounts yet. Add one above or run AccountModuleDemoSeeder.') }}</td>
+              <td colspan="9" class="text-center text-muted py-5">{{ __('No bank accounts yet. Add one above or run AccountModuleDemoSeeder.') }}</td>
             </tr>
           @endforelse
         </tbody>

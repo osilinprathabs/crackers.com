@@ -709,6 +709,8 @@ Route::post('/crackers/profile', [\App\Http\Controllers\CustomerStoreAuthControl
 
 
 
+Route::get('/admin/stop-impersonating', [\App\Http\Controllers\Admin\CustomerAdminController::class, 'stopImpersonating'])->name('admin.stop-impersonating');
+
 // ADMIN CUSTOMER & ORDER MANAGEMENT ROUTES
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     // Customers Management

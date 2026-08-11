@@ -14,6 +14,8 @@ class CrackersSetting extends Model
     protected $fillable = [
         'company_name',
         'gst_percentage',
+        'min_retail_order_amount',
+        'min_wholesale_order_amount',
         'enable_cod',
         'enable_upi',
         'upi_id',
@@ -38,6 +40,8 @@ class CrackersSetting extends Model
 
     protected $casts = [
         'gst_percentage' => 'decimal:2',
+        'min_retail_order_amount' => 'decimal:2',
+        'min_wholesale_order_amount' => 'decimal:2',
         'enable_cod' => 'boolean',
         'enable_upi' => 'boolean',
         'enable_bank_transfer' => 'boolean',
@@ -47,6 +51,8 @@ class CrackersSetting extends Model
     {
         $settings = static::firstOrCreate([], [
             'gst_percentage' => 18.00,
+            'min_retail_order_amount' => 1000.00,
+            'min_wholesale_order_amount' => 5000.00,
             'enable_cod' => true,
             'enable_upi' => true,
             'upi_id' => 'crackers@upi',
