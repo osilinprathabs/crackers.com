@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Account Deletion - {{ config('variables.templateName') }}</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Remix Icons -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    
+
     <style>
         * {
             margin: 0;
@@ -229,13 +230,14 @@
             .public-page-header h1 {
                 font-size: 1.75rem;
             }
-            
+
             .public-page-content {
                 padding: 2rem 1.5rem;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="public-page-container">
         <div class="public-page-card">
@@ -243,11 +245,12 @@
                 <h1>Account Deletion Request</h1>
                 <p>Manage your account and data privacy</p>
             </div>
-            
+
             <div class="public-page-content">
                 <div class="info-box">
                     <h3><i class="ri-information-line"></i> About Account Deletion</h3>
-                    <p>We respect your right to privacy and data control. If you wish to delete your account and all associated data from our system, please submit the form below.</p>
+                    <p>We respect your right to privacy and data control. If you wish to delete your account and all
+                        associated data from our system, please submit the form below.</p>
                 </div>
 
                 <div class="warning-box">
@@ -264,12 +267,14 @@
                 </div>
 
                 <h2>Submit Account Deletion Request</h2>
-                <p>Please fill out the form below to request account deletion. Our support team will review your request and contact you for verification.</p>
+                <p>Please fill out the form below to request account deletion. Our support team will review your request
+                    and contact you for verification.</p>
 
                 <div class="deletion-form">
                     <div id="successAlert" class="alert alert-success">
                         <i class="ri-checkbox-circle-line"></i>
-                        <strong>Request Submitted!</strong> Your account deletion request has been received. Our team will contact you within 24-48 hours for verification.
+                        <strong>Request Submitted!</strong> Your account deletion request has been received. Our team
+                        will contact you within 24-48 hours for verification.
                     </div>
 
                     <div id="errorAlert" class="alert alert-error">
@@ -281,22 +286,26 @@
                         @csrf
                         <div class="form-group">
                             <label for="full_name">Full Name <span class="required">*</span></label>
-                            <input type="text" id="full_name" name="full_name" class="form-control" required placeholder="Enter your full name">
+                            <input type="text" id="full_name" name="full_name" class="form-control" required
+                                placeholder="Enter your full name">
                         </div>
 
                         <div class="form-group">
                             <label for="email">Registered Email Address <span class="required">*</span></label>
-                            <input type="email" id="email" name="email" class="form-control" required placeholder="Enter your registered email">
+                            <input type="email" id="email" name="email" class="form-control" required
+                                placeholder="Enter your registered email">
                         </div>
 
                         <div class="form-group">
                             <label for="mobile">Registered Mobile Number <span class="required">*</span></label>
-                            <input type="tel" id="mobile" name="mobile" class="form-control" required placeholder="Enter your registered mobile number">
+                            <input type="tel" id="mobile" name="mobile" class="form-control" required
+                                placeholder="Enter your registered mobile number">
                         </div>
 
                         <div class="form-group">
                             <label for="reason">Reason for Account Deletion</label>
-                            <textarea id="reason" name="reason" class="form-control" placeholder="Please let us know why you want to delete your account"></textarea>
+                            <textarea id="reason" name="reason" class="form-control"
+                                placeholder="Please let us know why you want to delete your account"></textarea>
                         </div>
 
                         <button type="submit" class="btn-submit" id="submitBtn">
@@ -317,57 +326,61 @@
 
                 <div class="info-box" style="margin-top: 2rem;">
                     <h3><i class="ri-question-line"></i> Need Help?</h3>
-                    <p>If you have any questions about the account deletion process or our data policies, please don't hesitate to contact our support team at <a href="mailto:support@esycash.com" style="color: #696cff; text-decoration: none; font-weight: 500;">support@esycash.com</a></p>
+                    <p>If you have any questions about the account deletion process or our data policies, please don't
+                        hesitate to contact our support team at <a href="mailto:support@esycash.com"
+                            style="color: #696cff; text-decoration: none; font-weight: 500;">support@esycash.com</a></p>
                 </div>
             </div>
-            
+
             <div class="public-page-footer">
                 <a href="{{ route('login') }}" class="back-to-login">
                     <i class="ri-arrow-left-line"></i>
                     Back to Login
                 </a>
                 <div class="footer-text">
-                    &copy; {{ date('Y') }} <a href="https://demo.com/" target="_blank" style="color: #696cff; text-decoration: none; font-weight: 500;">Made with love by Fixit</a> - All rights reserved.
+                    &copy; {{ date('Y') }} <a href="https://demo.com/" target="_blank"
+                        style="color: #696cff; text-decoration: none; font-weight: 500;">Made with love by OP</a> - All
+                    rights reserved.
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('deletionForm').addEventListener('submit', function(e) {
+        document.getElementById('deletionForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             const submitBtn = document.getElementById('submitBtn');
             const successAlert = document.getElementById('successAlert');
             const errorAlert = document.getElementById('errorAlert');
-            
+
             // Hide alerts
             successAlert.style.display = 'none';
             errorAlert.style.display = 'none';
-            
+
             // Check if required fields are filled
             const fullName = document.getElementById('full_name').value.trim();
             const email = document.getElementById('email').value.trim();
             const mobile = document.getElementById('mobile').value.trim();
-            
+
             if (!fullName || !email || !mobile) {
                 errorAlert.style.display = 'block';
                 document.getElementById('errorMessage').textContent = 'Please fill in all required fields.';
                 errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
-            
+
             // Disable button temporarily
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="ri-loader-4-line"></i> Submitting...';
-            
+
             // Simulate submission delay for better UX
             setTimeout(() => {
                 // Show success message
                 successAlert.style.display = 'block';
                 this.reset();
                 successAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
+
                 // Re-enable button
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="ri-send-plane-fill"></i> Submit Deletion Request';
@@ -375,4 +388,5 @@
         });
     </script>
 </body>
+
 </html>

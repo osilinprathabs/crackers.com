@@ -152,7 +152,7 @@
                     Back to Login
                 </a>
                 <div class="footer-text">
-                    &copy; {{ date('Y') }} <a href="https://demo.com/" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500;">Made with love by Fixit</a> - All rights reserved.
+                    &copy; {{ date('Y') }} <a href="https://demo.com/" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500;">Made with love by OP</a> - All rights reserved.
                 </div>
             </div>
         </div>

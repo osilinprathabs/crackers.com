@@ -16,7 +16,7 @@
         </script>
         <a href="https://demo.com/"
           target="_blank"
-          class="footer-link fw-medium">Made with love by Fixit</a>
+          class="footer-link fw-medium">Made with love by OP</a>
           <span> - All rights reserved.</span>
       </div>
     </div>

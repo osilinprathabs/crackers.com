@@ -761,9 +761,12 @@
                             <div class="product-card h-100 d-flex flex-column justify-content-between">
                                 <!-- Wishlist Toggle Button -->
                                 <button class="btn-wishlist" id="wishlistBtn{{ $product->id }}"
-                                    onclick="event.stopPropagation(); toggleWishlist({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $activePrice }})"
+                                    data-id="{{ $product->id }}"
+                                    data-name="{{ $product->name }}"
+                                    data-price="{{ $activePrice }}"
+                                    onclick="event.stopPropagation(); toggleWishlistFromElement(this)"
                                     title="Add to Wishlist">
-                                    <i class="ri-heart-line"></i>
+                                    <i class="ri-heart-line fs-5"></i>
                                 </button>
 
                                 @if($product->stock <= 0)
@@ -1016,10 +1019,14 @@
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex align-items-center justify-content-end gap-2">
-                                        <button class="btn btn-sm btn-outline-danger rounded-circle p-2"
-                                            onclick="toggleWishlist({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $activePrice }})"
+                                        <button class="btn btn-sm btn-outline-danger rounded-circle p-2 btn-wishlist"
+                                            id="wishlistBtnList{{ $product->id }}"
+                                            data-id="{{ $product->id }}"
+                                            data-name="{{ $product->name }}"
+                                            data-price="{{ $activePrice }}"
+                                            onclick="event.stopPropagation(); toggleWishlistFromElement(this)"
                                             title="Wishlist">
-                                            <i class="ri-heart-line"></i>
+                                            <i class="ri-heart-line fs-5"></i>
                                         </button>
                                         @if($product->stock > 0)
                                             <button class="btn btn-sm btn-warning rounded-pill px-3 fw-bold text-dark"
@@ -1805,11 +1812,11 @@
                 <!-- Scripts -->
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
                 <script>
-                    const customerType = '{{ $customerType ?? "retail" }}';
-                    let cart = JSON.parse(localStorage.getItem('crackers_cart') || '[]');
-                    let wishlist = JSON.parse(localStorage.getItem('crackers_wishlist') || '[]');
-                    const gstPct = {{ $settings->gst_percentage ?: 0 }};
-                    let currentQvProduct = null;
+                    var customerType = '{{ $customerType ?? "retail" }}';
+                    var cart = JSON.parse(localStorage.getItem('crackers_cart') || '[]');
+                    var wishlist = JSON.parse(localStorage.getItem('crackers_wishlist') || '[]');
+                    var gstPct = {{ $settings->gst_percentage ?: 0 }};
+                    var currentQvProduct = null;
 
                     // Product Quick View Popup Modal Handler
                     function openProductQuickView(prodData) {
@@ -1967,9 +1974,8 @@
                         try { savedView = localStorage.getItem('crackers_catalog_view') || 'card'; } catch (e) { }
                         setCatalogView(savedView);
                         updateCartUI();
+                        updateWishlistUI();
                     });
-
-                    const customerType = '{{ $customerType ?? "retail" }}';
 
                     function showAddToCartToast(productName) {
                         let toastEl = document.getElementById('cartToastNotification');
@@ -2203,6 +2209,16 @@
                     }
 
                     // Wishlist Logic
+                    function toggleWishlistFromElement(btn) {
+                        if (!btn) return;
+                        let id = parseInt(btn.getAttribute('data-id'));
+                        let name = btn.getAttribute('data-name');
+                        let price = parseFloat(btn.getAttribute('data-price'));
+                        if (id && name && !isNaN(price)) {
+                            toggleWishlist(id, name, price);
+                        }
+                    }
+
                     function toggleWishlist(id, name, price) {
                         let idx = wishlist.findIndex(item => item.id === id);
                         if (idx > -1) {
@@ -2289,7 +2305,7 @@
 
                         // Sync all wishlist heart buttons on product cards
                         document.querySelectorAll('.btn-wishlist').forEach(btn => {
-                            let id = parseInt(btn.id.replace('wishlistBtn', ''));
+                            let id = parseInt(btn.getAttribute('data-id') || btn.id.replace('wishlistBtnList', '').replace('wishlistBtn', ''));
                             if (wishlist.some(item => item.id === id)) {
                                 btn.classList.add('active');
                                 btn.innerHTML = '<i class="ri-heart-fill text-danger fs-5"></i>';
@@ -2412,6 +2428,19 @@
                                 btn.disabled = false;
                             });
                     });
+
+                    // Expose functions globally on window object
+                    window.addToCartFromElement = addToCartFromElement;
+                    window.addToCart = addToCart;
+                    window.updateQuantity = updateQuantity;
+                    window.toggleWishlistFromElement = toggleWishlistFromElement;
+                    window.toggleWishlist = toggleWishlist;
+                    window.removeFromWishlist = removeFromWishlist;
+                    window.moveWishlistItemToCart = moveWishlistItemToCart;
+                    window.moveAllWishlistToCart = moveAllWishlistToCart;
+                    window.updateCartUI = updateCartUI;
+                    window.updateWishlistUI = updateWishlistUI;
+                    window.openProductQuickView = openProductQuickView;
 
                     // Initialize UI & Auto-slide Carousel every 5 seconds
                     updateCartUI();

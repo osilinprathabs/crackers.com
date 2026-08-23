@@ -18,7 +18,7 @@ class AdminSettingSeeder extends Seeder
             ['key' => 'admin_subtitle', 'value' => 'Loan Management System', 'type' => 'text'],
             
             // Footer Settings
-            ['key' => 'footer_company_name', 'value' => 'Made with love by Fixit', 'type' => 'text'],
+            ['key' => 'footer_company_name', 'value' => 'Made with love by OP', 'type' => 'text'],
             ['key' => 'footer_copyright', 'value' => '© 2025 All rights reserved.', 'type' => 'text'],
             
             // Appearance Settings
