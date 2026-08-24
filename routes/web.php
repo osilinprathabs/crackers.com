@@ -49,6 +49,7 @@ use App\Http\Controllers\PublicLoanController;
 // Serve public storage files through Laravel (works even when public/storage symlink is blocked).
 Route::get('/storage/{path}', StorageServeController::class)->where('path', '.*')->name('storage.serve');
 Route::get('/media/{path}', StorageServeController::class)->where('path', '.*')->name('media.serve');
+Route::get('/quotation/view/{id}', [\App\Http\Controllers\Admin\CrackersPosAdminController::class, 'quotationView'])->name('public.pos.quotation.view');
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -755,10 +756,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::patch('/orders/{id}/update-payment', [\App\Http\Controllers\Admin\CrackersOrderAdminController::class, 'updatePaymentStatus'])->name('admin.orders.update-payment');
     Route::delete('/orders/{id}', [\App\Http\Controllers\Admin\CrackersOrderAdminController::class, 'destroy'])->name('admin.orders.destroy');
 
-    // POS Counter Billing (Walk-In Sales)
+    // POS Counter Billing (Walk-In Sales & Quotations)
     Route::get('/pos', [\App\Http\Controllers\Admin\CrackersPosAdminController::class, 'index'])->name('admin.pos.index');
     Route::post('/pos/store', [\App\Http\Controllers\Admin\CrackersPosAdminController::class, 'store'])->name('admin.pos.store');
+    Route::post('/pos/quotation/store', [\App\Http\Controllers\Admin\CrackersPosAdminController::class, 'storeQuotation'])->name('admin.pos.quotation.store');
     Route::get('/pos/receipt/{id}', [\App\Http\Controllers\Admin\CrackersPosAdminController::class, 'receipt'])->name('admin.pos.receipt');
+    Route::get('/pos/quotation/{id}', [\App\Http\Controllers\Admin\CrackersPosAdminController::class, 'quotationView'])->name('admin.pos.quotation.view');
 
     // Dynamic Hero Banners (Homepage Setup)
     Route::post('/homepage-setup/banner/store', [\App\Http\Controllers\WebsiteSetupController::class, 'storeBanner'])->name('admin.homepage-banner.store');

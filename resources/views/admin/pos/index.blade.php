@@ -228,18 +228,21 @@
                 <div class="card-body p-3 d-flex flex-column justify-content-between">
                     <div>
                         <!-- Customer Selection Section -->
-                        <div class="mb-3 p-2 bg-light rounded border">
-                            <label class="form-label fw-bold small mb-1"><i class="ri-user-3-line text-primary me-1"></i> Customer Selection</label>
-                            <select id="posCustomerType" class="form-select form-select-sm mb-2" onchange="handleCustomerTypeChange()">
-                                <option value="walkin" selected>👤 Walk-In Customer (Default)</option>
-                                <option value="existing">🔍 Select Existing Customer</option>
-                                <option value="new">➕ Register New Customer</option>
+                        <div class="mb-3 p-2 bg-light rounded border border-warning">
+                            <label class="form-label fw-bold small mb-1 text-dark d-flex align-items-center justify-content-between">
+                                <span><i class="ri-user-3-line text-primary me-1"></i> Customer Selection</span>
+                                <span class="badge bg-danger text-white px-2 py-1" style="font-size: 10px;">Mandatory *</span>
+                            </label>
+                            <select id="posCustomerType" class="form-select form-select-sm mb-2 fw-semibold" onchange="handleCustomerTypeChange(); checkPosFormValidity();">
+                                <option value="walkin" selected>👤 Enter Customer Details (*)</option>
+                                <option value="existing">🔍 Select Existing Customer (*)</option>
+                                <option value="new">➕ Register New Customer (*)</option>
                             </select>
 
                             <!-- Existing Customer Dropdown -->
                             <div id="existingCustomerBox" class="d-none mb-2">
-                                <select id="posCustomerId" class="form-select form-select-sm">
-                                    <option value="">-- Choose Customer --</option>
+                                <select id="posCustomerId" class="form-select form-select-sm" onchange="this.classList.remove('is-invalid'); checkPosFormValidity();">
+                                    <option value="">-- Choose Customer (*) --</option>
                                     @foreach($customers as $c)
                                         <option value="{{ $c->id }}">{{ $c->contact_person_name ?: $c->company_name }} ({{ $c->contact_person_mobile }})</option>
                                     @endforeach
@@ -250,10 +253,10 @@
                             <div id="customerFieldsBox">
                                 <div class="row g-2">
                                     <div class="col-6">
-                                        <input type="text" id="posCustomerName" class="form-control form-control-sm" placeholder="Customer Name (Optional)">
+                                        <input type="text" id="posCustomerName" class="form-control form-control-sm" placeholder="Customer Name *" oninput="this.classList.remove('is-invalid'); checkPosFormValidity();">
                                     </div>
                                     <div class="col-6">
-                                        <input type="text" id="posCustomerPhone" class="form-control form-control-sm" placeholder="Mobile Number">
+                                        <input type="text" id="posCustomerPhone" class="form-control form-control-sm" placeholder="Mobile Number *" oninput="this.classList.remove('is-invalid'); checkPosFormValidity();">
                                     </div>
                                 </div>
                             </div>
@@ -384,12 +387,65 @@
                             </div>
                         </div>
 
-                        <!-- Compact Submit Order Button -->
-                        <button type="button" id="posSubmitBtn" class="btn btn-warning btn-md w-100 rounded-pill fw-bold shadow-sm py-2 text-dark border-0 text-uppercase" style="background: linear-gradient(135deg, #ffb703 0%, #fb8500 100%); font-size: 0.9rem; letter-spacing: 0.3px;" onclick="submitPosSale()" disabled>
-                            <i class="ri-printer-line me-1 align-middle fs-6"></i> <span class="align-middle">Complete Sale & Print Receipt</span>
-                        </button>
+                        <!-- POS Action Buttons (Sale & Quotation) -->
+                        <div class="d-flex gap-2 mt-2">
+                            <button type="button" id="posQuotationBtn" class="btn btn-outline-primary btn-md flex-fill rounded-pill fw-bold py-2 text-uppercase" style="font-size: 0.85rem;" onclick="submitPosQuotation()" disabled>
+                                <i class="ri-file-paper-2-line me-1 align-middle fs-6"></i> <span class="align-middle">Generate Quotation</span>
+                            </button>
+
+                            <button type="button" id="posSubmitBtn" class="btn btn-warning btn-md flex-fill rounded-pill fw-bold shadow-sm py-2 text-dark border-0 text-uppercase" style="background: linear-gradient(135deg, #ffb703 0%, #fb8500 100%); font-size: 0.85rem;" onclick="submitPosSale()" disabled>
+                                <i class="ri-printer-line me-1 align-middle fs-6"></i> <span class="align-middle">Complete Sale</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- POS Quotation Modal -->
+<div class="modal fade" id="posQuotationModal" tabindex="-1" aria-labelledby="posQuotationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-primary text-white py-3">
+                <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2 mb-0" id="posQuotationModalLabel">
+                    <i class="ri-file-paper-2-line"></i> POS Quotation Generated
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div class="mb-3">
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill font-monospace fw-bold fs-6" id="quoModalNumber">QUO-20260824-001</span>
+                </div>
+                <h3 class="fw-bold text-success mb-1" id="quoModalTotal">₹0.00</h3>
+                <p class="text-muted small mb-4" id="quoModalCustomer">Customer: Walk-In Customer</p>
+
+                <!-- PDF Download / Print Action Button -->
+                <div class="d-grid gap-2 mb-4">
+                    <a href="#" id="quoModalPdfBtn" target="_blank" class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm">
+                        <i class="ri-file-pdf-line me-1"></i> Print / Download Quotation PDF
+                    </a>
+                </div>
+
+                <!-- WhatsApp Mobile Number Input & Send Section -->
+                <div class="p-3 bg-light rounded-3 border text-start">
+                    <label class="form-label fw-bold small text-dark mb-2 d-flex align-items-center gap-1">
+                        <i class="ri-whatsapp-line text-success fs-5"></i> Enter Mobile Number to Send Quote via WhatsApp
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white font-monospace fw-bold text-success">+91</span>
+                        <input type="text" id="quoModalPhoneInput" class="form-control fw-bold" placeholder="Enter 10-digit mobile number">
+                        <button type="button" class="btn btn-success fw-bold px-3" onclick="sendQuotationToWhatsAppModal()">
+                            <i class="ri-send-plane-fill me-1"></i> Redirect to WhatsApp
+                        </button>
+                    </div>
+                    <small class="text-muted d-block mt-2"><i class="ri-information-line me-1"></i> Formats product price estimate text and redirects directly to WhatsApp chat.</small>
+                </div>
+            </div>
+            <div class="modal-footer bg-light py-2 justify-content-between">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold" onclick="clearCart(); $('#posQuotationModal').modal('hide');">New POS Sale</button>
             </div>
         </div>
     </div>
@@ -465,18 +521,17 @@
     function renderCart() {
         let listEl = document.getElementById('posCartItemsList');
         let emptyEl = document.getElementById('posCartEmpty');
-        let btn = document.getElementById('posSubmitBtn');
 
         if (posCart.length === 0) {
             listEl.innerHTML = '';
             emptyEl.classList.remove('d-none');
-            btn.disabled = true;
+            checkPosFormValidity();
             calculateTotals();
             return;
         }
 
         emptyEl.classList.add('d-none');
-        btn.disabled = false;
+        checkPosFormValidity();
 
         listEl.innerHTML = posCart.map(item => `
             <tr>
@@ -641,11 +696,61 @@
         });
     }
 
+    function checkPosFormValidity() {
+        let btn = document.getElementById('posSubmitBtn');
+        let quoBtn = document.getElementById('posQuotationBtn');
+
+        let hasCartItems = posCart && posCart.length > 0;
+
+        let type = document.getElementById('posCustomerType')?.value || 'walkin';
+        let customerId = document.getElementById('posCustomerId')?.value || '';
+        let customerName = document.getElementById('posCustomerName')?.value.trim() || '';
+        let customerPhone = document.getElementById('posCustomerPhone')?.value.trim() || '';
+
+        let isCustomerValid = false;
+        if (type === 'existing') {
+            isCustomerValid = (customerId !== '');
+        } else {
+            isCustomerValid = (customerName !== '') && (customerPhone !== '');
+        }
+
+        let isValid = hasCartItems && isCustomerValid;
+
+        if (btn) btn.disabled = !isValid;
+        if (quoBtn) quoBtn.disabled = !isValid;
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         let savedMode = 'grid';
         try { savedMode = localStorage.getItem('pos_view_mode') || 'grid'; } catch(e) {}
         setPosView(savedMode);
+        checkPosFormValidity();
     });
+
+    function validateCustomerSelection() {
+        let type = document.getElementById('posCustomerType').value;
+        let customerId = document.getElementById('posCustomerId').value;
+        let nameInput = document.getElementById('posCustomerName');
+        let phoneInput = document.getElementById('posCustomerPhone');
+        let nameVal = nameInput ? nameInput.value.trim() : '';
+        let phoneVal = phoneInput ? phoneInput.value.trim() : '';
+
+        if (type === 'existing') {
+            if (!customerId) {
+                document.getElementById('posCustomerId').classList.add('is-invalid');
+                Swal.fire('Customer Selection Mandatory', 'Please select an existing customer from the dropdown (*).', 'warning');
+                return false;
+            }
+        } else {
+            if (!nameVal || !phoneVal) {
+                if (!nameVal && nameInput) nameInput.classList.add('is-invalid');
+                if (!phoneVal && phoneInput) phoneInput.classList.add('is-invalid');
+                Swal.fire('Customer Selection Mandatory', 'Customer Name and Mobile Number are required (*).', 'warning');
+                return false;
+            }
+        }
+        return true;
+    }
 
     function submitPosSale() {
         if (posCart.length === 0) {
@@ -653,20 +758,7 @@
             return;
         }
 
-        let customerType = document.getElementById('posCustomerType').value;
-        let customerId = document.getElementById('posCustomerId').value;
-        let customerName = document.getElementById('posCustomerName').value;
-        let customerPhone = document.getElementById('posCustomerPhone').value;
-        let paymentMethod = document.getElementById('posPaymentMethod').value;
-        let discountType = document.getElementById('posDiscountTypeSelect')?.value || 'amount';
-        let discountVal = parseFloat(document.getElementById('posDiscountInput').value) || 0;
-        let subtotal = posCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        let calculatedDiscount = discountType === 'percent' ? (subtotal * discountVal) / 100 : discountVal;
-        let discountAmount = Math.min(subtotal, Math.max(0, calculatedDiscount));
-        let amountTendered = parseFloat(document.getElementById('posAmountTendered').value) || 0;
-
-        if (customerType === 'existing' && !customerId) {
-            Swal.fire('Validation Error', 'Please select an existing customer.', 'warning');
+        if (!validateCustomerSelection()) {
             return;
         }
 
@@ -728,8 +820,97 @@
             console.error('POS Error:', err);
             Swal.fire('Server Error', 'An unexpected error occurred.', 'error');
             btn.disabled = false;
-            btn.innerHTML = '<i class="ri-printer-line fs-5 me-1 align-middle"></i> <span class="align-middle">COMPLETE SALE & PRINT RECEIPT</span>';
+            btn.innerHTML = '<i class="ri-printer-line fs-5 me-1 align-middle"></i> <span class="align-middle">COMPLETE SALE</span>';
         });
+    }
+
+    let currentQuotationData = null;
+
+    function submitPosQuotation() {
+        if (posCart.length === 0) {
+            Swal.fire('Empty Cart', 'Please add products before generating quotation.', 'warning');
+            return;
+        }
+
+        if (!validateCustomerSelection()) {
+            return;
+        }
+
+        let customerType = document.getElementById('posCustomerType').value;
+        let customerId = document.getElementById('posCustomerId').value;
+        let customerName = document.getElementById('posCustomerName').value;
+        let customerPhone = document.getElementById('posCustomerPhone').value;
+        let discountType = document.getElementById('posDiscountTypeSelect')?.value || 'amount';
+        let discountVal = parseFloat(document.getElementById('posDiscountInput').value) || 0;
+        let subtotal = posCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        let calculatedDiscount = discountType === 'percent' ? (subtotal * discountVal) / 100 : discountVal;
+        let discountAmount = Math.min(subtotal, Math.max(0, calculatedDiscount));
+
+        let btn = document.getElementById('posQuotationBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Creating Quote...';
+
+        fetch('{{ route("admin.pos.quotation.store") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                customer_type: customerType,
+                customer_id: customerId,
+                customer_name: customerName,
+                customer_phone: customerPhone,
+                discount_type: discountType,
+                discount_value: discountVal,
+                discount: discountAmount,
+                items: posCart.map(i => ({ id: i.id, quantity: i.quantity }))
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="ri-file-paper-2-line me-1 align-middle fs-6"></i> <span class="align-middle">Generate Quotation</span>';
+
+            if (res.success) {
+                currentQuotationData = res;
+
+                document.getElementById('quoModalNumber').innerText = res.quotation_number;
+                document.getElementById('quoModalTotal').innerText = '₹' + res.grand_total.toFixed(2);
+                document.getElementById('quoModalCustomer').innerText = 'Customer: ' + (res.customer_name || 'Walk-In Customer');
+                document.getElementById('quoModalPdfBtn').href = res.quotation_url;
+                document.getElementById('quoModalPhoneInput').value = res.customer_phone ? res.customer_phone.replace(/[^0-9]/g, '') : '';
+
+                var quoModal = new bootstrap.Modal(document.getElementById('posQuotationModal'));
+                quoModal.show();
+            } else {
+                Swal.fire('Quotation Error', res.message || 'Failed to create quotation.', 'error');
+            }
+        })
+        .catch(err => {
+            console.error('POS Quotation Error:', err);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="ri-file-paper-2-line me-1 align-middle fs-6"></i> <span class="align-middle">Generate Quotation</span>';
+            Swal.fire('Server Error', 'An unexpected error occurred.', 'error');
+        });
+    }
+
+    function sendQuotationToWhatsAppModal() {
+        if (!currentQuotationData) return;
+
+        let phoneInput = document.getElementById('quoModalPhoneInput').value.replace(/[^0-9]/g, '');
+        if (!phoneInput || phoneInput.length < 10) {
+            Swal.fire('Mobile Number Required', 'Please enter a valid 10-digit mobile number.', 'warning');
+            document.getElementById('quoModalPhoneInput').focus();
+            return;
+        }
+
+        let formattedPhone = phoneInput.length === 10 ? '91' + phoneInput : phoneInput;
+        let encodedMsg = encodeURIComponent(currentQuotationData.whatsapp_text);
+        let waUrl = `https://wa.me/${formattedPhone}?text=${encodedMsg}`;
+
+        window.open(waUrl, '_blank');
     }
 </script>
 @endsection

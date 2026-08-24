@@ -207,12 +207,13 @@
                             <td>
                                 @php
                                     $statusBadge = match($order->status) {
-                                        'pending' => 'bg-warning',
-                                        'processing' => 'bg-info',
-                                        'dispatched' => 'bg-primary',
-                                        'delivered' => 'bg-success',
-                                        'cancelled' => 'bg-danger',
-                                        default => 'bg-secondary',
+                                        'pending' => 'bg-warning text-dark',
+                                        'processing' => 'bg-info text-white',
+                                        'dispatched' => 'bg-primary text-white',
+                                        'delivered' => 'bg-success text-white',
+                                        'cancelled' => 'bg-danger text-white',
+                                        'quotation' => 'bg-primary text-white',
+                                        default => 'bg-secondary text-white',
                                     };
                                 @endphp
                                 <span class="badge {{ $statusBadge }}">{{ ucfirst($order->status) }}</span>
