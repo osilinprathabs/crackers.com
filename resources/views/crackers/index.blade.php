@@ -1067,7 +1067,7 @@
                             </span>
                             <h2 class="fw-bold text-dark display-6 mb-3">About Crackers.com</h2>
                             <p class="text-muted lead mb-4" style="font-size: 1.05rem; line-height: 1.7;">
-                                Welcome to <strong>Crackers.com</strong> (S.R. Traders) — India's premier online
+                                Welcome to <strong>{{ $settings->company_name ?: 'S.R. TRADERS (Crackers.com)' }}</strong> — India's premier online
                                 platform for certified green crackers, sparklers, flower pots, sky rockets, and festive
                                 gift boxes straight from Sivakasi manufacturing hubs.
                             </p>
@@ -1348,9 +1348,9 @@
                 <div class="row g-4 mb-4">
                     <!-- Brand Info & Slogan -->
                     <div class="col-lg-4 col-md-6">
-                        <a class="brand-logo mb-2 text-decoration-none d-inline-block"
+                        <a class="brand-logo mb-2 text-decoration-none d-inline-block text-warning fw-bold fs-4"
                             href="{{ route('crackers.storefront') }}">
-                            <i class="ri-fire-fill text-warning fs-3"></i> S.R. TRADERS (Crackers.com)
+                            <i class="ri-fire-fill text-warning fs-3"></i> {{ $settings->company_name ?: 'S.R. TRADERS (Crackers.com)' }}
                         </a>
                         @if($settings->company_slogan)
                             <div class="fst-italic text-warning fw-bold fs-6 mb-2"><i class="ri-double-quotes-l"></i>
@@ -1464,7 +1464,7 @@
                 <!-- Bottom Copyright Bar -->
                 <div class="border-top border-secondary pt-3 mt-3 d-flex flex-wrap justify-content-between align-items-center text-dark fw-semibold"
                     style="font-size: 0.95rem;">
-                    <div>&copy; {{ date('Y') }} <strong class="text-warning">S.R. TRADERS (Crackers.com)</strong>. All
+                    <div>&copy; {{ date('Y') }} <strong class="text-warning">{{ $settings->company_name ?: 'S.R. TRADERS (Crackers.com)' }}</strong>. All
                         Rights Reserved. Purely Festive Crackers Store.</div>
                     <div class="d-flex gap-3">
                         <span><i class="ri-shield-line me-1 text-success fs-6"></i> 100% Legal & Statutory

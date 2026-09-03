@@ -1,27 +1,24 @@
 {
   "suggestions": {
     "Pages": [
-      { "name": "Dashboard", "url": "dashboard", "icon": "ri-dashboard-line" },
-      { "name": "Clients", "url": "client-management", "icon": "ri-group-line" },
-      { "name": "Loan Applications", "url": "loan/loan-applications", "icon": "ri-file-list-3-line" },
-      { "name": "Repayments", "url": "emi/repayments", "icon": "ri-calendar-check-line" }
+      { "name": "POS Counter Billing", "url": "admin/pos", "icon": "ri-shopping-cart-2-line" },
+      { "name": "Orders", "url": "admin/orders", "icon": "ri-file-list-3-line" },
+      { "name": "Products", "url": "admin/products", "icon": "ri-store-2-line" },
+      { "name": "Categories", "url": "admin/categories", "icon": "ri-grid-line" }
     ]
   },
   "navigation": {
     "pages": [
       { "name": "Dashboard", "url": "dashboard", "icon": "ri-dashboard-line" },
-      { "name": "Clients", "url": "client-management", "icon": "ri-group-line" },
-      { "name": "KYC Verification", "url": "verification/kyc-verification", "icon": "ri-shield-check-line" },
-      { "name": "Loan Applications", "url": "loan/loan-applications", "icon": "ri-file-list-3-line" },
-      { "name": "Loan Accounts", "url": "loan/loan-accounts", "icon": "ri-bank-line" },
-      { "name": "Loan Setup", "url": "loan/loan-products", "icon": "ri-settings-4-line" },
-      { "name": "Repayments", "url": "emi/repayments", "icon": "ri-calendar-check-line" },
-      { "name": "Payment Receipts", "url": "emi/receipts", "icon": "ri-receipt-line" },
-      { "name": "EMI Calculator", "url": "emi/emi-calculator", "icon": "ri-calculator-line" },
-      { "name": "Agent Management", "url": "app/agents", "icon": "ri-user-settings-line" },
-      { "name": "User Management", "url": "user-management", "icon": "ri-user-star-line" },
-      { "name": "Staff Management", "url": "staff", "icon": "ri-team-line" },
-      { "name": "Location Management", "url": "location-management", "icon": "ri-map-pin-line" }
+      { "name": "POS Counter Billing", "url": "admin/pos", "icon": "ri-shopping-cart-2-line" },
+      { "name": "Orders Management", "url": "admin/orders", "icon": "ri-file-list-3-line" },
+      { "name": "Products Management", "url": "admin/products", "icon": "ri-store-2-line" },
+      { "name": "Category Setup", "url": "admin/categories", "icon": "ri-grid-line" },
+      { "name": "Inventory Logs", "url": "admin/inventory-logs", "icon": "ri-history-line" },
+      { "name": "Homepage Setup", "url": "admin/homepage-setup", "icon": "ri-window-line" },
+      { "name": "Bank Accounts", "url": "admin/bank-accounts", "icon": "ri-bank-card-line" },
+      { "name": "Store Settings", "url": "admin/settings", "icon": "ri-settings-4-line" },
+      { "name": "User Management", "url": "user-management", "icon": "ri-user-star-line" }
     ]
   }
 }

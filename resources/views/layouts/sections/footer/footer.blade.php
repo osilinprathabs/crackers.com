@@ -3,6 +3,7 @@
       isset($configData['contentLayout']) && $configData['contentLayout'] === 'compact'
           ? 'container-xxl'
           : 'container-fluid';
+  $companyName = \App\Models\CrackersSetting::getSettings()->company_name ?: 'S.R. TRADERS';
 @endphp
 
 <!-- Footer-->
@@ -10,13 +11,10 @@
   <div class="{{ $containerFooter }}">
     <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
       <div class="mb-2 mb-md-0 text-nowrap">
-        &#169;
-        <script>
-          document.write(new Date().getFullYear());
-        </script>
-        <a href="https://demo.com/"
+        &#169; {{ date('Y') }}
+        <a href="{{ url('/') }}"
           target="_blank"
-          class="footer-link fw-medium">Made with love by OP</a>
+          class="footer-link fw-bold text-primary">{{ $companyName }}</a>
           <span> - All rights reserved.</span>
       </div>
     </div>

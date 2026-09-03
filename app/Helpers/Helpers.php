@@ -39,7 +39,7 @@ class Helpers
       'myTheme' => 'light',
       'mySkins' => 'default',
       'hasSemiDark' => false,
-      'myRTLMode' => true,
+      'myRTLMode' => false,
       'hasCustomizer' => true,
       'showDropdownOnHover' => true,
       'displayCustomizer' => true,
@@ -180,7 +180,7 @@ class Helpers
     // Get Header type from cookie or fall back to config
     $headerTypeFromCookie = isset($_COOKIE['headerType']) ? $_COOKIE['headerType'] : $data['headerType'];
 
-    $directionVal = isset($_COOKIE['direction']) ? ($_COOKIE['direction'] === 'true' ? 'rtl' : 'ltr') : $data['myRTLMode'];
+    $directionVal = isset($_COOKIE['direction']) ? ($_COOKIE['direction'] === 'true' ? 'rtl' : 'ltr') : (is_bool($data['myRTLMode']) ? ($data['myRTLMode'] ? 'rtl' : 'ltr') : 'ltr');
 
     //layout classes
     $layoutClasses = [

@@ -55,6 +55,13 @@
       <!-- /Search -->
     @endif
 
+    <!-- Visit Live Store Website -->
+    <li class="nav-item me-2 me-sm-3">
+      <a href="{{ url('/') }}" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill fw-bold d-flex align-items-center gap-1 shadow-sm px-3" title="Open Store Front Website in New Tab">
+        <i class="icon-base ri ri-global-line fs-5"></i>
+        <span class="d-none d-md-inline">Visit Website</span>
+      </a>
+    </li>
 
     @if ($configData['hasCustomizer'] == true)
       <!-- Style Switcher -->
