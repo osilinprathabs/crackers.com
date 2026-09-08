@@ -55,6 +55,17 @@ class AppServiceProvider extends ServiceProvider
             }
         }
 
+        // Share Crackers settings globally across all views
+        try {
+            if (class_exists(\App\Models\CrackersSetting::class)) {
+                View::composer('*', function ($view) {
+                    $view->with('settings', \App\Models\CrackersSetting::getSettings());
+                });
+            }
+        } catch (\Throwable $e) {
+            // Ignore during setup/migrations
+        }
+
         // Register model observers
         if (class_exists(\App\Models\LoanAccount::class) && class_exists(\App\Observers\LoanAccountObserver::class)) {
             \App\Models\LoanAccount::observe(\App\Observers\LoanAccountObserver::class);

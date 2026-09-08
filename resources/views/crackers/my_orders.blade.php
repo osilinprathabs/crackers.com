@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Orders | Crackers.com</title>
+    <title>My Orders | {{ $settings->company_name ?: 'S.R. TRADERS' }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -60,7 +60,7 @@
     <nav class="navbar navbar-expand-lg navbar-festive mb-4">
         <div class="container">
             <a class="navbar-brand brand-logo text-decoration-none" href="{{ route('crackers.storefront') }}">
-                <i class="ri-fire-fill text-warning"></i> Crackers.com
+                <i class="ri-fire-fill text-warning"></i> {{ $settings->company_name ?: 'S.R. TRADERS' }}
             </a>
             <div class="d-flex align-items-center gap-2">
                 <a href="{{ route('crackers.profile') }}" class="btn btn-outline-primary rounded-pill px-3 btn-sm fw-semibold">

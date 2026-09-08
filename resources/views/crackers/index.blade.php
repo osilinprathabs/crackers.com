@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Crackers.com | Premium Festive Crackers & Fireworks Store</title>
+    <title>{{ $settings->company_name ?: 'S.R. TRADERS' }} | Premium Festive Crackers & Fireworks Store</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -470,7 +470,7 @@
                 <div>
                     <span class="brand-font fw-bold d-block"
                         style="font-size: 1.85rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        {{ $companyDetail->company_name ?? ($appearance->title ?? 'Crackers.com') }}
+                        {{ $settings->company_name ?: ($companyDetail->company_name ?? 'S.R. TRADERS') }}
                     </span>
                     <small class="d-block text-muted small fst-italic" style="font-size: 0.75rem; margin-top: -6px;">
                         {{ $companyDetail->company_slogan ?? ($appearance->subtitle ?? 'Festive Fireworks Direct Store') }}
@@ -662,7 +662,7 @@
                                 Checkout
                             </span>
                             <h1 class="text-white fw-bold display-5 mb-3" style="text-shadow: 0 2px 12px rgba(0,0,0,0.85);">
-                                Light Up Celebrations With Crackers.com!</h1>
+                                Light Up Celebrations With {{ $settings->company_name ?: 'S.R. TRADERS' }}!</h1>
                             <p class="text-white lead mb-4 fw-semibold" style="text-shadow: 0 2px 10px rgba(0,0,0,0.85);">
                                 Purely Premium Firecrackers, Sparklers, Flower Pots & Gift Boxes Delivered Direct.</p>
                             <a href="#catalog" class="btn btn-warning rounded-pill px-4 py-2 fw-bold shadow"
@@ -879,16 +879,6 @@
                                                         class="small text-muted text-decoration-line-through">₹{{ number_format($product->price, 2) }}</span>
                                                 @endif
                                             </div>
-                                            @if($product->wholesale_price)
-                                                <div class="small text-warning fw-semibold mt-1"><i
-                                                        class="ri-store-3-line me-1"></i>Wholesale Rate:
-                                                    ₹{{ number_format($product->wholesale_price, 2) }}</div>
-                                                @if($product->wholesale_min_qty)
-                                                    <small class="text-muted d-block fw-bold mt-1"><i
-                                                            class="ri-shopping-basket-line me-1 text-warning"></i>Min Wholesale Qty:
-                                                        {{ $product->wholesale_min_qty }} {{ $product->unit }}</small>
-                                                @endif
-                                            @endif
                                         @endif
                                     </div>
 
@@ -932,8 +922,10 @@
                         <tr class="small text-muted text-uppercase">
                             <th style="width: 75px;" class="ps-4">Item</th>
                             <th>Product Name & Category</th>
-                            <th>Retail Price</th>
-                            <th>Wholesale Price</th>
+                            <th>{{ $customerType === 'wholesale' ? 'Wholesale Price' : 'Price' }}</th>
+                            @if($customerType === 'wholesale')
+                                <th>Retail Price</th>
+                            @endif
                             <th class="text-center">Availability</th>
                             <th class="text-end pe-4" style="width: 180px;">Action</th>
                         </tr>
@@ -984,28 +976,35 @@
                                         <small class="text-muted font-monospace">Unit: {{ $product->unit }}</small>
                                     </div>
                                 </td>
-                                <td>
-                                    <div class="fw-bold text-success fs-6">
-                                        ₹{{ number_format($product->discount_price ?: $product->price, 2) }}</div>
-                                    @if($product->discount_price && $product->discount_price < $product->price)
-                                        <small class="text-muted text-decoration-line-through">MRP:
-                                            ₹{{ number_format($product->price, 2) }}</small>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($product->wholesale_price)
-                                        <span
-                                            class="badge bg-warning bg-opacity-10 text-dark border border-warning font-monospace fs-6 px-2 py-1"><i
-                                                class="ri-store-3-line me-1"></i>₹{{ number_format($product->wholesale_price, 2) }}</span>
-                                        @if($product->wholesale_min_qty)
-                                            <small class="text-muted d-block fw-bold mt-1"><i
-                                                    class="ri-shopping-basket-line me-1 text-warning"></i>Min Qty:
-                                                {{ $product->wholesale_min_qty }} {{ $product->unit }}</small>
+                                @if($customerType === 'wholesale')
+                                    <td>
+                                        @if($product->wholesale_price)
+                                            <span
+                                                class="badge bg-warning bg-opacity-10 text-dark border border-warning font-monospace fs-6 px-2 py-1"><i
+                                                    class="ri-store-3-line me-1"></i>₹{{ number_format($product->wholesale_price, 2) }}</span>
+                                            @if($product->wholesale_min_qty)
+                                                <small class="text-muted d-block fw-bold mt-1"><i
+                                                        class="ri-shopping-basket-line me-1 text-warning"></i>Min Qty:
+                                                    {{ $product->wholesale_min_qty }} {{ $product->unit }}</small>
+                                            @endif
+                                        @else
+                                            <span class="text-muted small">—</span>
                                         @endif
-                                    @else
-                                        <span class="text-muted small">—</span>
-                                    @endif
-                                </td>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-muted fs-6">
+                                            ₹{{ number_format($product->discount_price ?: $product->price, 2) }}</div>
+                                    </td>
+                                @else
+                                    <td>
+                                        <div class="fw-bold text-success fs-6">
+                                            ₹{{ number_format($product->discount_price ?: $product->price, 2) }}</div>
+                                        @if($product->discount_price && $product->discount_price < $product->price)
+                                            <small class="text-muted text-decoration-line-through">MRP:
+                                                ₹{{ number_format($product->price, 2) }}</small>
+                                        @endif
+                                    </td>
+                                @endif
                                 <td class="text-center">
                                     @if($product->stock <= 0)
                                         <span class="badge bg-danger rounded-pill px-3 py-1">Out of Stock</span>
@@ -1044,7 +1043,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center py-5 text-muted">
+                                <td colspan="{{ $customerType === 'wholesale' ? 6 : 5 }}" class="text-center py-5 text-muted">
                                     <i class="ri-ghost-line display-4 d-block mb-2 opacity-50"></i>
                                     No crackers found in catalog.
                                 </td>
@@ -1065,9 +1064,9 @@
                             <span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill mb-3">
                                 <i class="ri-award-fill me-1"></i> Certified Sivakasi Fireworks Direct
                             </span>
-                            <h2 class="fw-bold text-dark display-6 mb-3">About Crackers.com</h2>
+                            <h2 class="fw-bold text-dark display-6 mb-3">About {{ $settings->company_name ?: 'S.R. TRADERS' }}</h2>
                             <p class="text-muted lead mb-4" style="font-size: 1.05rem; line-height: 1.7;">
-                                Welcome to <strong>{{ $settings->company_name ?: 'S.R. TRADERS (Crackers.com)' }}</strong> — India's premier online
+                                Welcome to <strong>{{ $settings->company_name ?: 'S.R. TRADERS' }}</strong> — India's premier online
                                 platform for certified green crackers, sparklers, flower pots, sky rockets, and festive
                                 gift boxes straight from Sivakasi manufacturing hubs.
                             </p>
@@ -1350,7 +1349,7 @@
                     <div class="col-lg-4 col-md-6">
                         <a class="brand-logo mb-2 text-decoration-none d-inline-block text-warning fw-bold fs-4"
                             href="{{ route('crackers.storefront') }}">
-                            <i class="ri-fire-fill text-warning fs-3"></i> {{ $settings->company_name ?: 'S.R. TRADERS (Crackers.com)' }}
+                            <i class="ri-fire-fill text-warning fs-3"></i> {{ $settings->company_name ?: 'S.R. TRADERS' }}
                         </a>
                         @if($settings->company_slogan)
                             <div class="fst-italic text-warning fw-bold fs-6 mb-2"><i class="ri-double-quotes-l"></i>
@@ -1464,7 +1463,7 @@
                 <!-- Bottom Copyright Bar -->
                 <div class="border-top border-secondary pt-3 mt-3 d-flex flex-wrap justify-content-between align-items-center text-dark fw-semibold"
                     style="font-size: 0.95rem;">
-                    <div>&copy; {{ date('Y') }} <strong class="text-warning">{{ $settings->company_name ?: 'S.R. TRADERS (Crackers.com)' }}</strong>. All
+                    <div>&copy; {{ date('Y') }} <strong class="text-warning">{{ $settings->company_name ?: 'S.R. TRADERS' }}</strong>. All
                         Rights Reserved. Purely Festive Crackers Store.</div>
                     <div class="d-flex gap-3">
                         <span><i class="ri-shield-line me-1 text-success fs-6"></i> 100% Legal & Statutory

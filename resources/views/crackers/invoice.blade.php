@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice #{{ $order->order_number }} | Crackers.com</title>
+    <title>Invoice #{{ $order->order_number }} | {{ $settings->company_name ?: 'S.R. TRADERS' }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -104,11 +104,11 @@
         <div class="row align-items-center border-bottom pb-4 mb-4">
             <div class="col-sm-6 mb-3 mb-sm-0">
                 <div class="brand-header d-flex align-items-center gap-2">
-                    <i class="ri-fire-fill text-warning"></i> Crackers.com
+                    <i class="ri-fire-fill text-warning"></i> {{ $settings->company_name ?: 'S.R. TRADERS' }}
                 </div>
                 <div class="small text-muted mt-1">
-                    {{ $settings->website_name ?? 'Crackers Store' }}<br>
-                    Contact: {{ $settings->support_phone ?? '+91 9876543210' }} | {{ $settings->support_email ?? 'support@crackers.com' }}<br>
+                    {{ $settings->company_name ?: 'S.R. TRADERS' }}<br>
+                    Contact: {{ $settings->support_phone ?? '+91 9876543210' }} | {{ $settings->support_email ?? ('support@' . \Illuminate\Support\Str::slug($settings->company_name ?: 'crackers') . '.com') }}<br>
                     @if($settings->gst_percentage)
                         GSTIN: <strong>{{ $settings->gst_number ?? '33AAAAA0000A1Z5' }}</strong>
                     @endif
@@ -218,7 +218,7 @@
 
         <!-- Footer Terms -->
         <div class="text-center mt-5 pt-3 border-top text-muted small">
-            <p class="mb-0">Thank you for shopping with <strong>Crackers.com</strong>! Have a bright & safe celebration.</p>
+            <p class="mb-0">Thank you for shopping with <strong>{{ $settings->company_name ?: 'S.R. TRADERS' }}</strong>! Have a bright & safe celebration.</p>
         </div>
 
     </div>

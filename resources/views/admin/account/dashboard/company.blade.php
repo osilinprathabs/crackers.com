@@ -57,7 +57,7 @@
   <!-- Crackers ERP Store Financial Metrics -->
   <div class="row g-4 mb-4">
     <div class="col-12">
-      <h5 class="mb-0 fw-bold text-dark"><i class="ri-fire-fill text-warning me-2 fs-4"></i>Crackers.com Integrated ERP Sales & Financial Summary</h5>
+      <h5 class="mb-0 fw-bold text-dark"><i class="ri-fire-fill text-warning me-2 fs-4"></i>{{ $settings->company_name ?: 'S.R. TRADERS' }} Integrated ERP Sales & Financial Summary</h5>
     </div>
     
     <div class="col-sm-6 col-xl-3">

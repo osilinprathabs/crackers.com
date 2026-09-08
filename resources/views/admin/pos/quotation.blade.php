@@ -112,7 +112,7 @@
                 </div>
                 <div class="small text-muted mt-1">
                     {{ $settings->support_address ?: 'Main Store Road, Sivakasi' }}<br>
-                    Contact: {{ $settings->support_phone ?: '+91 9876543210' }} | {{ $settings->support_email ?: 'info@crackers.com' }}<br>
+                    Contact: {{ $settings->support_phone ?: '+91 9876543210' }} | {{ $settings->support_email ?: ('info@' . \Illuminate\Support\Str::slug($settings->company_name ?: 'crackers') . '.com') }}<br>
                     @if($settings->gst_percentage)
                         GSTIN: <strong>{{ $settings->gst_number ?: '33AAAAA0000A1Z5' }}</strong> | 
                     @endif

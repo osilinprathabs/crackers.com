@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title }} | Crackers.com</title>
+    <title>{{ $title }} | {{ $settings->company_name ?: 'S.R. TRADERS' }}</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
@@ -57,7 +57,7 @@
     <nav class="navbar navbar-expand-lg navbar-festive mb-4">
         <div class="container">
             <a class="navbar-brand brand-logo text-decoration-none" href="{{ route('crackers.storefront') }}">
-                <i class="ri-fire-fill text-warning"></i> Crackers.com
+                <i class="ri-fire-fill text-warning"></i> {{ $settings->company_name ?: 'S.R. TRADERS' }}
             </a>
             <div class="d-flex align-items-center gap-3">
                 <a href="{{ route('crackers.storefront') }}" class="btn btn-outline-warning rounded-pill px-3 btn-sm">
@@ -82,7 +82,7 @@
                         <a href="{{ route('crackers.storefront') }}" class="text-warning text-decoration-none fw-bold">
                             <i class="ri-arrow-left-line me-1"></i> Return To Shop
                         </a>
-                        <small class="text-muted">Crackers.com &copy; {{ date('Y') }}</small>
+                        <small class="text-muted">{{ $settings->company_name ?: 'S.R. TRADERS' }} &copy; {{ date('Y') }}</small>
                     </div>
                 </div>
             </div>

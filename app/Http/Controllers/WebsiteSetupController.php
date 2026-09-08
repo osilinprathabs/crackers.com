@@ -240,6 +240,16 @@ class WebsiteSetupController extends Controller
         }
 
         $companyDetail->update($companyData); 
+        
+        if (class_exists('\App\Models\CrackersSetting')) {
+            $cs = \App\Models\CrackersSetting::getSettings();
+            $cs->company_name = $request->company_name;
+            if ($request->filled('company_slogan')) {
+                $cs->company_slogan = $request->company_slogan;
+            }
+            $cs->save();
+        }
+
         SettingsHelper::clearCache();
 
         return redirect()->route('website-homepage')->with('success', 'Company details updated successfully!');

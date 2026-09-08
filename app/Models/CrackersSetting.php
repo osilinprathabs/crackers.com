@@ -47,8 +47,14 @@ class CrackersSetting extends Model
         'enable_bank_transfer' => 'boolean',
     ];
 
+    protected static $cachedSettings = null;
+
     public static function getSettings()
     {
+        if (static::$cachedSettings !== null) {
+            return static::$cachedSettings;
+        }
+
         $settings = static::firstOrCreate([], [
             'gst_percentage' => 18.00,
             'min_retail_order_amount' => 1000.00,
@@ -69,13 +75,14 @@ class CrackersSetting extends Model
             'license_number' => 'LE/5/1234/2026',
             'supreme_court_disclaimer' => 'As per 2018 Supreme Court order, online sale of firecrackers are not permitted! We value our customers and at the same time, respect jurisdiction. We request you to add your products to the cart and submit the required crackers through the enquiry button. We will contact you within 24 hrs and confirm the order through WhatsApp or phone call. Please add and submit your enquiries and enjoy your Diwali with S.R.TRADERS. Our License No. LE/5/1234/2026. S.R.TRADERS as a company following 100% legal & statutory compliances and all our shops, go-downs are maintained as per the explosive acts. We send the parcels through registered and legal transport service providers as like every other major companies in Sivakasi is doing so.',
             'google_map_embed' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3936.574483782977!2d77.7946927!3d9.4533036!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b06cee3a4e107f9%3A0xd1469e38ef8bfcfd!2sSivakasi%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin',
-            'terms_and_conditions' => "Welcome to Crackers.com. All purchases are governed by standard explosive & fireworks transport safety guidelines. Customers must be 18 years or older to purchase festive fireworks.",
-            'privacy_policy' => "Crackers.com values your privacy. We collect customer delivery details solely for processing festive order dispatches. We do not sell or disclose your personal data to third parties.",
+            'terms_and_conditions' => "Welcome. All purchases are governed by standard explosive & fireworks transport safety guidelines. Customers must be 18 years or older to purchase festive fireworks.",
+            'privacy_policy' => "We value your privacy. We collect customer delivery details solely for processing festive order dispatches. We do not sell or disclose your personal data to third parties.",
             'shipping_policy' => "All orders are dispatched via registered surface transport safely packaged according to safety standards. Delivery timelines vary from 2 to 5 business days depending on city location.",
         ]);
 
-        if (empty($settings->company_name)) {
-            $settings->company_name = 'S.R. TRADERS';
+        $compDetailName = class_exists('\App\Models\CompanyDetail') ? \App\Models\CompanyDetail::first()?->company_name : null;
+        if (empty($settings->company_name) || ($compDetailName && $settings->company_name !== $compDetailName)) {
+            $settings->company_name = $compDetailName ?: 'S.R. TRADERS';
             $settings->save();
         }
 
@@ -96,6 +103,7 @@ class CrackersSetting extends Model
             $settings->save();
         }
 
+        static::$cachedSettings = $settings;
         return $settings;
     }
 }

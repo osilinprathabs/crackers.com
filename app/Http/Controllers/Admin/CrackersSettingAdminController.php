@@ -71,6 +71,22 @@ class CrackersSettingAdminController extends Controller
 
         $settings->save();
 
+        if (class_exists('\App\Models\CompanyDetail')) {
+            $cd = \App\Models\CompanyDetail::firstOrCreate(['id' => 1]);
+            $cd->company_name = $settings->company_name;
+            if (!empty($settings->company_slogan)) {
+                $cd->company_slogan = $settings->company_slogan;
+            }
+            $cd->save();
+        }
+        if (class_exists('\App\Models\Appearance')) {
+            $app = \App\Models\Appearance::where('type', 'web')->first();
+            if ($app) {
+                $app->title = $settings->company_name;
+                $app->save();
+            }
+        }
+
         return redirect()->back()->with('success', 'Store, Contact, Payment & Policy Settings updated successfully!');
     }
 
