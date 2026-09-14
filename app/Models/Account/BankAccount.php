@@ -49,4 +49,28 @@ class BankAccount extends Model
     {
         return $this->belongsTo(ChartOfAccount::class, 'gl_account_id');
     }
+
+    public static function syncStoreBankAccounts()
+    {
+        if (class_exists('\App\Models\CrackersBankAccount')) {
+            $storeBanks = \App\Models\CrackersBankAccount::all();
+            foreach ($storeBanks as $sb) {
+                if (empty($sb->account_number)) continue;
+                static::updateOrCreate(
+                    ['account_number' => $sb->account_number],
+                    [
+                        'account_name' => ($sb->account_holder ? $sb->account_holder . ' (' . $sb->bank_name . ')' : $sb->bank_name),
+                        'bank_name' => $sb->bank_name ?: 'Bank',
+                        'branch_name' => $sb->branch_name ?? '',
+                        'account_type' => 'savings',
+                        'opening_balance' => 0,
+                        'current_balance' => 0,
+                        'is_active' => $sb->is_active ?? true,
+                        'creator_id' => auth()->id() ?? 1,
+                        'created_by' => function_exists('creatorId') ? creatorId() : 1,
+                    ]
+                );
+            }
+        }
+    }
 }

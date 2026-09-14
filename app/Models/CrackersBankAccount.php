@@ -24,3 +24,5 @@ class CrackersBankAccount extends Model
         'is_active' => 'boolean',
     ];
 }
+
+

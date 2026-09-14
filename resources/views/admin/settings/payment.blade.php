@@ -334,7 +334,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Bank Name *</label>
-                        <input type="text" name="bank_name" class="form-control" placeholder="e.g. HDFC Bank" required>
+                        <input type="text" name="bank_name" class="form-control" placeholder="e.g. State Bank of India" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Account Holder Name *</label>
@@ -346,7 +346,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">IFSC Code *</label>
-                        <input type="text" name="ifsc_code" class="form-control" placeholder="e.g. HDFC0001234" required>
+                        <input type="text" name="ifsc_code" class="form-control" placeholder="e.g. SBIN0001234" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Branch Name (Optional)</label>

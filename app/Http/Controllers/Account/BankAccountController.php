@@ -18,6 +18,7 @@ class BankAccountController extends Controller
 {
     public function index()
     {
+        BankAccount::syncStoreBankAccounts();
         if(Auth::user()->can('manage-bank-accounts')){
             $bankaccounts = BankAccount::query()
                 ->with(['gl_account'])

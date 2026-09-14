@@ -257,21 +257,21 @@
 
     <!-- Header Navbar -->
     <nav class="navbar navbar-expand-lg navbar-festive mb-4">
-        <div class="container">
+        <div class="container d-flex align-items-center justify-content-between flex-wrap gap-2">
             <a class="navbar-brand brand-logo text-decoration-none" href="{{ route('crackers.storefront') }}">
                 <i class="ri-fire-fill text-warning"></i> {{ $settings->company_name ?: 'S.R. TRADERS' }}
             </a>
-            <div class="d-flex align-items-center gap-3">
-                <a href="{{ route('crackers.storefront') }}" class="btn btn-outline-dark rounded-pill px-3 btn-sm fw-semibold">
-                    <i class="ri-store-2-line me-1"></i> Storefront
+            <div class="d-flex align-items-center gap-1 gap-sm-2 flex-wrap">
+                <a href="{{ route('crackers.storefront') }}" class="btn btn-outline-dark rounded-pill px-2 px-sm-3 btn-sm fw-semibold">
+                    <i class="ri-store-2-line me-1"></i> <span class="d-none d-sm-inline">Storefront</span><span class="d-sm-none">Shop</span>
                 </a>
-                <a href="{{ route('crackers.my-orders') }}" class="btn btn-outline-warning rounded-pill px-3 btn-sm fw-bold">
-                    <i class="ri-shopping-bag-3-line me-1"></i> My Orders
+                <a href="{{ route('crackers.my-orders') }}" class="btn btn-outline-warning rounded-pill px-2 px-sm-3 btn-sm fw-bold">
+                    <i class="ri-shopping-bag-3-line me-1"></i> <span class="d-none d-sm-inline">My </span>Orders
                 </a>
                 <form action="{{ route('crackers.logout') }}" method="POST" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn btn-outline-danger rounded-pill px-3 btn-sm">
-                        <i class="ri-logout-box-r-line me-1"></i> Logout
+                    <button type="submit" class="btn btn-outline-danger rounded-pill px-2 px-sm-3 btn-sm">
+                        <i class="ri-logout-box-r-line me-1"></i> <span class="d-none d-sm-inline">Logout</span>
                     </button>
                 </form>
             </div>
@@ -595,5 +595,6 @@
             setProfileTheme(savedTheme);
         });
     </script>
+    @include('crackers.partials.celebration_blast')
 </body>
 </html>

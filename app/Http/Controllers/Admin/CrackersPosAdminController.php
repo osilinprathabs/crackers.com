@@ -212,6 +212,18 @@ class CrackersPosAdminController extends Controller
                     ]);
                 }
 
+                // Notify admin of POS sale
+                try {
+                    \App\Models\AdminNotification::create([
+                        'type' => 'pos_order',
+                        'title' => 'POS Sale #' . $order->order_number,
+                        'message' => 'POS counter sale completed for customer ' . $order->customer_name . ' total ₹' . number_format($order->grand_total, 2),
+                        'link' => route('admin.pos.receipt', $order->id),
+                        'icon' => 'ri-store-2-line',
+                        'related_id' => $order->id,
+                    ]);
+                } catch (\Exception $ne) {}
+
                 return response()->json([
                     'success' => true,
                     'message' => 'POS Sale Completed Successfully!',

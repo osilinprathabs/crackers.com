@@ -119,6 +119,14 @@ class CrackersStoreController extends Controller
             }
         }
 
+        if (!$request->has('items') || !is_array($request->input('items')) || count($request->input('items')) === 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Your shopping cart is empty! Please add crackers to your cart before placing an order.',
+                'errors' => ['items' => ['Shopping cart is empty.']]
+            ], 422);
+        }
+
         try {
             $validated = $request->validate([
                 'customer_name' => 'required|string|max:255',
@@ -281,10 +289,22 @@ class CrackersStoreController extends Controller
                         'quantity' => $qtyDeducted,
                         'old_stock' => $oldStock,
                         'new_stock' => $newStock,
-                        'notes' => "Deducted for Customer Order #{$order->order_number}",
-                        'created_by' => 'Store Front Order',
+                        'reference' => 'Order #' . $order->order_number,
+                        'notes' => 'Automatic inventory deduction on online order placement',
                     ]);
                 }
+
+                // Notify admin of new order
+                try {
+                    \App\Models\AdminNotification::create([
+                        'type' => 'new_order',
+                        'title' => 'New Online Order #' . $order->order_number,
+                        'message' => 'Customer ' . $order->customer_name . ' (' . $order->customer_phone . ') placed order #' . $order->order_number . ' for ₹' . number_format($order->grand_total, 2),
+                        'link' => route('admin.crackers-orders.show', $order->id),
+                        'icon' => 'ri-shopping-cart-3-line',
+                        'related_id' => $order->id,
+                    ]);
+                } catch (\Exception $ne) {}
 
                 return response()->json([
                     'success' => true,

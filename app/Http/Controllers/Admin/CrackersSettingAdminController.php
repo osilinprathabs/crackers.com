@@ -77,6 +77,17 @@ class CrackersSettingAdminController extends Controller
             if (!empty($settings->company_slogan)) {
                 $cd->company_slogan = $settings->company_slogan;
             }
+            if (!empty($settings->support_phone)) {
+                $cleanDigits = preg_replace('/[^0-9]/', '', $settings->support_phone);
+                if (strlen($cleanDigits) >= 10) {
+                    $cd->company_mobile = substr($cleanDigits, -10);
+                    $cd->support_mobile = substr($cleanDigits, -10);
+                }
+            }
+            if (!empty($settings->support_email)) {
+                $cd->company_email = $settings->support_email;
+                $cd->support_email = $settings->support_email;
+            }
             $cd->save();
         }
         if (class_exists('\App\Models\Appearance')) {

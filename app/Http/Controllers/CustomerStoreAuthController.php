@@ -57,6 +57,10 @@ class CustomerStoreAuthController extends Controller
         $isAdmin = method_exists($user, 'hasAnyRole') && $user->hasAnyRole(['Admin', 'Agent', 'Staff', 'Super Admin']);
         $redirectUrl = $isAdmin ? route('dashboard') : route('crackers.my-orders');
 
+        // Flash login celebration flags to session
+        session()->flash('show_login_celebration', true);
+        session()->flash('celebration_user', $user->name ?: 'Customer');
+
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -106,7 +110,21 @@ class CustomerStoreAuthController extends Controller
                 ],
             ]);
 
+            try {
+                \App\Models\AdminNotification::create([
+                    'type' => 'customer_registered',
+                    'title' => 'New Customer Registration',
+                    'message' => 'New customer ' . $customer->company_name . ' (' . $customer->contact_person_mobile . ') registered an account.',
+                    'link' => route('admin.customers.show', $customer->id),
+                    'icon' => 'ri-user-add-line',
+                    'related_id' => $customer->id,
+                ]);
+            } catch (\Exception $ne) {}
+
             Auth::login($user, true);
+
+            session()->flash('show_login_celebration', true);
+            session()->flash('celebration_user', $user->name ?: 'Customer');
 
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json([

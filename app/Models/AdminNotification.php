@@ -82,11 +82,17 @@ class AdminNotification extends Model
         }
 
         return match($this->type) {
-            'emi_overdue' => 'ri-alarm-warning-line',
-            'new_loan_application' => 'ri-file-list-3-line',
-            'new_user_registration' => 'ri-user-add-line',
-            'payment_received' => 'ri-money-rupee-circle-line',
-            default => 'ri-notification-3-line',
+            'new_order', 'online_order' => 'ri-shopping-cart-fill',
+            'pos_order' => 'ri-store-2-fill',
+            'pos_quotation' => 'ri-file-text-fill',
+            'customer_registered', 'new_user_registration' => 'ri-user-add-fill',
+            'order_dispatched' => 'ri-truck-fill',
+            'order_delivered' => 'ri-checkbox-circle-fill',
+            'order_cancelled' => 'ri-close-circle-fill',
+            'payment_received', 'payment_confirmed' => 'ri-money-rupee-circle-fill',
+            'emi_overdue' => 'ri-alarm-warning-fill',
+            'new_loan_application' => 'ri-file-list-3-fill',
+            default => 'ri-notification-3-fill',
         };
     }
 
@@ -96,11 +102,17 @@ class AdminNotification extends Model
     public function getBadgeColorAttribute()
     {
         return match($this->type) {
+            'new_order', 'online_order' => 'warning',
+            'pos_order' => 'info',
+            'pos_quotation' => 'secondary',
+            'customer_registered', 'new_user_registration' => 'primary',
+            'order_dispatched' => 'info',
+            'order_delivered' => 'success',
+            'order_cancelled' => 'danger',
+            'payment_received', 'payment_confirmed' => 'success',
             'emi_overdue' => 'danger',
             'new_loan_application' => 'primary',
-            'new_user_registration' => 'success',
-            'payment_received' => 'success',
-            default => 'secondary',
+            default => 'primary',
         };
     }
 }

@@ -129,7 +129,7 @@ class AccountModuleDemoSeeder extends Seeder
             $glBank = ChartOfAccount::firstOrCreate(
                 ['account_code' => '1010', 'created_by' => $uid],
                 [
-                    'account_name' => 'HDFC Operational Account',
+                    'account_name' => 'Primary Operational Bank Account',
                     'account_type_id' => $typeBank->id,
                     'parent_account_id' => null,
                     'level' => 1,
@@ -179,11 +179,11 @@ class AccountModuleDemoSeeder extends Seeder
 
             // --- Bank account (must link to GL in 1000–1099 range for ERP bank module)
             $bank = BankAccount::firstOrCreate(
-                ['account_number' => 'ACC-HDFC-001', 'created_by' => $uid],
+                ['account_number' => 'ACC-SBI-001', 'created_by' => $uid],
                 [
-                    'account_name' => 'HDFC Corporate Current Account',
-                    'bank_name' => 'HDFC Bank',
-                    'branch_name' => 'Koramangala Branch',
+                    'account_name' => 'Corporate Bank Current Account',
+                    'bank_name' => 'State Bank of India',
+                    'branch_name' => 'Sivakasi Branch',
                     'account_type' => 'current',
                     'opening_balance' => 5000000,
                     'current_balance' => 5000000,

@@ -120,6 +120,30 @@ class CrackersOrderAdminController extends Controller
         }
         $order->save();
 
+        try {
+            $notifType = match($validated['status']) {
+                'dispatched' => 'order_dispatched',
+                'delivered' => 'order_delivered',
+                'cancelled' => 'order_cancelled',
+                default => 'new_order',
+            };
+            $icon = match($validated['status']) {
+                'dispatched' => 'ri-truck-line',
+                'delivered' => 'ri-checkbox-circle-line',
+                'cancelled' => 'ri-close-circle-line',
+                default => 'ri-shopping-bag-3-line',
+            };
+
+            \App\Models\AdminNotification::create([
+                'type' => $notifType,
+                'title' => 'Order #' . $order->order_number . ' ' . ucfirst($validated['status']),
+                'message' => 'Order #' . $order->order_number . ' for customer ' . $order->customer_name . ' has been updated to ' . strtoupper($validated['status']) . '.',
+                'link' => route('admin.crackers-orders.show', $order->id),
+                'icon' => $icon,
+                'related_id' => $order->id,
+            ]);
+        } catch (\Exception $e) {}
+
         return redirect()->back()->with('success', 'Order status updated to ' . ucfirst($validated['status']));
     }
 
@@ -136,6 +160,19 @@ class CrackersOrderAdminController extends Controller
             $order->payment_method = $validated['payment_method'];
         }
         $order->save();
+
+        if ($validated['payment_status'] === 'paid') {
+            try {
+                \App\Models\AdminNotification::create([
+                    'type' => 'payment_received',
+                    'title' => 'Payment Confirmed for Order #' . $order->order_number,
+                    'message' => 'Payment of ₹' . number_format($order->grand_total, 2) . ' confirmed for order #' . $order->order_number . ' (' . $order->customer_name . ').',
+                    'link' => route('admin.crackers-orders.show', $order->id),
+                    'icon' => 'ri-money-rupee-circle-line',
+                    'related_id' => $order->id,
+                ]);
+            } catch (\Exception $e) {}
+        }
 
         return redirect()->back()->with('success', 'Payment status updated to ' . ucfirst($validated['payment_status']) . ' for Order #' . $order->order_number);
     }

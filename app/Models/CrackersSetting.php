@@ -106,4 +106,43 @@ class CrackersSetting extends Model
         static::$cachedSettings = $settings;
         return $settings;
     }
+
+    public function getWhatsappNumberAttribute()
+    {
+        $mobile = null;
+        if (class_exists('\App\Models\CompanyDetail')) {
+            $cd = \App\Models\CompanyDetail::first();
+            if ($cd && !empty($cd->company_mobile)) {
+                $mobile = $cd->company_mobile;
+            } elseif ($cd && !empty($cd->support_mobile)) {
+                $mobile = $cd->support_mobile;
+            }
+        }
+        if (empty($mobile) && !empty($this->support_phone)) {
+            $mobile = $this->support_phone;
+        }
+        return $mobile ?: '9876543210';
+    }
+
+    public function getFormattedWhatsappNumberAttribute()
+    {
+        $raw = $this->whatsapp_number;
+        $digits = preg_replace('/[^0-9]/', '', $raw);
+        if (strlen($digits) === 10) {
+            return '+91 ' . substr($digits, 0, 5) . ' ' . substr($digits, 5);
+        }
+        if (str_starts_with(trim($raw), '+')) {
+            return trim($raw);
+        }
+        return '+91 ' . trim($raw);
+    }
+
+    public function getWhatsappLinkAttribute()
+    {
+        $digits = preg_replace('/[^0-9]/', '', $this->whatsapp_number);
+        if (strlen($digits) === 10) {
+            $digits = '91' . $digits;
+        }
+        return 'https://wa.me/' . $digits;
+    }
 }

@@ -33,6 +33,7 @@ class RevenueController extends Controller
 
     public function index(Request $request)
     {
+        BankAccount::syncStoreBankAccounts();
         if(Auth::user()->can('manage-revenues')){
             $query = Revenue::with(['category:id,category_name', 'bankAccount:id,account_name', 'chartOfAccount:id,account_code,account_name', 'approvedBy:id,name'])
                 ->select('id', 'revenue_number', 'revenue_date', 'category_id', 'bank_account_id', 'chart_of_account_id', 'amount', 'description', 'reference_number', 'status', 'approved_by', 'created_at')

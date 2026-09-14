@@ -141,6 +141,29 @@
         .text-theme-dynamic {
             color: var(--primary-amber) !important;
         }
+
+        /* Mobile Responsiveness Enhancements */
+        @media (max-width: 767.98px) {
+            .checkout-tabs .nav-link {
+                padding: 0.65rem 0.5rem !important;
+                font-size: 0.75rem !important;
+                border-radius: 12px !important;
+            }
+
+            .card-custom {
+                padding: 1.15rem !important;
+                border-radius: 16px !important;
+            }
+
+            .brand-logo {
+                font-size: 1.35rem !important;
+            }
+
+            .container {
+                padding-left: 0.85rem !important;
+                padding-right: 0.85rem !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -554,6 +577,14 @@
         });
 
         function goToTab(tabId) {
+            if (tabId !== 'tab-cart' && (!cart || cart.length === 0)) {
+                showValidationModal(
+                    'Shopping Cart is Empty',
+                    'Your shopping cart is empty! Please add crackers to your cart before proceeding to checkout steps.',
+                    []
+                );
+                return false;
+            }
             const tabTrigger = new bootstrap.Tab(document.querySelector(`#${tabId}-btn`));
             tabTrigger.show();
             window.scrollTo({ top: 120, behavior: 'smooth' });
@@ -618,6 +649,14 @@
         }
 
         function validateShippingAndNext() {
+            if (!cart || cart.length === 0) {
+                showValidationModal(
+                    'Shopping Cart is Empty',
+                    'Your shopping cart is empty! Please add crackers to your cart before proceeding to shipping info.',
+                    []
+                );
+                return false;
+            }
             const fieldMap = [
                 { id: 'inputName', name: 'Full Name (*)' },
                 { id: 'inputPhone', name: 'Mobile Number (*)' },
@@ -683,17 +722,51 @@
             let badgeCount = document.getElementById('cartItemCountBadge');
 
             if (!cart || cart.length === 0) {
-                const emptyHtml = `<div class="text-center py-5 text-muted"><i class="ri-shopping-cart-line display-4 opacity-50"></i><p class="mt-2 fw-bold">Your shopping cart is empty.</p><a href="{{ route('crackers.storefront') }}" class="btn btn-sm btn-theme-dynamic rounded-pill mt-2 fw-bold px-4">Browse Crackers Store</a></div>`;
+                const emptyHtml = `
+                    <div class="text-center py-5 px-3 rounded-4 bg-light border border-dashed border-secondary my-3">
+                        <div class="mb-3">
+                            <i class="ri-shopping-cart-line display-1 text-warning opacity-75"></i>
+                        </div>
+                        <h4 class="fw-bold text-dark mb-2">Your Shopping Cart is Empty</h4>
+                        <p class="text-muted mb-4 small" style="max-width: 450px; margin: 0 auto;">
+                            You currently have no crackers in your cart. Please browse our product catalog and add crackers to proceed with your order.
+                        </p>
+                        <a href="{{ route('crackers.storefront') }}" class="btn btn-theme-dynamic btn-lg rounded-pill fw-bold px-5 py-3 shadow-sm text-white d-inline-flex align-items-center gap-2">
+                            <i class="ri-fire-fill fs-5"></i> Browse & Add Crackers to Cart
+                        </a>
+                    </div>
+                `;
                 fullCartContainer.innerHTML = emptyHtml;
                 stickyContainer.innerHTML = emptyHtml;
                 if (reviewCartContainer) reviewCartContainer.innerHTML = emptyHtml;
                 subtotalEl.innerText = '₹0.00';
                 gstEl.innerText = '₹0.00';
                 grandTotalEl.innerText = '₹0.00';
-                btn.disabled = true;
+                if (btn) {
+                    btn.disabled = true;
+                    btn.classList.add('disabled');
+                }
                 if (badgeCount) badgeCount.innerText = '0 Items';
+
+                ['tab-shipping-btn', 'tab-payment-btn', 'tab-summary-btn'].forEach(id => {
+                    let el = document.getElementById(id);
+                    if (el) {
+                        el.classList.add('disabled');
+                        el.style.opacity = '0.5';
+                        el.style.pointerEvents = 'none';
+                    }
+                });
                 return;
             }
+
+            ['tab-shipping-btn', 'tab-payment-btn', 'tab-summary-btn'].forEach(id => {
+                let el = document.getElementById(id);
+                if (el) {
+                    el.classList.remove('disabled');
+                    el.style.opacity = '1';
+                    el.style.pointerEvents = 'auto';
+                }
+            });
 
             let totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
             if (badgeCount) badgeCount.innerText = totalItems + ' Items';
@@ -855,6 +928,18 @@
         }
 
         document.querySelectorAll('button[data-bs-toggle="pill"]').forEach(btn => {
+            btn.addEventListener('show.bs.tab', function(e) {
+                const targetId = this.getAttribute('data-bs-target');
+                if (targetId !== '#tab-cart' && (!cart || cart.length === 0)) {
+                    e.preventDefault();
+                    showValidationModal(
+                        'Shopping Cart is Empty',
+                        'Your shopping cart is empty! Please add crackers to your cart before proceeding to checkout steps.',
+                        []
+                    );
+                    return false;
+                }
+            });
             btn.addEventListener('shown.bs.tab', function() {
                 updateSummaryReview();
             });

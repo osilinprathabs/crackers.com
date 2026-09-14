@@ -108,7 +108,7 @@
                 </div>
                 <div class="small text-muted mt-1">
                     {{ $settings->company_name ?: 'S.R. TRADERS' }}<br>
-                    Contact: {{ $settings->support_phone ?? '+91 9876543210' }} | {{ $settings->support_email ?? ('support@' . \Illuminate\Support\Str::slug($settings->company_name ?: 'crackers') . '.com') }}<br>
+                    Contact: WhatsApp: {{ $settings->formatted_whatsapp_number }} | {{ $settings->support_email ?? ('support@' . \Illuminate\Support\Str::slug($settings->company_name ?: 'crackers') . '.com') }}<br>
                     @if($settings->gst_percentage)
                         GSTIN: <strong>{{ $settings->gst_number ?? '33AAAAA0000A1Z5' }}</strong>
                     @endif

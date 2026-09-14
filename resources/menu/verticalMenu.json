@@ -216,67 +216,11 @@
     },
     {
       "name": "Notifications",
-      "url": "notifications",
+      "url": "admin/notifications",
       "icon": "menu-icon icon-base ri ri-notification-line",
-      "slug": "notifications",
+      "slug": "admin-notifications",
       "roles": [
         "Admin"
-      ]
-    },
-    {
-      "name": "Templates",
-      "icon": "menu-icon icon-base ri ri-file-text-line",
-      "slug": [
-        "templates-email",
-        "email-template-index",
-        "email-template-create",
-        "email-template-edit",
-        "templates-sms",
-        "sms-template-index",
-        "sms-template-create",
-        "sms-template-edit",
-        "templates-whatsapp",
-        "whatsapp-template-index",
-        "whatsapp-template-create",
-        "whatsapp-template-edit",
-        "whatsapp-template-view"
-      ],
-      "roles": [
-        "Admin"
-      ],
-      "submenu": [
-        {
-          "url": "templates/email",
-          "name": "Email Templates",
-          "slug": [
-            "templates-email",
-            "email-template-index",
-            "email-template-create",
-            "email-template-edit"
-          ]
-        },
-        {
-          "url": "templates/sms",
-          "name": "SMS Templates",
-          "slug": [
-            "templates-sms",
-            "sms-template-index",
-            "sms-template-create",
-            "sms-template-edit"
-          ]
-        },
-        {
-          "url": "templates/whatsapp",
-          "name": "WhatsApp Templates",
-          "slug": [
-            "templates-whatsapp",
-            "whatsapp-template-index",
-            "whatsapp-template-create",
-            "whatsapp-template-edit",
-            "whatsapp-template-view",
-            "templates/whatsapp"
-          ]
-        }
       ]
     },
     {
@@ -297,64 +241,6 @@
           "url": "admin/appearance",
           "name": "Appearance",
           "slug": "website-appearance"
-        }
-      ]
-    },
-    {
-      "name": "Setup & Configuration",
-      "icon": "menu-icon icon-base ri ri-settings-5-line",
-      "slug": [
-        "setup-configuration",
-        "feature-activation",
-        "setup-configuration-smtp-settings",
-        "smtp-settings",
-        "smtp-settings-update",
-        "smtp-settings-test",
-        "payment-methods",
-        "payment-methods-update",
-        "page-configuration",
-        "faq-index",
-        "setup-configuration-api-configuration",
-        "faq-create",
-        "faq-edit"
-      ],
-      "roles": [
-        "Admin"
-      ],
-      "submenu": [
-        {
-          "url": "setup-configuration/feature-activation",
-          "name": "Feature Activation",
-          "slug": "feature-activation"
-        },
-        {
-          "url": "setup-configuration/api-configuration",
-          "name": "API Configuration",
-          "slug": "setup-configuration-api-configuration"
-        },
-        {
-          "url": "setup-configuration/smtp-settings",
-          "name": "SMTP Settings",
-          "slug": "smtp-settings"
-        },
-        {
-          "url": "setup-configuration/payment-methods",
-          "name": "Payment Methods",
-          "slug": "payment-methods"
-        },
-        {
-          "url": "setup-configuration/page-configuration",
-          "name": "Pages Configuration",
-          "slug": "page-configuration"
-        },
-        {
-          "url": "setup-configuration/faq",
-          "name": "FAQ",
-          "slug": [
-            "faq-index",
-            "faq-create",
-            "faq-edit"
-          ]
         }
       ]
     },

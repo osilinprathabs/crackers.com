@@ -247,6 +247,12 @@ class WebsiteSetupController extends Controller
             if ($request->filled('company_slogan')) {
                 $cs->company_slogan = $request->company_slogan;
             }
+            if ($request->filled('company_mobile')) {
+                $cs->support_phone = $request->company_mobile;
+            }
+            if ($request->filled('company_email')) {
+                $cs->support_email = $request->company_email;
+            }
             $cs->save();
         }
 

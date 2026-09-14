@@ -108,6 +108,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/notifications/latest', [\App\Http\Controllers\NotificationController::class, 'getLatest'])->name('admin-notifications.latest');
     Route::get('/admin/notifications/unread-count', [\App\Http\Controllers\NotificationController::class, 'getUnreadCount'])->name('admin-notifications.unread-count');
     Route::post('/admin/notifications/{id}/mark-read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('admin-notifications.mark-read');
+    Route::post('/admin/notifications/{id}/mark-unread', [\App\Http\Controllers\NotificationController::class, 'markAsUnread'])->name('admin-notifications.mark-unread');
     Route::post('/admin/notifications/mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('admin-notifications.mark-all-read');
     Route::delete('/admin/notifications/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy'])->name('admin-notifications.destroy');
     Route::post('/admin/notifications/clear-read', [\App\Http\Controllers\NotificationController::class, 'clearRead'])->name('admin-notifications.clear-read');

@@ -376,9 +376,9 @@
         // IFSC
         if (input.name === 'ifsc_code' && !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(input.value)) {
            input.classList.add('is-invalid');
-           showFieldError(input, 'Invalid IFSC Format (e.g. HDFC0001234)');
+           showFieldError(input, 'Invalid IFSC Format (e.g. SBIN0001234)');
            isValid = false;
-           errorMessages.push(`IFSC Code must be 11 characters (e.g. HDFC0001234).`);
+           errorMessages.push(`IFSC Code must be 11 characters (e.g. SBIN0001234).`);
         }
         // PAN
         if (input.name === 'pan_number' && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(input.value)) {
@@ -594,7 +594,7 @@
         ifscInput.addEventListener('blur', function() {
             if (this.value.trim() && !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(this.value)) {
                 this.classList.add('is-invalid');
-                showFieldError(this, 'Invalid IFSC Format (e.g. HDFC0001234)');
+                showFieldError(this, 'Invalid IFSC Format (e.g. SBIN0001234)');
             } else {
                 this.classList.remove('is-invalid');
                 const err = this.nextElementSibling;
@@ -825,7 +825,7 @@
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-bold">IFSC Code </label>
-                      <input type="text" name="ifsc_code" class="form-control input-group-custom" placeholder="e.g. HDFC0001234" maxlength="11" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')" pattern="^[A-Z]{4}0[A-Z0-9]{6}$" title="Invalid IFSC Code (e.g. HDFC0001234)">
+                      <input type="text" name="ifsc_code" class="form-control input-group-custom" placeholder="e.g. SBIN0001234" maxlength="11" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')" pattern="^[A-Z]{4}0[A-Z0-9]{6}$" title="Invalid IFSC Code (e.g. SBIN0001234)">
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-bold">Account Type </label>

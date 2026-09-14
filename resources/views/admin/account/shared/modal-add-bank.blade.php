@@ -30,7 +30,7 @@
             </div>
             <div class="col-md-6">
               <label class="form-label">{{ __('Bank name') }} <span class="text-danger">*</span></label>
-              <input type="text" name="bank_name" class="form-control" required placeholder="e.g. HDFC Bank" oninput="this.value=this.value.replace(/[0-9]/g,'');">
+              <input type="text" name="bank_name" class="form-control" required placeholder="e.g. State Bank of India" oninput="this.value=this.value.replace(/[0-9]/g,'');">
             </div>
             <div class="col-md-6">
               <label class="form-label">{{ __('Branch name') }}</label>

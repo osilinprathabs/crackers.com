@@ -297,7 +297,7 @@
 
             <!-- Company Mobile -->
             <div class="col-md-6">
-              <label class="form-label" for="companyMobile">Company Mobile <span class="text-danger">*</span></label>
+              <label class="form-label" for="companyMobile">Company Mobile / WhatsApp Support Number <span class="text-danger">*</span></label>
               <div class="input-group">
                 <span class="input-group-text">+91</span>
                 <input type="text" class="form-control @error('company_mobile') is-invalid @enderror" 
@@ -309,7 +309,7 @@
                   <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
               </div>
-              <small class="text-muted">Enter 10-digit mobile number</small>
+              <small class="text-muted"><i class="ri-whatsapp-line text-success me-1"></i>Enter 10-digit mobile number for website header/footer WhatsApp support</small>
             </div>
 
             <!-- Alternate Mobile -->

@@ -351,6 +351,30 @@
             box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
         }
 
+        .btn-wishlist-action {
+            position: relative !important;
+            top: auto !important;
+            left: auto !important;
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 50% !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            transition: all 0.2s ease !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        .btn-wishlist-action.active,
+        .btn-wishlist-action:hover {
+            background-color: #dc3545 !important;
+            color: #ffffff !important;
+            border-color: #dc3545 !important;
+            transform: scale(1.1) !important;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.35) !important;
+        }
+
         .product-badge-discount {
             position: absolute;
             top: 1rem;
@@ -417,6 +441,142 @@
             padding: 1rem;
             margin-top: 0.75rem;
         }
+
+        /* -------------------------------------------------------------
+           MOBILE RESPONSIVENESS ENHANCEMENTS
+           ------------------------------------------------------------- */
+        @media (max-width: 767.98px) {
+            body {
+                padding-bottom: 75px !important;
+            }
+
+            .top-header-strip {
+                font-size: 0.8rem !important;
+            }
+
+            .brand-logo img {
+                max-height: 38px !important;
+                max-width: 140px !important;
+            }
+
+            .hero-banner {
+                padding: 1.75rem 1.15rem !important;
+                min-height: 200px !important;
+            }
+
+            .hero-banner h1 {
+                font-size: 1.55rem !important;
+                line-height: 1.25 !important;
+            }
+
+            .hero-banner p {
+                font-size: 0.88rem !important;
+            }
+
+            .product-card {
+                padding: 0.85rem !important;
+                border-radius: 16px !important;
+            }
+
+            .product-img-box {
+                height: 130px !important;
+                font-size: 2.8rem !important;
+                border-radius: 12px !important;
+            }
+
+            .price-current {
+                font-size: 1.15rem !important;
+            }
+
+            .btn-add-cart {
+                padding: 0.5rem 0.85rem !important;
+                font-size: 0.88rem !important;
+                border-radius: 10px !important;
+            }
+
+            .btn-wishlist {
+                width: 32px !important;
+                height: 32px !important;
+                top: 0.5rem !important;
+                left: 0.5rem !important;
+            }
+
+            .catalog-mode-pill, .store-mode-pill {
+                padding: 0.35rem 0.65rem !important;
+                font-size: 0.75rem !important;
+            }
+
+            .offcanvas {
+                max-width: 90vw !important;
+            }
+
+            #floatingSummaryToggleBtn {
+                bottom: 80px !important;
+                right: 15px !important;
+            }
+
+            #floatingSummaryCard {
+                bottom: 140px !important;
+                right: 15px !important;
+                left: 15px !important;
+                max-width: calc(100vw - 30px) !important;
+            }
+
+            .nav-header-bar {
+                padding-top: 0.5rem !important;
+                padding-bottom: 0.5rem !important;
+            }
+
+            .nav-header-link {
+                font-size: 0.8rem !important;
+                padding: 0.35rem 0.75rem !important;
+                white-space: nowrap !important;
+            }
+        }
+
+        /* Fixed Mobile Bottom Navigation Bar */
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: #0f172a;
+            border-top: 1px solid rgba(255, 183, 3, 0.25);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 1045;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.35);
+        }
+
+        .mobile-nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.72rem;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            position: relative;
+            transition: all 0.2s ease;
+            height: 100%;
+        }
+
+        .mobile-nav-link i {
+            font-size: 1.35rem;
+            margin-bottom: 1px;
+            transition: transform 0.2s ease;
+        }
+
+        .mobile-nav-link.active, .mobile-nav-link:hover {
+            color: #ffc107;
+        }
+
+        .mobile-nav-link.active i {
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 
@@ -447,8 +607,11 @@
                     Crackers Approved & Certified Safe</span>
                 <span class="me-5"><i class="ri-map-pin-2-fill text-warning fs-5 align-middle me-1"></i> 🏭 Sivakasi
                     Factory Direct Hub - Pure Quality Guaranteed</span>
-                <span class="me-5"><i class="ri-whatsapp-line text-white fs-5 align-middle me-1"></i> 📱 WhatsApp
-                    Support: +91 98765 43210</span>
+                <span class="me-5">
+                    <a href="{{ $settings->whatsapp_link }}" target="_blank" class="text-white text-decoration-none fw-bold">
+                        <i class="ri-whatsapp-fill text-success fs-5 align-middle me-1"></i> 📱 WhatsApp Support: {{ $settings->formatted_whatsapp_number }}
+                    </a>
+                </span>
                 <span class="me-5"><i class="ri-sparkling-fill text-warning fs-5 align-middle me-1"></i> ✨ GST
                     {{ $settings->gst_percentage ?? 18 }}% Included at Checkout - Fast Doorstep Dispatch!</span>
             </marquee>
@@ -478,7 +641,7 @@
                 </div>
             </a>
 
-            <!-- Search Input Bar -->
+            <!-- Search Input Bar (Desktop) -->
             <form method="GET" action="{{ route('crackers.storefront') }}"
                 class="d-none d-md-flex align-items-center gap-2 flex-grow-1 mx-lg-5" style="max-width: 420px;">
                 <input type="hidden" name="type" value="{{ $customerType }}">
@@ -492,26 +655,41 @@
                 </div>
             </form>
 
+            <!-- Mobile Search Bar (< md) -->
+            <div class="w-100 d-md-none mt-1">
+                <form method="GET" action="{{ route('crackers.storefront') }}">
+                    <input type="hidden" name="type" value="{{ $customerType }}">
+                    <input type="hidden" name="category" value="{{ $category }}">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control rounded-start-pill ps-3 fs-6"
+                            placeholder="Search crackers, sparklers..." value="{{ $search }}">
+                        <button type="submit" class="btn btn-warning rounded-end-pill px-3"
+                            style="background: var(--gold-gradient); color:#000;"><i
+                                class="ri-search-line fw-bold"></i></button>
+                    </div>
+                </form>
+            </div>
+
             <!-- Action Buttons -->
-            <div class="d-flex align-items-center gap-2 gap-sm-3">
+            <div class="d-flex align-items-center gap-1 gap-sm-3">
                 <!-- Wishlist Icon Button -->
                 <button
                     class="btn btn-light border rounded-circle shadow-sm position-relative d-flex align-items-center justify-content-center p-0 me-1"
-                    style="width: 42px; height: 42px;" data-bs-toggle="offcanvas" data-bs-target="#wishlistOffcanvas"
+                    style="width: 40px; height: 40px;" data-bs-toggle="offcanvas" data-bs-target="#wishlistOffcanvas"
                     title="My Wishlist">
-                    <i class="ri-heart-3-line fs-4 text-danger"></i>
+                    <i class="ri-heart-3-line fs-5 text-danger"></i>
                     <span id="wishlistCount"
                         class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger font-monospace"
-                        style="font-size: 0.7rem;">0</span>
+                        style="font-size: 0.65rem;">0</span>
                 </button>
 
                 @auth
                     <!-- Customer Account Dropdown -->
                     <div class="dropdown">
                         <button
-                            class="btn btn-outline-warning text-dark rounded-pill px-3 fw-bold dropdown-toggle d-flex align-items-center gap-1 shadow-sm"
+                            class="btn btn-outline-warning text-dark rounded-pill px-2 px-sm-3 py-1.5 fw-bold dropdown-toggle d-flex align-items-center gap-1 shadow-sm"
                             type="button" data-bs-toggle="dropdown">
-                            <i class="ri-user-smile-line text-warning fs-5"></i> {{ auth()->user()->name }}
+                            <i class="ri-user-smile-line text-warning fs-5"></i> <span class="d-none d-sm-inline">{{ auth()->user()->name }}</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3">
                             <li><a class="dropdown-item py-2" href="{{ route('crackers.my-orders') }}"><i
@@ -535,16 +713,18 @@
                 @else
                     <!-- Customer Login / Register Button -->
                     <a href="{{ route('crackers.login-page') }}"
-                        class="btn btn-outline-warning text-dark rounded-pill px-3 fw-bold d-flex align-items-center gap-1 shadow-sm">
-                        <i class="ri-user-line text-warning fs-5"></i> Login / Register
+                        class="btn btn-outline-warning text-dark rounded-pill px-2 px-sm-3 py-1.5 fw-bold d-flex align-items-center gap-1 shadow-sm" style="font-size: 0.88rem;">
+                        <i class="ri-user-line text-warning fs-5"></i>
+                        <span class="d-none d-sm-inline">Login / Register</span>
+                        <span class="d-sm-none">Login</span>
                     </a>
                 @endauth
 
                 <!-- Cart Button -->
-                <button class="btn btn-warning rounded-pill px-3 py-2 fw-bold d-flex align-items-center gap-2 shadow-sm"
+                <button class="btn btn-warning rounded-pill px-2 px-sm-3 py-1.5 fw-bold d-flex align-items-center gap-1 gap-sm-2 shadow-sm"
                     data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas"
-                    style="background: var(--gold-gradient); color:#000;">
-                    <i class="ri-shopping-cart-fill fs-5"></i> Cart (<span id="cartCount">0</span>)
+                    style="background: var(--gold-gradient); color:#000; font-size: 0.88rem;">
+                    <i class="ri-shopping-cart-fill fs-5"></i> <span class="d-none d-sm-inline">Cart </span>(<span id="cartCount">0</span>)
                 </button>
             </div>
         </div>
@@ -1018,13 +1198,13 @@
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex align-items-center justify-content-end gap-2">
-                                        <button class="btn btn-sm btn-outline-danger rounded-circle p-2 btn-wishlist"
+                                        <button class="btn btn-sm btn-outline-danger btn-wishlist btn-wishlist-action"
                                             id="wishlistBtnList{{ $product->id }}"
                                             data-id="{{ $product->id }}"
                                             data-name="{{ $product->name }}"
                                             data-price="{{ $activePrice }}"
                                             onclick="event.stopPropagation(); toggleWishlistFromElement(this)"
-                                            title="Wishlist">
+                                            title="Add to Wishlist">
                                             <i class="ri-heart-line fs-5"></i>
                                         </button>
                                         @if($product->stock > 0)
@@ -1363,8 +1543,8 @@
                                     class="ri-facebook-fill fs-5"></i></a>
                             <a href="#" class="btn btn-outline-warning rounded-circle px-2 py-1"><i
                                     class="ri-instagram-line fs-5"></i></a>
-                            <a href="https://wa.me/919876543210" target="_blank"
-                                class="btn btn-outline-success rounded-circle px-2 py-1"><i
+                            <a href="{{ $settings->whatsapp_link }}" target="_blank"
+                                class="btn btn-outline-success rounded-circle px-2 py-1" title="WhatsApp Support ({{ $settings->formatted_whatsapp_number }})"><i
                                     class="ri-whatsapp-line fs-5"></i></a>
                             <a href="#" class="btn btn-outline-danger rounded-circle px-2 py-1"><i
                                     class="ri-youtube-fill fs-5"></i></a>
@@ -1437,8 +1617,11 @@
                                 <div><i class="ri-map-pin-line text-warning me-2 fs-6"></i> {{ $settings->support_address }}
                                 </div>
                             @endif
-                            @if($settings->support_phone)
-                                <div><i class="ri-phone-line text-warning me-2 fs-6"></i> {{ $settings->support_phone }}
+                            @if($settings->whatsapp_number)
+                                <div>
+                                    <a href="{{ $settings->whatsapp_link }}" target="_blank" class="text-dark text-decoration-none hover-warning">
+                                        <i class="ri-whatsapp-fill text-success me-2 fs-6"></i> WhatsApp: {{ $settings->formatted_whatsapp_number }}
+                                    </a>
                                 </div>
                             @endif
                             @if($settings->support_email)
@@ -2111,6 +2294,9 @@
                         if (cornerTotalVal) cornerTotalVal.innerText = '₹' + grandTotal.toFixed(2);
                         if (cornerToggleBtn) cornerToggleBtn.style.display = cart.length > 0 ? 'flex' : 'none';
 
+                        let mobileCartBadge = document.getElementById('mobileCartBadge');
+                        if (mobileCartBadge) mobileCartBadge.innerText = totalQty;
+
                         localStorage.setItem('crackers_cart', JSON.stringify(cart));
 
                         if (checkoutBtn) {
@@ -2271,9 +2457,11 @@
 
                     function updateWishlistUI() {
                         let countEl = document.getElementById('wishlistCount');
+                        let mobileWishlistBadge = document.getElementById('mobileWishlistBadge');
                         let list = document.getElementById('wishlistItemsList');
                         let footer = document.getElementById('wishlistFooter');
                         if (countEl) countEl.innerText = wishlist.length;
+                        if (mobileWishlistBadge) mobileWishlistBadge.innerText = wishlist.length;
 
                         if (footer) {
                             footer.style.display = wishlist.length > 0 ? 'block' : 'none';
@@ -2441,6 +2629,20 @@
                     window.updateWishlistUI = updateWishlistUI;
                     window.openProductQuickView = openProductQuickView;
 
+                    // Prevent navigating to checkout when cart is empty
+                    document.addEventListener('click', function(e) {
+                        let target = e.target.closest('#checkoutBtn, #rightCheckoutBtn, #cornerCheckoutBtn, a[href*="/crackers/checkout"]');
+                        if (target) {
+                            let currentCart = JSON.parse(localStorage.getItem('crackers_cart') || '[]');
+                            if (!currentCart || currentCart.length === 0) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                alert('Your shopping cart is empty! Please add crackers to your cart before proceeding to checkout.');
+                                return false;
+                            }
+                        }
+                    }, true);
+
                     // Initialize UI & Auto-slide Carousel every 5 seconds
                     updateCartUI();
                     updateWishlistUI();
@@ -2455,6 +2657,50 @@
                         carousel.cycle();
                     }
                 </script>
+    <!-- 📱 MOBILE BOTTOM NAVIGATION DOCK BAR (Shown on screens < 768px) -->
+    <div class="mobile-bottom-nav d-flex d-md-none align-items-center justify-content-around">
+        <a href="{{ route('crackers.storefront') }}" class="mobile-nav-link {{ request()->is('crackers') || request()->is('/') ? 'active' : '' }}">
+            <i class="ri-home-4-line"></i>
+            <span>Home</span>
+        </a>
+        <a href="#catalog" class="mobile-nav-link">
+            <i class="ri-fire-line"></i>
+            <span>Catalog</span>
+        </a>
+        <a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#wishlistOffcanvas" class="mobile-nav-link">
+            <i class="ri-heart-3-line"></i>
+            <span>Wishlist</span>
+            <span id="mobileWishlistBadge" class="position-absolute top-0 start-50 translate-middle-x badge rounded-pill bg-danger font-monospace" style="font-size: 0.65rem; margin-left: 12px; margin-top: 4px;">0</span>
+        </a>
+        <a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" class="mobile-nav-link">
+            <i class="ri-shopping-cart-line"></i>
+            <span>Cart</span>
+            <span id="mobileCartBadge" class="position-absolute top-0 start-50 translate-middle-x badge rounded-pill bg-warning text-dark font-monospace fw-bold" style="font-size: 0.65rem; margin-left: 12px; margin-top: 4px;">0</span>
+        </a>
+        @auth
+            <a href="{{ route('crackers.profile') }}" class="mobile-nav-link {{ request()->routeIs('crackers.profile') ? 'active' : '' }}">
+                <i class="ri-user-smile-line"></i>
+                <span>Account</span>
+            </a>
+        @else
+            <a href="{{ route('crackers.login-page') }}" class="mobile-nav-link {{ request()->routeIs('crackers.login-page') ? 'active' : '' }}">
+                <i class="ri-user-line"></i>
+                <span>Login</span>
+            </a>
+        @endauth
+    </div>
+
+    <!-- FLOATING WHATSAPP QUICK CHAT BUTTON -->
+    <a href="{{ $settings->whatsapp_link }}" target="_blank" 
+       class="position-fixed d-flex align-items-center justify-content-center text-white shadow-lg text-decoration-none" 
+       style="bottom: 85px; right: 20px; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); z-index: 1040; transition: transform 0.25s ease;"
+       onmouseover="this.style.transform='scale(1.1)'" 
+       onmouseout="this.style.transform='scale(1)'"
+       title="Chat on WhatsApp ({{ $settings->formatted_whatsapp_number }})">
+        <i class="ri-whatsapp-fill fs-2"></i>
+    </a>
+
+    @include('crackers.partials.celebration_blast')
 </body>
 
 </html>

@@ -132,47 +132,47 @@
               <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                 <i class="icon-base ri ri-home-smile-line icon-26px text-heading"></i>
               </span>
-              <a href="{{ url('dashboard') }}" class="stretched-link">Dashboard</a>
+              <a href="{{ route('dashboard') }}" class="stretched-link">Dashboard</a>
               <small>Overview</small>
             </div>
             <div class="dropdown-shortcuts-item col">
               <span class="dropdown-shortcuts-icon rounded-circle mb-3">
-                <i class="icon-base ri ri-file-list-3-line icon-26px text-heading"></i>
+                <i class="icon-base ri ri-shopping-bag-3-line icon-26px text-heading"></i>
               </span>
-              <a href="{{ url('loan/loan-applications') }}" class="stretched-link">Loan Applications</a>
-              <small>Manage Applications</small>
+              <a href="{{ route('admin.orders.index') }}" class="stretched-link">Orders</a>
+              <small>Manage Orders</small>
             </div>
           </div>
           <div class="row row-bordered overflow-visible g-0">
             <div class="dropdown-shortcuts-item col">
               <span class="dropdown-shortcuts-icon rounded-circle mb-3">
-                <i class="icon-base ri ri-hand-coin-line icon-26px text-heading"></i>
+                <i class="icon-base ri ri-fire-line icon-26px text-heading"></i>
               </span>
-              <a href="{{ url('loan/loan-products') }}" class="stretched-link">Loan Products</a>
-              <small>Product Catalog</small>
+              <a href="{{ route('admin.products.index') }}" class="stretched-link">Products</a>
+              <small>Cracker Catalog</small>
+            </div>
+            <div class="dropdown-shortcuts-item col">
+              <span class="dropdown-shortcuts-icon rounded-circle mb-3">
+                <i class="icon-base ri ri-printer-line icon-26px text-heading"></i>
+              </span>
+              <a href="{{ route('admin.pos.index') }}" class="stretched-link">POS Billing</a>
+              <small>Counter Sales</small>
+            </div>
+          </div>
+          <div class="row row-bordered overflow-visible g-0">
+            <div class="dropdown-shortcuts-item col">
+              <span class="dropdown-shortcuts-icon rounded-circle mb-3">
+                <i class="icon-base ri ri-user-line icon-26px text-heading"></i>
+              </span>
+              <a href="{{ route('admin.customers.index') }}" class="stretched-link">Customers</a>
+              <small>Manage Customers</small>
             </div>
             <div class="dropdown-shortcuts-item col">
               <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                 <i class="icon-base ri ri-settings-5-line icon-26px text-heading"></i>
               </span>
-              <a href="{{ url('loan/loan-types') }}" class="stretched-link">Loan Types</a>
-              <small>Configuration</small>
-            </div>
-          </div>
-          <div class="row row-bordered overflow-visible g-0">
-            <div class="dropdown-shortcuts-item col">
-              <span class="dropdown-shortcuts-icon rounded-circle mb-3">
-                <i class="icon-base ri ri-group-line icon-26px text-heading"></i>
-              </span>
-              <a href="{{ url('client-management') }}" class="stretched-link">Client Management</a>
-              <small>Manage Clients</small>
-            </div>
-            <div class="dropdown-shortcuts-item col">
-              <span class="dropdown-shortcuts-icon rounded-circle mb-3">
-                <i class="icon-base ri ri-shield-user-line icon-26px text-heading"></i>
-              </span>
-              <a href="{{ url('roles') }}" class="stretched-link">Roles & Permissions</a>
-              <small>Access Control</small>
+              <a href="{{ route('admin.payment-settings.edit') }}" class="stretched-link">Store Settings</a>
+              <small>Bank & Payment</small>
             </div>
           </div>
         </div>
@@ -509,6 +509,137 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+
+// ── Header Notifications Auto-Load & Click-Redirect Script ──────────────────
+document.addEventListener('DOMContentLoaded', function () {
+  var notifList = document.getElementById('notificationList');
+  var notifBadge = document.getElementById('notificationBadge');
+  var notifPulse = document.getElementById('notificationPulse');
+  var notifCount = document.getElementById('notificationCount');
+  var markAllReadBtn = document.getElementById('markAllRead');
+  var clearAllBtn = document.getElementById('clearAllNotifications');
+
+  if (!notifList) return;
+
+  window.loadHeaderNotifications = function() {
+    fetch("{{ route('admin-notifications.latest') }}", {
+      headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (!data.success) return;
+
+      var unread = data.unread_count || 0;
+      if (notifCount) notifCount.textContent = unread;
+
+      if (unread > 0) {
+        if (notifBadge) {
+          notifBadge.textContent = unread > 99 ? '99+' : unread;
+          notifBadge.style.display = 'inline-block';
+        }
+        if (notifPulse) notifPulse.style.display = 'block';
+      } else {
+        if (notifBadge) notifBadge.style.display = 'none';
+        if (notifPulse) notifPulse.style.display = 'none';
+      }
+
+      var items = data.notifications || [];
+      if (items.length === 0) {
+        notifList.innerHTML = '<div class="py-4 px-4 text-center text-muted"><i class="ri-notification-off-line fs-3 d-block mb-1"></i><span class="small">No notifications yet</span></div>';
+        return;
+      }
+
+      var html = '<ul class="list-group list-group-flush mb-0">';
+      items.forEach(function(n) {
+        var unreadClass = n.is_read ? '' : 'bg-label-primary font-weight-bold';
+        var linkUrl = n.link || "{{ route('admin-notifications') }}";
+        html += '<li class="list-group-item list-group-item-action p-3 notif-header-item ' + unreadClass + '" style="cursor: pointer;" data-id="' + n.id + '" data-link="' + linkUrl + '">';
+        html += '<div class="d-flex align-items-start gap-2">';
+        html += '<span class="avatar-initial rounded-circle bg-label-' + n.badge_color + ' flex-shrink-0" style="width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;"><i class="' + n.icon + '"></i></span>';
+        html += '<div class="flex-grow-1 overflow-hidden">';
+        html += '<div class="d-flex justify-content-between align-items-center mb-1">';
+        html += '<h6 class="mb-0 small fw-bold text-dark text-truncate" style="max-width: 170px;">' + n.title + '</h6>';
+        html += '<small class="text-muted text-nowrap" style="font-size: 11px;">' + n.created_at + '</small>';
+        html += '</div>';
+        html += '<p class="mb-0 text-muted small text-truncate" style="font-size: 12px;">' + n.message + '</p>';
+        html += '</div>';
+        html += '</div>';
+        html += '</li>';
+      });
+      html += '</ul>';
+
+      notifList.innerHTML = html;
+
+      // Click on any notification item -> mark read & redirect directly
+      notifList.querySelectorAll('.notif-header-item').forEach(function(el) {
+        el.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var id = el.dataset.id;
+          var link = el.dataset.link;
+          var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+          fetch("{{ url('admin/notifications') }}/" + id + "/mark-read", {
+            method: 'POST',
+            headers: {
+              'X-CSRF-TOKEN': csrf,
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          }).finally(function() {
+            window.location.href = link;
+          });
+        });
+      });
+    })
+    .catch(function(err) {
+      console.error('Error loading header notifications:', err);
+    });
+  };
+
+  window.loadHeaderNotifications();
+
+  if (markAllReadBtn) {
+    markAllReadBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+      fetch("{{ route('admin-notifications.mark-all-read') }}", {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': csrf,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }).then(function() {
+        window.loadHeaderNotifications();
+      });
+    });
+  }
+
+  if (clearAllBtn) {
+    clearAllBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (!confirm('Clear all read notifications?')) return;
+      var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+      fetch("{{ route('admin-notifications.clear-read') }}", {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': csrf,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }).then(function() {
+        window.loadHeaderNotifications();
+      });
+    });
+  }
+});
 </script>
 @endpush
 @endif
+
+@include('crackers.partials.celebration_blast')
+

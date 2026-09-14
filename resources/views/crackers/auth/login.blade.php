@@ -15,9 +15,9 @@
         /* CSS Variables for Light & Dark Mode */
         [data-theme="light"] {
             --bg-main: radial-gradient(circle at 50% 15%, #fffdf5 0%, #fef3c7 40%, #ffedd5 75%, #fed7aa 100%);
-            --card-bg: rgba(255, 255, 255, 0.92);
+            --card-bg: rgba(255, 255, 255, 0.94);
             --card-border: rgba(245, 158, 11, 0.35);
-            --card-shadow: 0 25px 50px -12px rgba(217, 119, 6, 0.2), 0 0 35px rgba(251, 146, 60, 0.25);
+            --card-shadow: 0 20px 45px -10px rgba(217, 119, 6, 0.22), 0 0 30px rgba(251, 146, 60, 0.2);
             --promo-bg: linear-gradient(155deg, #7c2d12 0%, #9a3412 45%, #c2410c 100%);
             --text-title: #0f172a;
             --text-body: #475569;
@@ -27,16 +27,16 @@
             --input-text: #0f172a;
             --gold-gradient: linear-gradient(135deg, #d97706 0%, #ea580c 50%, #dc2626 100%);
             --btn-text: #ffffff;
-            --btn-shadow: 0 10px 25px rgba(234, 88, 12, 0.35);
-            --switch-bg: rgba(255, 255, 255, 0.7);
+            --btn-shadow: 0 8px 20px rgba(234, 88, 12, 0.35);
+            --switch-bg: rgba(255, 255, 255, 0.85);
             --switch-border: rgba(217, 119, 6, 0.25);
         }
 
         [data-theme="dark"] {
             --bg-main: #07090e;
-            --card-bg: rgba(15, 20, 32, 0.88);
+            --card-bg: rgba(15, 20, 32, 0.92);
             --card-border: rgba(255, 183, 3, 0.28);
-            --card-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(255, 140, 0, 0.25);
+            --card-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 140, 0, 0.25);
             --promo-bg: linear-gradient(160deg, rgba(26, 32, 53, 0.98) 0%, rgba(13, 17, 28, 0.98) 100%);
             --text-title: #ffffff;
             --text-body: #94a3b8;
@@ -46,27 +46,49 @@
             --input-text: #ffffff;
             --gold-gradient: linear-gradient(135deg, #ffc107 0%, #ff8c00 50%, #ff3b00 100%);
             --btn-text: #000000;
-            --btn-shadow: 0 10px 30px rgba(255, 140, 0, 0.4);
-            --switch-bg: rgba(255, 255, 255, 0.05);
-            --switch-border: rgba(255, 255, 255, 0.1);
+            --btn-shadow: 0 8px 25px rgba(255, 140, 0, 0.4);
+            --switch-bg: rgba(255, 255, 255, 0.08);
+            --switch-border: rgba(255, 255, 255, 0.15);
         }
 
         * {
             box-sizing: border-box;
         }
 
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: var(--bg-main);
             color: var(--text-body);
-            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem 1rem;
             position: relative;
-            overflow-x: hidden;
             transition: background 0.4s ease;
+        }
+
+        /* Desktop specific: Strict 100vh fitting without scrollbar */
+        @media (min-width: 992px) {
+            body {
+                height: 100vh;
+                overflow: hidden;
+            }
+        }
+
+        /* Mobile fallback: Allow normal page scrolling */
+        @media (max-width: 991.98px) {
+            body {
+                height: auto;
+                min-height: 100vh;
+                overflow-y: auto;
+                padding: 1rem 0.5rem;
+            }
         }
 
         /* Fireworks Sky Shot Canvas */
@@ -92,24 +114,24 @@
         .glow-1 {
             top: -8%;
             left: -5%;
-            width: 450px;
-            height: 450px;
-            background: rgba(245, 158, 11, 0.22);
+            width: 400px;
+            height: 400px;
+            background: rgba(245, 158, 11, 0.2);
             animation: floatGlow 8s infinite alternate ease-in-out;
         }
 
         .glow-2 {
             bottom: -10%;
             right: -5%;
-            width: 500px;
-            height: 500px;
-            background: rgba(239, 68, 68, 0.18);
+            width: 450px;
+            height: 450px;
+            background: rgba(239, 68, 68, 0.16);
             animation: floatGlow 10s infinite alternate-reverse ease-in-out;
         }
 
         @keyframes floatGlow {
             0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(30px, 20px) scale(1.1); }
+            100% { transform: translate(25px, 15px) scale(1.08); }
         }
 
         /* Main Container Wrapper */
@@ -117,8 +139,19 @@
             position: relative;
             z-index: 2;
             width: 100%;
-            max-width: 1050px;
+            max-width: 1000px;
             margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (min-width: 992px) {
+            .auth-wrapper {
+                height: 100vh;
+                max-height: 100vh;
+                padding: 1.25rem;
+            }
         }
 
         .glass-card {
@@ -126,17 +159,25 @@
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border: 1px solid var(--card-border);
-            border-radius: 28px;
+            border-radius: 24px;
             box-shadow: var(--card-shadow);
             overflow: hidden;
+            width: 100%;
             transition: all 0.4s ease;
+            position: relative;
+        }
+
+        @media (min-width: 992px) {
+            .glass-card {
+                max-height: calc(100vh - 2.5rem);
+            }
         }
 
         /* Theme Switcher Top Floating Bar */
         .theme-switcher-bar {
             position: absolute;
-            top: 15px;
-            right: 20px;
+            top: 14px;
+            right: 18px;
             z-index: 10;
         }
 
@@ -144,29 +185,29 @@
             background: var(--switch-bg);
             border: 1px solid var(--switch-border);
             color: var(--text-title);
-            padding: 0.45rem 0.9rem;
+            padding: 0.35rem 0.8rem;
             border-radius: 50px;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             backdrop-filter: blur(10px);
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         }
 
         .btn-theme-toggle:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.25);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(245, 158, 11, 0.25);
         }
 
         /* Left Side Promo Banner */
         .promo-side {
             background: var(--promo-bg);
             border-right: 1px solid var(--card-border);
-            padding: 3.5rem 3rem;
+            padding: 2.25rem 2.25rem;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -180,7 +221,7 @@
             position: absolute;
             bottom: -20px;
             right: -20px;
-            font-size: 10rem;
+            font-size: 9rem;
             opacity: 0.08;
             pointer-events: none;
         }
@@ -188,65 +229,72 @@
         .brand-logo-badge {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             background: rgba(255, 255, 255, 0.12);
             border: 1px solid rgba(255, 255, 255, 0.25);
             border-radius: 50px;
-            padding: 0.5rem 1.25rem;
+            padding: 0.4rem 1.1rem;
             font-family: 'Outfit', sans-serif;
             font-weight: 800;
-            font-size: 1.35rem;
+            font-size: 1.15rem;
             color: #ffffff;
             backdrop-filter: blur(8px);
         }
 
         .brand-logo-badge i {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             color: #fbbf24;
         }
 
         .promo-heading {
             font-family: 'Outfit', sans-serif;
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 800;
             line-height: 1.25;
             color: #ffffff;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.6rem;
         }
 
         .promo-heading span {
             color: #fef08a;
-            text-shadow: 0 0 20px rgba(254, 240, 138, 0.4);
+            text-shadow: 0 0 15px rgba(254, 240, 138, 0.4);
+        }
+
+        .promo-desc {
+            font-size: 0.88rem;
+            line-height: 1.5;
+            margin-bottom: 0.85rem;
+            opacity: 0.9;
         }
 
         .feature-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.85rem;
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 16px;
-            padding: 1rem 1.25rem;
-            margin-bottom: 0.85rem;
+            border-radius: 14px;
+            padding: 0.6rem 0.9rem;
+            margin-bottom: 0.5rem;
             transition: all 0.3s ease;
         }
 
         .feature-item:hover {
             background: rgba(255, 255, 255, 0.16);
-            transform: translateX(6px);
+            transform: translateX(4px);
         }
 
         .feature-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             background: rgba(254, 240, 138, 0.2);
             color: #fef08a;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.35rem;
+            font-size: 1.15rem;
             flex-shrink: 0;
         }
 
@@ -255,46 +303,49 @@
             background: rgba(254, 240, 138, 0.18);
             border: 1px dashed rgba(254, 240, 138, 0.5);
             color: #fef08a;
-            border-radius: 12px;
-            padding: 0.65rem 1rem;
-            font-size: 0.85rem;
+            border-radius: 10px;
+            padding: 0.45rem 0.85rem;
+            font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             transition: all 0.3s ease;
-            margin-top: 0.5rem;
+            margin-top: 0.25rem;
         }
 
         .skyshot-trigger-btn:hover {
             background: rgba(254, 240, 138, 0.35);
-            transform: scale(1.03);
+            transform: scale(1.02);
             color: #ffffff;
         }
 
         /* Right Form Side */
         .form-side {
-            padding: 3.5rem 3rem;
+            padding: 2.25rem 2.5rem;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         @media (max-width: 991.98px) {
             .form-side {
-                padding: 2.5rem 1.75rem;
+                padding: 1.75rem 1.25rem;
             }
         }
 
         .back-home-btn {
             color: var(--text-body);
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             font-weight: 600;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             transition: color 0.2s ease;
-            margin-bottom: 1.75rem;
+            margin-bottom: 0.85rem;
         }
 
         .back-home-btn:hover {
@@ -303,27 +354,27 @@
 
         .auth-title {
             font-family: 'Outfit', sans-serif;
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 800;
             color: var(--text-title);
-            margin-bottom: 0.35rem;
+            margin-bottom: 0.2rem;
             letter-spacing: -0.5px;
         }
 
         .auth-subtitle {
             color: var(--text-body);
-            font-size: 0.95rem;
-            margin-bottom: 2rem;
+            font-size: 0.88rem;
+            margin-bottom: 1.25rem;
         }
 
         /* Custom Input Styling */
         .form-label-custom {
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             font-weight: 700;
-            letter-spacing: 0.6px;
+            letter-spacing: 0.5px;
             color: var(--text-body);
             text-transform: uppercase;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.35rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -333,7 +384,7 @@
             position: relative;
             background: var(--input-bg);
             border: 1.5px solid var(--input-border);
-            border-radius: 14px;
+            border-radius: 12px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
             display: flex;
@@ -342,13 +393,13 @@
 
         .input-group-custom:focus-within {
             border-color: #ea580c;
-            box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.15), 0 0 15px rgba(234, 88, 12, 0.2);
+            box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15), 0 0 12px rgba(234, 88, 12, 0.2);
         }
 
         .input-icon-box {
-            padding: 0.85rem 0.25rem 0.85rem 1.15rem;
+            padding: 0.65rem 0.25rem 0.65rem 0.95rem;
             color: #ea580c;
-            font-size: 1.35rem;
+            font-size: 1.2rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -358,9 +409,9 @@
             background: transparent !important;
             border: none !important;
             color: var(--input-text) !important;
-            font-size: 0.98rem;
+            font-size: 0.92rem;
             font-weight: 500;
-            padding: 0.85rem 1rem 0.85rem 0.65rem;
+            padding: 0.65rem 0.85rem 0.65rem 0.5rem;
             width: 100%;
             box-shadow: none !important;
         }
@@ -374,8 +425,8 @@
             background: transparent;
             border: none;
             color: var(--text-muted);
-            padding: 0 1.15rem;
-            font-size: 1.25rem;
+            padding: 0 0.95rem;
+            font-size: 1.15rem;
             cursor: pointer;
             transition: color 0.2s ease;
         }
@@ -390,11 +441,11 @@
             color: var(--btn-text);
             font-family: 'Outfit', sans-serif;
             font-weight: 800;
-            font-size: 1.08rem;
+            font-size: 0.98rem;
             letter-spacing: 0.5px;
             border: none;
             border-radius: 50px;
-            padding: 0.95rem 2rem;
+            padding: 0.75rem 1.75rem;
             width: 100%;
             box-shadow: var(--btn-shadow);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -426,15 +477,15 @@
 
         .btn-festive-glow:hover {
             transform: translateY(-2px);
-            box-shadow: 0 15px 35px rgba(234, 88, 12, 0.5);
+            box-shadow: 0 12px 28px rgba(234, 88, 12, 0.45);
             color: var(--btn-text);
         }
 
         .switch-auth-box {
             background: var(--switch-bg);
             border: 1px solid var(--switch-border);
-            border-radius: 16px;
-            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
             text-align: center;
         }
 
@@ -453,14 +504,14 @@
             background: rgba(239, 68, 68, 0.12);
             border: 1px solid rgba(239, 68, 68, 0.3);
             color: #b91c1c;
-            border-radius: 14px;
+            border-radius: 12px;
         }
 
         .alert-festive-success {
             background: rgba(34, 197, 94, 0.12);
             border: 1px solid rgba(34, 197, 94, 0.3);
             color: #15803d;
-            border-radius: 14px;
+            border-radius: 12px;
         }
     </style>
 </head>
@@ -475,16 +526,16 @@
 
     <!-- Main Auth Section -->
     <div class="auth-wrapper">
-        <!-- Floating Theme Switcher -->
-        <div class="theme-switcher-bar">
-            <button type="button" class="btn-theme-toggle" id="themeToggleBtn" title="Toggle Light / Dark Theme">
-                <i class="ri-sun-line" id="themeIcon"></i>
-                <span id="themeLabel">Light Mode</span>
-            </button>
-        </div>
-
         <div class="glass-card">
-            <div class="row g-0">
+            <!-- Floating Theme Switcher inside Card Header -->
+            <div class="theme-switcher-bar">
+                <button type="button" class="btn-theme-toggle" id="themeToggleBtn" title="Toggle Light / Dark Theme">
+                    <i class="ri-sun-line" id="themeIcon"></i>
+                    <span id="themeLabel">Light Mode</span>
+                </button>
+            </div>
+
+            <div class="row g-0 h-100 align-items-stretch">
 
                 <!-- Left Column: Festive Branding & Features -->
                 <div class="col-lg-5 d-none d-lg-flex promo-side">
@@ -497,7 +548,7 @@
                         <h2 class="promo-heading">
                             Light Up Your World with <span>Genuine Crackers</span>
                         </h2>
-                        <p class="mb-4 opacity-90" style="font-size: 0.95rem; line-height: 1.6;">
+                        <p class="promo-desc">
                             Experience festive fireworks with direct factory rates, doorstep delivery, and 100% green cracker guarantee.
                         </p>
 
@@ -505,78 +556,78 @@
                         <div class="feature-item">
                             <div class="feature-icon"><i class="ri-rocket-line"></i></div>
                             <div>
-                                <h6 class="fw-bold mb-0" style="font-size: 0.9rem;">Sky Shots & Fancy Crackers</h6>
-                                <span class="small opacity-80">Premium high-altitude sky bursts & glitter effects</span>
+                                <h6 class="fw-bold mb-0" style="font-size: 0.85rem;">Sky Shots & Fancy Crackers</h6>
+                                <span class="small opacity-80" style="font-size: 0.75rem;">Premium high-altitude sky bursts & glitter effects</span>
                             </div>
                         </div>
 
                         <div class="feature-item">
                             <div class="feature-icon"><i class="ri-percent-line"></i></div>
                             <div>
-                                <h6 class="fw-bold mb-0" style="font-size: 0.9rem;">Wholesale & Retail Discounts</h6>
-                                <span class="small opacity-80">Direct Sivakasi manufacturer pricing save up to 80%</span>
+                                <h6 class="fw-bold mb-0" style="font-size: 0.85rem;">Wholesale & Retail Discounts</h6>
+                                <span class="small opacity-80" style="font-size: 0.75rem;">Direct Sivakasi manufacturer pricing save up to 80%</span>
                             </div>
                         </div>
 
                         <div class="feature-item">
                             <div class="feature-icon"><i class="ri-truck-line"></i></div>
                             <div>
-                                <h6 class="fw-bold mb-0" style="font-size: 0.9rem;">Express Safe Transport</h6>
-                                <span class="small opacity-80">Damage-proof box packing & live delivery updates</span>
+                                <h6 class="fw-bold mb-0" style="font-size: 0.85rem;">Express Safe Transport</h6>
+                                <span class="small opacity-80" style="font-size: 0.75rem;">Damage-proof box packing & live delivery updates</span>
                             </div>
                         </div>
 
                         <!-- Interactive Sky Shot Launcher Button -->
                         <button type="button" class="skyshot-trigger-btn" id="launchSkyShotBtn">
-                            <i class="ri-sparkling-fill fs-5"></i>
+                            <i class="ri-sparkling-fill fs-6"></i>
                             <span>Launch Sky Shot Cracker Blast! 🎆</span>
                         </button>
                     </div>
 
-                    <div class="pt-3 border-top border-white border-opacity-25 d-flex align-items-center gap-2 text-warning small fw-semibold">
+                    <div class="pt-2 mt-2 border-top border-white border-opacity-25 d-flex align-items-center gap-2 text-warning small fw-semibold">
                         <span class="spinner-grow spinner-grow-sm text-warning" role="status"></span>
-                        <span>Diwali & Festive Mega Sale is LIVE!</span>
+                        <span style="font-size: 0.78rem;">Diwali & Festive Mega Sale is LIVE!</span>
                     </div>
                 </div>
 
                 <!-- Right Column: Login Form -->
                 <div class="col-lg-7 form-side">
                     <!-- Top Navigation Link -->
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center me-5">
                         <a href="{{ route('crackers.storefront') }}" class="back-home-btn">
                             <i class="ri-arrow-left-line"></i> Back to Store
                         </a>
-                        <div class="d-lg-none">
-                            <a href="{{ route('crackers.storefront') }}" class="fw-bold text-danger text-decoration-none" style="font-family: 'Outfit', sans-serif;">
+                        <div class="d-lg-none me-4">
+                            <a href="{{ route('crackers.storefront') }}" class="fw-bold text-danger text-decoration-none" style="font-family: 'Outfit', sans-serif; font-size: 0.95rem;">
                                 <i class="ri-fire-fill me-1 text-warning"></i> {{ $settings->company_name ?: 'S.R. TRADERS' }}
                             </a>
                         </div>
                     </div>
 
                     <!-- Header -->
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <h1 class="auth-title">Customer Login</h1>
                         <p class="auth-subtitle">Enter your Mobile Number / Email and Password</p>
                     </div>
 
                     <!-- Flash Alerts -->
                     @if(session('error'))
-                        <div class="alert alert-festive-danger alert-dismissible fade show p-3 mb-4" role="alert">
-                            <div class="d-flex align-items-center">
-                                <i class="ri-error-warning-fill me-2 fs-5"></i>
+                        <div class="alert alert-festive-danger alert-dismissible fade show p-2 px-3 mb-3" role="alert">
+                            <div class="d-flex align-items-center small">
+                                <i class="ri-error-warning-fill me-2 fs-6"></i>
                                 <div>{{ session('error') }}</div>
                             </div>
-                            <button type="button" class="btn-close py-3" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
 
                     @if(session('success'))
-                        <div class="alert alert-festive-success alert-dismissible fade show p-3 mb-4" role="alert">
-                            <div class="d-flex align-items-center">
-                                <i class="ri-checkbox-circle-fill me-2 fs-5"></i>
+                        <div class="alert alert-festive-success alert-dismissible fade show p-2 px-3 mb-3" role="alert">
+                            <div class="d-flex align-items-center small">
+                                <i class="ri-checkbox-circle-fill me-2 fs-6"></i>
                                 <div>{{ session('success') }}</div>
                             </div>
-                            <button type="button" class="btn-close py-3" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
 
@@ -585,7 +636,7 @@
                         @csrf
 
                         <!-- Mobile / Email Field -->
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label class="form-label-custom">
                                 <span>Mobile Number or Email <span class="text-danger">*</span></span>
                             </label>
@@ -604,7 +655,7 @@
                         </div>
 
                         <!-- Password Field -->
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label class="form-label-custom">
                                 <span>Password <span class="text-danger">*</span></span>
                             </label>
@@ -625,26 +676,26 @@
                         </div>
 
                         <!-- Options: Remember Me -->
-                        <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="form-check d-flex align-items-center gap-2 mb-0 ps-0">
-                                <input class="form-check-input ms-0" type="checkbox" name="remember" id="rememberMe" checked style="width: 18px; height: 18px; cursor: pointer;">
-                                <label class="form-check-label fw-semibold cursor-pointer small" for="rememberMe">
+                                <input class="form-check-input ms-0" type="checkbox" name="remember" id="rememberMe" checked style="width: 16px; height: 16px; cursor: pointer;">
+                                <label class="form-check-label fw-semibold cursor-pointer small" for="rememberMe" style="font-size: 0.82rem;">
                                     Keep me logged in
                                 </label>
                             </div>
                         </div>
 
                         <!-- Submit Festive Button -->
-                        <button type="submit" class="btn btn-festive-glow mb-4" id="submitLoginBtn">
+                        <button type="submit" class="btn btn-festive-glow mb-3" id="submitLoginBtn">
                             <span>LOG IN TO STORE</span>
-                            <i class="ri-arrow-right-line ms-2 fs-5 align-middle"></i>
+                            <i class="ri-arrow-right-line ms-2 fs-6 align-middle"></i>
                         </button>
                     </form>
 
                     <!-- Account Switch Box -->
                     <div class="switch-auth-box">
-                        <span class="small">Don't have an account yet?</span>
-                        <a href="{{ route('crackers.register-page') }}" class="switch-link small ms-1">
+                        <span class="small" style="font-size: 0.82rem;">Don't have an account yet?</span>
+                        <a href="{{ route('crackers.register-page') }}" class="switch-link small ms-1" style="font-size: 0.82rem;">
                             CREATE NEW ACCOUNT <i class="ri-user-add-line ms-1 align-middle"></i>
                         </a>
                     </div>
@@ -870,12 +921,44 @@
                 });
             }
 
-            // Submit Button Burst
+            // Submit Button & Form Cracker Blast Handler
+            const loginForm = document.getElementById('loginForm');
             const submitBtn = document.getElementById('submitLoginBtn');
-            if (submitBtn) {
-                submitBtn.addEventListener('click', function (e) {
-                    const rect = submitBtn.getBoundingClientRect();
-                    createExplosion(rect.left + rect.width / 2, rect.top, '#ffb703');
+            let isSubmitting = false;
+
+            if (loginForm) {
+                loginForm.addEventListener('submit', function (e) {
+                    if (isSubmitting) return;
+                    e.preventDefault();
+                    isSubmitting = true;
+
+                    const rect = submitBtn ? submitBtn.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0 };
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top;
+
+                    // Explosive particle bursts at button location
+                    createExplosion(centerX, centerY, '#ffb703');
+                    createExplosion(centerX - 40, centerY, '#ff5400');
+                    createExplosion(centerX + 40, centerY, '#00f5d4');
+
+                    // Launch rapid sky shots barrage across screen
+                    for (let i = 0; i < 7; i++) {
+                        setTimeout(() => {
+                            launchSkyShot(canvas.width * 0.15 + (i * 0.11 * canvas.width), canvas.height * 0.12 + (Math.random() * 0.3 * canvas.height));
+                        }, i * 85);
+                    }
+
+                    // Button visual feedback
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '<span>CELEBRATING & LOGGING IN... 🎆</span>';
+                        submitBtn.style.transform = 'scale(0.98)';
+                        submitBtn.style.opacity = '0.9';
+                    }
+
+                    // Submit form after cracker blast burst
+                    setTimeout(function() {
+                        loginForm.submit();
+                    }, 750);
                 });
             }
 
@@ -887,5 +970,6 @@
             });
         });
     </script>
+    @include('crackers.partials.celebration_blast')
 </body>
 </html>

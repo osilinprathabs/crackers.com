@@ -34,6 +34,7 @@ class ExpenseController extends Controller
 
     public function index(Request $request)
     {
+        BankAccount::syncStoreBankAccounts();
         if(Auth::user()->can('manage-expenses')){
             $query = Expense::with(['category:id,category_name', 'bankAccount:id,account_name', 'chartOfAccount:id,account_code,account_name', 'approvedBy:id,name'])
                 ->select('id', 'expense_number', 'expense_date', 'category_id', 'bank_account_id', 'chart_of_account_id', 'amount', 'description', 'reference_number', 'status', 'approved_by', 'created_at')

@@ -42,7 +42,7 @@ class KycRule implements ValidationRule
             'aadhaar' => "The {$attribute} must be a valid 12-digit Aadhaar number.",
             'pan'     => "The {$attribute} must be a valid PAN number (e.g., ABCDE1234F).",
             'bank'    => "The {$attribute} must be a valid bank account number (9–18 digits).",
-            'ifsc'    => "The {$attribute} must be a valid IFSC code (e.g., HDFC0001234).",
+            'ifsc'    => "The {$attribute} must be a valid IFSC code (e.g., SBIN0001234).",
             'pan_name' => "The {$attribute} must contain only letters and spaces (as per PAN name).",
             'pan_dob'  => "The {$attribute} must be a valid date in DD/MM/YYYY format (as per PAN DOB).",
             default   => "Invalid value for {$attribute}.",
