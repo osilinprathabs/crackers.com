@@ -194,8 +194,8 @@
                                     <label class="form-label small fw-semibold mb-1">Upload Product Photos (Up to 4 Images)</label>
                                     <input type="file" name="images[]" class="form-control form-control-sm" accept="image/*" multiple>
                                     <div id="currentPhotosContainer" class="mt-2" style="display: none;">
-                                        <span class="small text-muted me-1">Current Photos:</span>
-                                        <div id="currentPhotosList" class="d-inline-flex gap-1 flex-wrap align-items-center"></div>
+                                        <span class="small text-muted me-1 d-block mb-1">Existing Photos (Click <i class="ri-close-circle-fill text-danger ms-1 me-1"></i> to remove):</span>
+                                        <div id="currentPhotosList" class="d-flex gap-2 flex-wrap align-items-center pt-1"></div>
                                     </div>
                                 </div>
                             </div>
@@ -270,6 +270,43 @@
 
 @section('page-script')
 <script>
+let currentKeptImages = [];
+
+function renderExistingPhotos() {
+    let container = document.getElementById('currentPhotosContainer');
+    let list = document.getElementById('currentPhotosList');
+    list.innerHTML = '';
+
+    if (currentKeptImages && currentKeptImages.length > 0) {
+        currentKeptImages.forEach((imgUrl, index) => {
+            let src = imgUrl.startsWith('http') || imgUrl.startsWith('/') ? imgUrl : '/' + imgUrl.replace(/^\//, '');
+            let wrapper = document.createElement('div');
+            wrapper.className = 'position-relative d-inline-block rounded border p-1 bg-white shadow-sm';
+            wrapper.style.width = '55px';
+            wrapper.style.height = '55px';
+
+            wrapper.innerHTML = `
+                <img src="${src}" class="rounded w-100 h-100" style="object-fit: cover;">
+                <input type="hidden" name="keep_images[]" value="${imgUrl}">
+                <button type="button" class="btn btn-danger btn-xs position-absolute top-0 end-0 rounded-circle p-0 d-flex align-items-center justify-content-center shadow-sm" 
+                        style="width: 20px; height: 20px; transform: translate(35%, -35%); z-index: 5;"
+                        onclick="removeExistingPhoto(${index})" title="Remove this photo">
+                    <i class="ri-close-line fs-6"></i>
+                </button>
+            `;
+            list.appendChild(wrapper);
+        });
+        container.style.display = 'block';
+    } else {
+        container.style.display = 'none';
+    }
+}
+
+function removeExistingPhoto(index) {
+    currentKeptImages.splice(index, 1);
+    renderExistingPhotos();
+}
+
 function openAddProductModal() {
     document.getElementById('productForm').action = "{{ route('admin.products.store') }}";
     document.getElementById('productFormMethod').value = "POST";
@@ -278,7 +315,8 @@ function openAddProductModal() {
     document.getElementById('submitBtnText').innerText = "Save Product";
     
     document.getElementById('productForm').reset();
-    document.getElementById('currentPhotosContainer').style.display = 'none';
+    currentKeptImages = [];
+    renderExistingPhotos();
 
     let modalEl = document.getElementById('productModal');
     let bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -306,14 +344,14 @@ function openEditProductModal(product) {
     document.getElementById('prodFeatured').checked = Boolean(product.is_featured);
     document.getElementById('prodStatus').checked = Boolean(product.status);
 
-    let container = document.getElementById('currentPhotosContainer');
-    let list = document.getElementById('currentPhotosList');
-    if (product.images && product.images.length > 0) {
-        list.innerHTML = product.images.map(img => `<img src="/${img.replace(/^\//, '')}" class="rounded border p-1" width="36" height="36" style="object-fit: cover;">`).join('');
-        container.style.display = 'block';
+    if (Array.isArray(product.images) && product.images.length > 0) {
+        currentKeptImages = [...product.images];
+    } else if (product.image) {
+        currentKeptImages = [product.image];
     } else {
-        container.style.display = 'none';
+        currentKeptImages = [];
     }
+    renderExistingPhotos();
 
     let modalEl = document.getElementById('productModal');
     let bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);

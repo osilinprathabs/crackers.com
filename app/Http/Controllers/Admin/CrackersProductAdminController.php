@@ -124,6 +124,7 @@ class CrackersProductAdminController extends Controller
             'image_url' => 'nullable|url',
             'images.*' => 'nullable|image|max:3072',
             'image_urls' => 'nullable|array',
+            'keep_images' => 'nullable|array',
         ]);
 
         $product->name = $validated['name'];
@@ -140,7 +141,9 @@ class CrackersProductAdminController extends Controller
         $product->is_featured = $request->has('is_featured');
         $product->status = $request->has('status');
 
-        $uploadedImages = $product->images ?: [];
+        // Existing images that were retained by the user
+        $uploadedImages = $request->has('keep_images') && is_array($request->keep_images) ? array_values($request->keep_images) : [];
+
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('products', 'public');
             $mainImg = Storage::url($path);
@@ -164,10 +167,9 @@ class CrackersProductAdminController extends Controller
             }
         }
 
-        if (!empty($uploadedImages)) {
-            $product->image = $uploadedImages[0];
-            $product->images = array_values(array_unique(array_slice($uploadedImages, 0, 4)));
-        }
+        $finalImages = array_values(array_unique(array_slice($uploadedImages, 0, 4)));
+        $product->images = $finalImages;
+        $product->image = !empty($finalImages) ? $finalImages[0] : null;
 
         $product->save();
 

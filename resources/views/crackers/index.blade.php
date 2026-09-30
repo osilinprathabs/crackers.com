@@ -200,33 +200,36 @@
             border-color: var(--primary-color) !important;
         }
 
-        .navbar-festive {
-            background: var(--nav-bg);
-            border-bottom: 1px solid
-                {{ $websiteColor }}
-                30;
-            padding: 1rem 0;
+        .header-sticky-wrapper {
             position: sticky;
             top: 0;
             z-index: 1000;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        [data-bs-theme="dark"] .header-sticky-wrapper {
+            background: rgba(15, 23, 42, 0.96) !important;
+            border-bottom-color: rgba(255, 255, 255, 0.1) !important;
         }
 
         .nav-header-bar {
-            background-color:
-                {{ $websiteColor }}
-            ;
-            border-bottom: 3px solid rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
+            background: transparent;
+            border-top: 1px solid rgba(148, 163, 184, 0.12);
+            position: relative;
             z-index: 999;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: none;
         }
 
         .nav-header-link {
-            color: #ffffff;
-            font-weight: 700;
+            color: var(--text-main, #1e293b);
+            font-weight: 600;
             font-size: 0.95rem;
-            padding: 0.6rem 1.25rem;
+            padding: 0.5rem 1rem;
             border-radius: 50px;
             text-decoration: none;
             transition: all 0.25s ease;
@@ -236,9 +239,9 @@
         }
 
         .nav-header-link:hover {
-            background: rgba(255, 255, 255, 0.25);
-            color: #ffffff !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: rgba(124, 58, 237, 0.08);
+            color: var(--primary-color, #7c3aed) !important;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.12);
         }
 
         .brand-logo {
@@ -618,152 +621,155 @@
         </div>
     </div>
 
-    <!-- 2. MAIN BRANDING & ACTION HEADER -->
-    <header class="py-3 bg-white border-bottom shadow-sm">
-        <div class="container d-flex align-items-center justify-content-between flex-wrap gap-3">
-            <!-- Brand Logo & Company Slogan -->
-            <a class="navbar-brand brand-logo text-decoration-none d-flex align-items-center gap-2"
-                href="{{ route('crackers.storefront') }}">
-                @if(isset($appearance) && !empty($appearance->logo))
-                    <img src="{{ asset('storage/' . $appearance->logo) }}" alt="Logo" class="img-fluid"
-                        style="max-height: 48px; max-width: 160px; object-fit: contain;">
-                @else
-                    <i class="ri-fire-fill text-warning fs-1"></i>
-                @endif
-                <div>
-                    <span class="brand-font fw-bold d-block"
-                        style="font-size: 1.85rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        {{ $settings->company_name ?: ($companyDetail->company_name ?? 'S.R. TRADERS') }}
-                    </span>
-                    <small class="d-block text-muted small fst-italic" style="font-size: 0.75rem; margin-top: -6px;">
-                        {{ $companyDetail->company_slogan ?? ($appearance->subtitle ?? 'Festive Fireworks Direct Store') }}
-                    </small>
-                </div>
-            </a>
+    <!-- 2. UNIFIED STICKY E-COMMERCE HEADER CONTAINER -->
+    <div class="header-sticky-wrapper sticky-top">
+        <!-- MAIN BRANDING & ACTION HEADER -->
+        <header class="py-2.5 py-md-3">
+            <div class="container d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <!-- Brand Logo & Company Slogan -->
+                <a class="navbar-brand brand-logo text-decoration-none d-flex align-items-center gap-2"
+                    href="{{ route('crackers.storefront') }}">
+                    @if(isset($appearance) && !empty($appearance->logo))
+                        <img src="{{ asset('storage/' . $appearance->logo) }}" alt="Logo" class="img-fluid"
+                            style="max-height: 48px; max-width: 160px; object-fit: contain;">
+                    @else
+                        <i class="ri-fire-fill text-warning fs-1"></i>
+                    @endif
+                    <div>
+                        <span class="brand-font fw-bold d-block"
+                            style="font-size: 1.85rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                            {{ $settings->company_name ?: ($companyDetail->company_name ?? 'S.R. TRADERS') }}
+                        </span>
+                        <small class="d-block text-muted small fst-italic" style="font-size: 0.75rem; margin-top: -6px;">
+                            {{ $companyDetail->company_slogan ?? ($appearance->subtitle ?? 'Festive Fireworks Direct Store') }}
+                        </small>
+                    </div>
+                </a>
 
-            <!-- Search Input Bar (Desktop) -->
-            <form method="GET" action="{{ route('crackers.storefront') }}"
-                class="d-none d-md-flex align-items-center gap-2 flex-grow-1 mx-lg-5" style="max-width: 420px;">
-                <input type="hidden" name="type" value="{{ $customerType }}">
-                <input type="hidden" name="category" value="{{ $category }}">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control rounded-start-pill ps-3"
-                        placeholder="Search crackers, sparklers..." value="{{ $search }}">
-                    <button type="submit" class="btn btn-warning rounded-end-pill px-3"
-                        style="background: var(--gold-gradient); color:#000;"><i
-                            class="ri-search-line fw-bold"></i></button>
-                </div>
-            </form>
-
-            <!-- Mobile Search Bar (< md) -->
-            <div class="w-100 d-md-none mt-1">
-                <form method="GET" action="{{ route('crackers.storefront') }}">
+                <!-- Search Input Bar (Desktop) -->
+                <form method="GET" action="{{ route('crackers.storefront') }}"
+                    class="d-none d-md-flex align-items-center gap-2 flex-grow-1 mx-lg-5" style="max-width: 420px;">
                     <input type="hidden" name="type" value="{{ $customerType }}">
                     <input type="hidden" name="category" value="{{ $category }}">
                     <div class="input-group">
-                        <input type="text" name="search" class="form-control rounded-start-pill ps-3 fs-6"
+                        <input type="text" name="search" class="form-control rounded-start-pill ps-3"
                             placeholder="Search crackers, sparklers..." value="{{ $search }}">
                         <button type="submit" class="btn btn-warning rounded-end-pill px-3"
                             style="background: var(--gold-gradient); color:#000;"><i
                                 class="ri-search-line fw-bold"></i></button>
                     </div>
                 </form>
+
+                <!-- Mobile Search Bar (< md) -->
+                <div class="w-100 d-md-none mt-1">
+                    <form method="GET" action="{{ route('crackers.storefront') }}">
+                        <input type="hidden" name="type" value="{{ $customerType }}">
+                        <input type="hidden" name="category" value="{{ $category }}">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control rounded-start-pill ps-3 fs-6"
+                                placeholder="Search crackers, sparklers..." value="{{ $search }}">
+                            <button type="submit" class="btn btn-warning rounded-end-pill px-3"
+                                style="background: var(--gold-gradient); color:#000;"><i
+                                    class="ri-search-line fw-bold"></i></button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex align-items-center gap-1 gap-sm-3">
+                    <!-- Wishlist Icon Button -->
+                    <button
+                        class="btn btn-light border rounded-circle shadow-sm position-relative d-flex align-items-center justify-content-center p-0 me-1"
+                        style="width: 40px; height: 40px;" data-bs-toggle="offcanvas" data-bs-target="#wishlistOffcanvas"
+                        title="My Wishlist">
+                        <i class="ri-heart-3-line fs-5 text-danger"></i>
+                        <span id="wishlistCount"
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger font-monospace"
+                            style="font-size: 0.65rem;">0</span>
+                    </button>
+
+                    @auth
+                        <!-- Customer Account Dropdown -->
+                        <div class="dropdown">
+                            <button
+                                class="btn btn-outline-warning text-dark rounded-pill px-2 px-sm-3 py-1.5 fw-bold dropdown-toggle d-flex align-items-center gap-1 shadow-sm"
+                                type="button" data-bs-toggle="dropdown">
+                                <i class="ri-user-smile-line text-warning fs-5"></i> <span class="d-none d-sm-inline">{{ auth()->user()->name }}</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3">
+                                <li><a class="dropdown-item py-2" href="{{ route('crackers.my-orders') }}"><i
+                                            class="ri-shopping-bag-3-line text-warning me-2 fs-5 align-middle"></i> My
+                                        Orders</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('crackers.profile') }}"><i
+                                            class="ri-user-settings-line text-primary me-2 fs-5 align-middle"></i> My Profile &
+                                        Address</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <form action="{{ route('crackers.logout') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item py-2 text-danger"><i
+                                                class="ri-logout-box-r-line me-2 fs-5 align-middle"></i> Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    @else
+                        <!-- Customer Login / Register Button -->
+                        <a href="{{ route('crackers.login-page') }}"
+                            class="btn btn-outline-warning text-dark rounded-pill px-2 px-sm-3 py-1.5 fw-bold d-flex align-items-center gap-1 shadow-sm" style="font-size: 0.88rem;">
+                            <i class="ri-user-line text-warning fs-5"></i>
+                            <span class="d-none d-sm-inline">Login / Register</span>
+                            <span class="d-sm-none">Login</span>
+                        </a>
+                    @endauth
+
+                    <!-- Cart Button -->
+                    <button class="btn btn-warning rounded-pill px-2 px-sm-3 py-1.5 fw-bold d-flex align-items-center gap-1 gap-sm-2 shadow-sm"
+                        data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas"
+                        style="background: var(--gold-gradient); color:#000; font-size: 0.88rem;">
+                        <i class="ri-shopping-cart-fill fs-5"></i> <span class="d-none d-sm-inline">Cart </span>(<span id="cartCount">0</span>)
+                    </button>
+                </div>
             </div>
+        </header>
 
-            <!-- Action Buttons -->
-            <div class="d-flex align-items-center gap-1 gap-sm-3">
-                <!-- Wishlist Icon Button -->
-                <button
-                    class="btn btn-light border rounded-circle shadow-sm position-relative d-flex align-items-center justify-content-center p-0 me-1"
-                    style="width: 40px; height: 40px;" data-bs-toggle="offcanvas" data-bs-target="#wishlistOffcanvas"
-                    title="My Wishlist">
-                    <i class="ri-heart-3-line fs-5 text-danger"></i>
-                    <span id="wishlistCount"
-                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger font-monospace"
-                        style="font-size: 0.65rem;">0</span>
-                </button>
+        <!-- 3. DEDICATED NAVIGATION HEADER BAR -->
+        <div class="nav-header-bar py-1.5">
+            <div class="container d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <!-- Dedicated Navigation Bar Header Links -->
+                <div class="d-flex align-items-center gap-1 gap-md-2 overflow-x-auto py-1">
+                    <a class="nav-header-link" href="#home">
+                        <i class="ri-home-4-line text-warning me-1"></i> Home
+                    </a>
+                    <a class="nav-header-link" href="#catalog">
+                        <i class="ri-fire-line text-warning me-1"></i> Products & Categories
+                    </a>
+                    <a class="nav-header-link" href="#about-us">
+                        <i class="ri-information-line text-warning me-1"></i> About Us
+                    </a>
+                    <a class="nav-header-link" href="#safety-tips">
+                        <i class="ri-shield-cross-line text-warning me-1"></i> Safety Tips (Do's & Don'ts)
+                    </a>
+                </div>
 
-                @auth
-                    <!-- Customer Account Dropdown -->
-                    <div class="dropdown">
-                        <button
-                            class="btn btn-outline-warning text-dark rounded-pill px-2 px-sm-3 py-1.5 fw-bold dropdown-toggle d-flex align-items-center gap-1 shadow-sm"
-                            type="button" data-bs-toggle="dropdown">
-                            <i class="ri-user-smile-line text-warning fs-5"></i> <span class="d-none d-sm-inline">{{ auth()->user()->name }}</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3">
-                            <li><a class="dropdown-item py-2" href="{{ route('crackers.my-orders') }}"><i
-                                        class="ri-shopping-bag-3-line text-warning me-2 fs-5 align-middle"></i> My
-                                    Orders</a></li>
-                            <li><a class="dropdown-item py-2" href="{{ route('crackers.profile') }}"><i
-                                        class="ri-user-settings-line text-primary me-2 fs-5 align-middle"></i> My Profile &
-                                    Address</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <form action="{{ route('crackers.logout') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item py-2 text-danger"><i
-                                            class="ri-logout-box-r-line me-2 fs-5 align-middle"></i> Logout</button>
-                                </form>
-                            </li>
-                        </ul>
+                <!-- Store Mode Switcher -->
+                <div class="d-flex align-items-center gap-2 py-1">
+                    <span class="small fw-bold me-1" style="color: var(--text-main);"><i class="ri-store-3-line text-warning me-1"></i>Store
+                        Mode:</span>
+                    <div class="store-mode-container shadow-sm">
+                        <a href="{{ route('crackers.storefront', ['type' => 'retail', 'category' => $category, 'search' => $search]) }}"
+                            class="store-mode-pill {{ $customerType === 'retail' ? 'active-retail' : 'inactive' }}"
+                            onclick="try{localStorage.setItem('crackers_store_mode','retail');}catch(e){}">
+                            🛍️ Retail Store
+                        </a>
+                        <a href="{{ route('crackers.storefront', ['type' => 'wholesale', 'category' => $category, 'search' => $search]) }}"
+                            class="store-mode-pill {{ $customerType === 'wholesale' ? 'active-wholesale' : 'inactive' }}"
+                            onclick="try{localStorage.setItem('crackers_store_mode','wholesale');}catch(e){}">
+                            🏭 Wholesale Bulk
+                        </a>
                     </div>
-                @else
-                    <!-- Customer Login / Register Button -->
-                    <a href="{{ route('crackers.login-page') }}"
-                        class="btn btn-outline-warning text-dark rounded-pill px-2 px-sm-3 py-1.5 fw-bold d-flex align-items-center gap-1 shadow-sm" style="font-size: 0.88rem;">
-                        <i class="ri-user-line text-warning fs-5"></i>
-                        <span class="d-none d-sm-inline">Login / Register</span>
-                        <span class="d-sm-none">Login</span>
-                    </a>
-                @endauth
-
-                <!-- Cart Button -->
-                <button class="btn btn-warning rounded-pill px-2 px-sm-3 py-1.5 fw-bold d-flex align-items-center gap-1 gap-sm-2 shadow-sm"
-                    data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas"
-                    style="background: var(--gold-gradient); color:#000; font-size: 0.88rem;">
-                    <i class="ri-shopping-cart-fill fs-5"></i> <span class="d-none d-sm-inline">Cart </span>(<span id="cartCount">0</span>)
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- 3. DEDICATED SEPARATE MAIN NAVIGATION HEADER BAR -->
-    <div class="nav-header-bar py-2">
-        <div class="container d-flex align-items-center justify-content-between flex-wrap gap-2">
-            <!-- Dedicated Navigation Bar Header Links -->
-            <div class="d-flex align-items-center gap-1 gap-md-2 overflow-x-auto py-1">
-                <a class="nav-header-link" href="#home">
-                    <i class="ri-home-4-line text-warning me-1"></i> Home
-                </a>
-                <a class="nav-header-link" href="#catalog">
-                    <i class="ri-fire-line text-warning me-1"></i> Products & Categories
-                </a>
-                <a class="nav-header-link" href="#about-us">
-                    <i class="ri-information-line text-warning me-1"></i> About Us
-                </a>
-                <a class="nav-header-link" href="#safety-tips">
-                    <i class="ri-shield-cross-line text-warning me-1"></i> Safety Tips (Do's & Don'ts)
-                </a>
-            </div>
-
-            <!-- Store Mode Switcher -->
-            <div class="d-flex align-items-center gap-2 py-1">
-                <span class="small text-light fw-bold me-1"><i class="ri-store-3-line text-warning me-1"></i>Store
-                    Mode:</span>
-                <div class="store-mode-container shadow-sm">
-                    <a href="{{ route('crackers.storefront', ['type' => 'retail', 'category' => $category, 'search' => $search]) }}"
-                        class="store-mode-pill {{ $customerType === 'retail' ? 'active-retail' : 'inactive' }}"
-                        onclick="try{localStorage.setItem('crackers_store_mode','retail');}catch(e){}">
-                        🛍️ Retail Store
-                    </a>
-                    <a href="{{ route('crackers.storefront', ['type' => 'wholesale', 'category' => $category, 'search' => $search]) }}"
-                        class="store-mode-pill {{ $customerType === 'wholesale' ? 'active-wholesale' : 'inactive' }}"
-                        onclick="try{localStorage.setItem('crackers_store_mode','wholesale');}catch(e){}">
-                        🏭 Wholesale Bulk
-                    </a>
                 </div>
             </div>
         </div>
@@ -949,10 +955,7 @@
                                     <i class="ri-heart-line fs-5"></i>
                                 </button>
 
-                                @if($product->stock <= 0)
-                                    <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill">Out
-                                        of Stock</span>
-                                @elseif($customerType === 'wholesale' && $product->wholesale_price)
+                                @if($customerType === 'wholesale' && $product->wholesale_price)
                                     <span
                                         class="badge bg-warning text-dark position-absolute top-0 end-0 m-3 px-2 py-1 rounded-pill fw-bold">Wholesale
                                         Price</span>
