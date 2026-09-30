@@ -175,8 +175,8 @@ class WebsiteSetupController extends Controller
         // Handle logo upload
         $logoPath = null;
         if ($request->hasFile('logo')) {
-            if ($appearance->logo && Storage::disk('public')->exists($appearance->logo)) {
-                Storage::disk('public')->delete($appearance->logo);
+            if ($appearance->logo && (file_exists(storage_path('app/public/' . $appearance->logo)) || file_exists(public_path('storage/' . $appearance->logo)))) {
+                @unlink(storage_path('app/public/' . $appearance->logo));
             }
             $logoPath = $request->file('logo')->store('admin/logos', 'public');
             $appearanceData['logo'] = $logoPath;
@@ -184,16 +184,16 @@ class WebsiteSetupController extends Controller
 
         // Handle dark logo upload
         if ($request->hasFile('logo_dark')) {
-            if ($appearance->logo_dark && Storage::disk('public')->exists($appearance->logo_dark)) {
-                Storage::disk('public')->delete($appearance->logo_dark);
+            if ($appearance->logo_dark && (file_exists(storage_path('app/public/' . $appearance->logo_dark)) || file_exists(public_path('storage/' . $appearance->logo_dark)))) {
+                @unlink(storage_path('app/public/' . $appearance->logo_dark));
             }
             $appearanceData['logo_dark'] = $request->file('logo_dark')->store('admin/logos', 'public');
         }
 
         // Handle favicon upload
         if ($request->hasFile('favicon')) {
-            if ($appearance->favicon && Storage::disk('public')->exists($appearance->favicon)) {
-                Storage::disk('public')->delete($appearance->favicon);
+            if ($appearance->favicon && (file_exists(storage_path('app/public/' . $appearance->favicon)) || file_exists(public_path('storage/' . $appearance->favicon)))) {
+                @unlink(storage_path('app/public/' . $appearance->favicon));
             }
             $appearanceData['favicon'] = $request->file('favicon')->store('admin/logos', 'public');
         }

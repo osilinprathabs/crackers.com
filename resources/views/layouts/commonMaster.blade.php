@@ -114,8 +114,9 @@
 
   <!-- Favicon -->
   @php
-    $faviconExists = $adminFavicon && \Illuminate\Support\Facades\Storage::disk('public')->exists($adminFavicon);
-    $logoExists = SettingsHelper::get('admin_logo') && \Illuminate\Support\Facades\Storage::disk('public')->exists(SettingsHelper::get('admin_logo'));
+    $faviconExists = $adminFavicon && (file_exists(storage_path('app/public/' . $adminFavicon)) || file_exists(public_path('storage/' . $adminFavicon)));
+    $adminLogoPath = SettingsHelper::get('admin_logo');
+    $logoExists = $adminLogoPath && (file_exists(storage_path('app/public/' . $adminLogoPath)) || file_exists(public_path('storage/' . $adminLogoPath)));
   @endphp
   @if($faviconExists)
     <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $adminFavicon) }}" />

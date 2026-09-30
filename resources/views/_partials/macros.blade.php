@@ -4,7 +4,7 @@
   $width = $width ?? '120';
   $height = $height ?? '40';
   $adminLogo = SettingsHelper::get('admin_logo');
-  $logoExists = $adminLogo && Storage::disk('public')->exists($adminLogo);
+  $logoExists = $adminLogo && (file_exists(storage_path('app/public/' . $adminLogo)) || file_exists(public_path('storage/' . $adminLogo)));
 @endphp
 
 @if($adminLogo && $logoExists)
