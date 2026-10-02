@@ -19,12 +19,22 @@ class CrackersBankAccount extends Model
         'branch_name',
         'upi_id',
         'qr_code',
+        'is_primary',
         'is_active',
     ];
 
     protected $casts = [
+        'is_primary' => 'boolean',
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Get primary bank account for Quotations & Store Wire Transfers
+     */
+    public static function getPrimaryAccount()
+    {
+        return static::where('is_primary', true)->where('is_active', true)->first() 
+            ?: static::where('is_active', true)->first()
+            ?: static::first();
+    }
 }
-
-

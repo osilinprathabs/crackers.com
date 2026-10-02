@@ -114,19 +114,22 @@
 
   <!-- Favicon -->
   @php
-    $faviconExists = $adminFavicon && (file_exists(storage_path('app/public/' . $adminFavicon)) || file_exists(public_path('storage/' . $adminFavicon)));
+    $adminFavicon = SettingsHelper::get('admin_favicon');
     $adminLogoPath = SettingsHelper::get('admin_logo');
+    $faviconExists = $adminFavicon && (file_exists(storage_path('app/public/' . $adminFavicon)) || file_exists(public_path('storage/' . $adminFavicon)));
     $logoExists = $adminLogoPath && (file_exists(storage_path('app/public/' . $adminLogoPath)) || file_exists(public_path('storage/' . $adminLogoPath)));
+
+    if ($faviconExists) {
+        $finalFavicon = asset('storage/' . $adminFavicon);
+    } elseif ($logoExists) {
+        $finalFavicon = asset('storage/' . $adminLogoPath);
+    } else {
+        $finalFavicon = asset('assets/img/favicon/favicon.ico');
+    }
   @endphp
-  @if($faviconExists)
-    <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $adminFavicon) }}" />
-    <link rel="apple-touch-icon" href="{{ asset('storage/' . $adminFavicon) }}" />
-    <link rel="shortcut icon" href="{{ asset('storage/' . $adminFavicon) }}" />
-  @else
-    <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
-    <link rel="apple-touch-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
-    <link rel="shortcut icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
-  @endif
+  <link rel="icon" type="image/x-icon" href="{{ $finalFavicon }}" />
+  <link rel="apple-touch-icon" href="{{ $finalFavicon }}" />
+  <link rel="shortcut icon" href="{{ $finalFavicon }}" />
 
   <!-- Include Styles -->
   <!-- $isFront is used to append the front layout styles only on the front layout otherwise the variable will be blank -->

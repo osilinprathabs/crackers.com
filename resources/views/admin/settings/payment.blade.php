@@ -68,6 +68,7 @@
                                         <th>Branch</th>
                                         <th>UPI ID</th>
                                         <th>QR Code</th>
+                                        <th>Primary for Quote</th>
                                         <th>Active</th>
                                         <th>Actions</th>
                                     </tr>
@@ -88,6 +89,21 @@
                                                     </a>
                                                 @else
                                                     <span class="text-muted small">No QR</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($bank->is_primary)
+                                                    <span class="badge bg-warning text-dark fw-bold shadow-sm" title="Displayed on Quotations & Receipts">
+                                                        <i class="ri-star-fill me-1"></i> Primary Bank
+                                                    </span>
+                                                @else
+                                                    <form action="{{ route('admin.payment-settings.bank.set-primary', $bank->id) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button type="submit" class="btn btn-sm btn-outline-warning text-dark fw-bold">
+                                                            <i class="ri-star-line me-1"></i> Set Primary
+                                                        </button>
+                                                    </form>
                                                 @endif
                                             </td>
                                             <td>
@@ -158,6 +174,12 @@
                                                                 @endif
                                                                 <input type="file" name="qr_code" class="form-control" accept="image/*">
                                                             </div>
+                                                            <div class="form-check form-switch mb-3">
+                                                                <input class="form-check-input" type="checkbox" name="is_primary" value="1" id="editIsPrimary{{ $bank->id }}" {{ $bank->is_primary ? 'checked' : '' }}>
+                                                                <label class="form-check-label fw-bold text-dark" for="editIsPrimary{{ $bank->id }}">
+                                                                    Set as Primary Bank Account for Quotations & Invoices
+                                                                </label>
+                                                            </div>
                                                         </div>
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -169,7 +191,7 @@
                                         </div>
                                     @empty
                                         <tr>
-                                            <td colspan="7" class="text-center py-4 text-muted">No bank accounts added yet.</td>
+                                            <td colspan="10" class="text-center py-4 text-muted">No bank accounts added yet.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -273,7 +295,12 @@
                                                 <div class="col-md-6 col-lg-4">
                                                     <div class="card border rounded p-3 h-100 {{ $bAcc->is_active ? 'bg-success-subtle border-success' : 'bg-light border-secondary opacity-75' }}">
                                                         <div class="d-flex align-items-center justify-content-between mb-2">
-                                                            <strong class="text-dark">{{ $bAcc->bank_name }}</strong>
+                                                            <div>
+                                                                <strong class="text-dark me-1">{{ $bAcc->bank_name }}</strong>
+                                                                @if($bAcc->is_primary)
+                                                                    <span class="badge bg-warning text-dark"><i class="ri-star-fill me-1"></i>Primary</span>
+                                                                @endif
+                                                            </div>
                                                             <div class="form-check form-switch mb-0">
                                                                 <input class="form-check-input" type="checkbox" role="switch" id="bankToggle_{{ $bAcc->id }}" 
                                                                        {{ $bAcc->is_active ? 'checked' : '' }}
@@ -441,6 +468,12 @@
                     <div class="mb-3">
                         <label class="form-label">Bank QR Code Image (Optional)</label>
                         <input type="file" name="qr_code" class="form-control" accept="image/*">
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="is_primary" value="1" id="addIsPrimary" {{ count($bankAccounts) === 0 ? 'checked' : '' }}>
+                        <label class="form-check-label fw-bold text-dark" for="addIsPrimary">
+                            Set as Primary Bank Account for Quotations & Invoices
+                        </label>
                     </div>
                 </div>
                 <div class="modal-footer">

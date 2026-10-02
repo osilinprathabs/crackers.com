@@ -7,6 +7,29 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $settings->company_name ?: 'S.R. TRADERS' }} | Premium Festive Crackers & Fireworks Store</title>
 
+    @php
+        $favUrl = null;
+        if (isset($appearance) && !empty($appearance->favicon) && (file_exists(storage_path('app/public/' . $appearance->favicon)) || file_exists(public_path('storage/' . $appearance->favicon)))) {
+            $favUrl = asset('storage/' . $appearance->favicon);
+        } elseif (isset($appearance) && !empty($appearance->logo) && (file_exists(storage_path('app/public/' . $appearance->logo)) || file_exists(public_path('storage/' . $appearance->logo)))) {
+            $favUrl = asset('storage/' . $appearance->logo);
+        } else {
+            $adminLogoPath = \App\Helpers\SettingsHelper::get('admin_logo');
+            $adminFavicon = \App\Helpers\SettingsHelper::get('admin_favicon');
+            if ($adminFavicon && (file_exists(storage_path('app/public/' . $adminFavicon)) || file_exists(public_path('storage/' . $adminFavicon)))) {
+                $favUrl = asset('storage/' . $adminFavicon);
+            } elseif ($adminLogoPath && (file_exists(storage_path('app/public/' . $adminLogoPath)) || file_exists(public_path('storage/' . $adminLogoPath)))) {
+                $favUrl = asset('storage/' . $adminLogoPath);
+            } else {
+                $favUrl = asset('assets/img/favicon/favicon.ico');
+            }
+        }
+    @endphp
+    <!-- Favicon / Logo Icon -->
+    <link rel="icon" type="image/x-icon" href="{{ $favUrl }}" />
+    <link rel="apple-touch-icon" href="{{ $favUrl }}" />
+    <link rel="shortcut icon" href="{{ $favUrl }}" />
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

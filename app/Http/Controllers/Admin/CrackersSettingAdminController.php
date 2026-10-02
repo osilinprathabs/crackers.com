@@ -122,6 +122,8 @@ class CrackersSettingAdminController extends Controller
             $qrCodePath = 'uploads/bank_qr/' . $filename;
         }
 
+        $isFirst = CrackersBankAccount::count() === 0;
+
         CrackersBankAccount::create([
             'bank_name' => $validated['bank_name'],
             'account_holder' => $validated['account_holder'],
@@ -130,14 +132,38 @@ class CrackersSettingAdminController extends Controller
             'branch_name' => $validated['branch_name'] ?? null,
             'upi_id' => $validated['upi_id'] ?? null,
             'qr_code' => $qrCodePath,
+            'is_primary' => $isFirst || $request->has('is_primary'),
             'is_active' => true,
         ]);
+
+        if ($request->has('is_primary')) {
+            $lastCreated = CrackersBankAccount::latest('id')->first();
+            if ($lastCreated) {
+                CrackersBankAccount::where('id', '!=', $lastCreated->id)->update(['is_primary' => false]);
+            }
+        }
 
         if (class_exists('\App\Models\Account\BankAccount')) {
             \App\Models\Account\BankAccount::syncStoreBankAccounts();
         }
 
         return redirect()->back()->with('success', 'New Bank Account added successfully!');
+    }
+
+    public function setPrimaryBank($id)
+    {
+        $targetBank = CrackersBankAccount::findOrFail($id);
+
+        CrackersBankAccount::query()->update(['is_primary' => false]);
+        $targetBank->is_primary = true;
+        $targetBank->is_active = true;
+        $targetBank->save();
+
+        if (class_exists('\App\Models\Account\BankAccount')) {
+            \App\Models\Account\BankAccount::syncStoreBankAccounts();
+        }
+
+        return redirect()->back()->with('success', $targetBank->bank_name . ' set as Primary Bank Account!');
     }
 
     public function updateBank(Request $request, $id)
@@ -160,6 +186,12 @@ class CrackersSettingAdminController extends Controller
             $filename = 'bank_qr_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads/bank_qr'), $filename);
             $qrCodePath = 'uploads/bank_qr/' . $filename;
+        }
+
+        if ($request->has('is_primary') && $request->is_primary) {
+            CrackersBankAccount::query()->update(['is_primary' => false]);
+            $bank->is_primary = true;
+            $bank->is_active = true;
         }
 
         $bank->update([
@@ -203,6 +235,14 @@ class CrackersSettingAdminController extends Controller
         }
 
         $bank->delete();
+
+        // If primary was deleted, promote another bank as primary
+        if ($bank->is_primary) {
+            if ($nextBank = CrackersBankAccount::first()) {
+                $nextBank->is_primary = true;
+                $nextBank->save();
+            }
+        }
 
         return redirect()->back()->with('success', 'Bank Account deleted!');
     }

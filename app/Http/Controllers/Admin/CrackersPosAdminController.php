@@ -393,9 +393,11 @@ class CrackersPosAdminController extends Controller
                     ]);
                 }
 
+                $primaryBank = \App\Models\CrackersBankAccount::getPrimaryAccount();
+
                 $quotationPublicUrl = route('public.pos.quotation.view', $order->id);
 
-                // Build WhatsApp message text (includes item breakdown & direct PDF link)
+                // Build WhatsApp message text (includes item breakdown, primary bank details & direct PDF link)
                 $waText = "📜 *OFFICIAL QUOTATION / PRICE ESTIMATE*\n";
                 $waText .= "🏢 *" . ($settings->company_name ?: 'S.R. TRADERS') . "*\n";
                 $waText .= "Quotation No: *" . $order->order_number . "*\n";
@@ -411,6 +413,17 @@ class CrackersPosAdminController extends Controller
                 if ($discount > 0) $waText .= "Discount: -₹" . number_format($discount, 2) . "\n";
                 if ($gstAmount > 0) $waText .= "GST Tax ({$gstRate}%): ₹" . number_format($gstAmount, 2) . "\n";
                 $waText .= "👉 *GRAND TOTAL: ₹" . number_format($grandTotal, 2) . "*\n";
+
+                if ($primaryBank) {
+                    $waText .= "----------------------------------\n";
+                    $waText .= "💳 *PAYMENT BANK DETAILS:*\n";
+                    $waText .= "Bank: *" . $primaryBank->bank_name . "*\n";
+                    $waText .= "A/C Holder: *" . $primaryBank->account_holder . "*\n";
+                    $waText .= "A/C No: *" . $primaryBank->account_number . "*\n";
+                    $waText .= "IFSC: *" . $primaryBank->ifsc_code . "*\n";
+                    if ($primaryBank->upi_id) $waText .= "UPI ID: *" . $primaryBank->upi_id . "*\n";
+                }
+
                 $waText .= "----------------------------------\n";
                 $waText .= "📄 *View / Download Quotation PDF:*\n";
                 $waText .= $quotationPublicUrl . "\n";
@@ -448,7 +461,8 @@ class CrackersPosAdminController extends Controller
     {
         $order = CrackersOrder::with(['items', 'customer'])->findOrFail($id);
         $settings = CrackersSetting::getSettings();
+        $primaryBank = \App\Models\CrackersBankAccount::getPrimaryAccount();
 
-        return view('admin.pos.quotation', compact('order', 'settings'));
+        return view('admin.pos.quotation', compact('order', 'settings', 'primaryBank'));
     }
 }

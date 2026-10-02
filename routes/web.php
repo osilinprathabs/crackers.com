@@ -750,6 +750,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/payment-settings/bank/store', [\App\Http\Controllers\Admin\CrackersSettingAdminController::class, 'storeBank'])->name('admin.payment-settings.bank.store');
     Route::put('/payment-settings/bank/{id}', [\App\Http\Controllers\Admin\CrackersSettingAdminController::class, 'updateBank'])->name('admin.payment-settings.bank.update');
     Route::patch('/payment-settings/bank/{id}/toggle', [\App\Http\Controllers\Admin\CrackersSettingAdminController::class, 'toggleBankStatus'])->name('admin.payment-settings.bank.toggle');
+    Route::patch('/payment-settings/bank/{id}/set-primary', [\App\Http\Controllers\Admin\CrackersSettingAdminController::class, 'setPrimaryBank'])->name('admin.payment-settings.bank.set-primary');
     Route::delete('/payment-settings/bank/{id}', [\App\Http\Controllers\Admin\CrackersSettingAdminController::class, 'destroyBank'])->name('admin.payment-settings.bank.destroy');
 
     // Orders Management
