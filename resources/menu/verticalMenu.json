@@ -169,32 +169,6 @@
       "menuHeader": "Managements"
     },
     {
-      "url": "user-management",
-      "icon": "menu-icon icon-base ri ri-user-settings-line",
-      "name": "User Management",
-      "slug": "user-management",
-      "roles": [
-        "Admin"
-      ]
-    },
-    {
-      "name": "HRM Management",
-      "icon": "menu-icon icon-base ri ri-team-line",
-      "roles": [
-        "Admin"
-      ],
-      "slug": [
-        "admin.staff.index"
-      ],
-      "submenu": [
-        {
-          "url": "staff",
-          "name": "Staff Management",
-          "slug": "admin.staff.index"
-        }
-      ]
-    },
-    {
       "name": "Roles & Permissions",
       "icon": "menu-icon icon-base ri ri-key-2-line",
       "slug": "role",
@@ -212,15 +186,6 @@
           "name": "Role Permissions",
           "slug": "role-permissions"
         }
-      ]
-    },
-    {
-      "name": "Notifications",
-      "url": "admin/notifications",
-      "icon": "menu-icon icon-base ri ri-notification-line",
-      "slug": "admin-notifications",
-      "roles": [
-        "Admin"
       ]
     },
     {

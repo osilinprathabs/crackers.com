@@ -381,11 +381,51 @@
                                             <i class="ri-qr-code-line text-info me-1"></i> UPI / GPay / PhonePe / Paytm
                                         </label>
                                         <div id="upiBox" class="payment-box d-none mt-2">
-                                            <div class="small fw-bold">Company UPI ID: <span class="text-theme-dynamic fs-6 me-2">{{ $settings->upi_id }}</span></div>
-                                            @if($settings->upi_qr_code)
-                                                <div class="mt-2 text-center">
-                                                    <img src="{{ $settings->upi_qr_code }}" alt="UPI QR Code" class="img-fluid rounded border" style="max-width: 180px;">
-                                                    <div class="small text-muted mt-1">Scan QR Code using any UPI App to complete payment</div>
+                                            @if(!empty($settings->upi_id))
+                                                <div class="p-2 border rounded bg-dark-subtle mb-3">
+                                                    <div class="small fw-bold">Company Main UPI ID: <span class="text-theme-dynamic fs-6 me-2">{{ $settings->upi_id }}</span></div>
+                                                    @if($settings->upi_qr_code)
+                                                        <div class="mt-2 text-center">
+                                                            <img src="{{ asset($settings->upi_qr_code) }}" alt="UPI QR Code" class="img-fluid rounded border bg-white p-1" style="max-width: 180px;">
+                                                            <div class="small text-muted mt-1">Scan QR Code using any UPI App to complete payment</div>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @endif
+
+                                            @if(isset($activeBanks) && $activeBanks->count() > 0)
+                                                <div class="small text-dark mb-2 fw-bold d-flex align-items-center justify-content-between flex-wrap gap-1">
+                                                    <span><i class="ri-bank-line text-theme-dynamic me-1"></i> Choose Bank Account for Payment & QR Code:</span>
+                                                    <span class="badge bg-warning text-dark font-monospace">Select One Bank</span>
+                                                </div>
+                                                <div class="row g-2">
+                                                    @foreach($activeBanks as $index => $bank)
+                                                        <div class="col-12 col-md-6">
+                                                            <div class="p-3 border rounded-3 text-center h-100 d-flex flex-column align-items-center justify-content-between bank-select-card shadow-sm position-relative" id="bankCardUPI_{{ $bank->id }}" onclick="selectBankId({{ $bank->id }})" style="cursor: pointer; transition: all 0.2s ease;">
+                                                                <div class="position-absolute top-0 end-0 p-2">
+                                                                    <input class="form-check-input bank-radio-input" type="radio" name="bank_account_id" id="bankRadioUPI_{{ $bank->id }}" value="{{ $bank->id }}" {{ $index === 0 ? 'checked' : '' }} onchange="selectBankId({{ $bank->id }})">
+                                                                </div>
+                                                                <div class="fw-bold text-theme-dynamic fs-6 mb-1 pe-4"><i class="ri-bank-line me-1"></i>{{ $bank->bank_name }}</div>
+                                                                <div class="small text-muted mb-1">Holder: {{ $bank->account_holder }}</div>
+                                                                <div class="small text-dark mb-1">A/C: <code>{{ $bank->account_number }}</code></div>
+                                                                @if($bank->upi_id)
+                                                                    <div class="small fw-bold text-info mb-2">
+                                                                        UPI: <code>{{ $bank->upi_id }}</code>
+                                                                    </div>
+                                                                @endif
+                                                                @if($bank->qr_code)
+                                                                    <img src="{{ asset($bank->qr_code) }}" alt="Bank QR" class="img-fluid rounded border bg-white p-1 mb-1" style="max-width: 130px; max-height: 130px; object-fit: contain;">
+                                                                @elseif($bank->upi_id)
+                                                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data={{ urlencode('upi://pay?pa=' . $bank->upi_id . '&pn=' . $bank->account_holder . '&cu=INR') }}" alt="Dynamic UPI QR" class="img-fluid rounded border bg-white p-1 mb-1" style="max-width: 130px; max-height: 130px;">
+                                                                @else
+                                                                    <div class="small text-muted italic my-2">No QR uploaded</div>
+                                                                @endif
+                                                                <div class="badge bg-success bg-opacity-10 text-success border border-success-subtle w-100 mt-2 select-badge" id="selectBadgeUPI_{{ $bank->id }}">
+                                                                    <i class="ri-checkbox-circle-fill me-1"></i> {{ $index === 0 ? 'Selected Bank' : 'Click to Select' }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
                                                 </div>
                                             @endif
                                         </div>
@@ -399,18 +439,41 @@
                                             <i class="ri-bank-line text-success me-1"></i> Direct Bank Transfer
                                         </label>
                                         <div id="bankBox" class="payment-box d-none mt-2">
-                                            <div class="small text-muted mb-2"><i class="ri-information-line me-1"></i> Transfer order total to any active bank account below:</div>
+                                            <div class="small text-dark mb-2 fw-bold d-flex align-items-center justify-content-between flex-wrap gap-1">
+                                                <span><i class="ri-information-line me-1 text-primary"></i> Choose Bank Account to Transfer Payment:</span>
+                                                <span class="badge bg-primary font-monospace">Select One Bank</span>
+                                            </div>
                                             <div class="row g-2">
-                                                @forelse($activeBanks as $bank)
-                                                    <div class="col-12">
-                                                        <div class="p-2 border rounded bg-dark-subtle">
-                                                            <div class="fw-bold text-theme-dynamic"><i class="ri-bank-card-line me-1"></i>{{ $bank->bank_name }}</div>
-                                                            <div class="small"><strong>A/C Holder:</strong> {{ $bank->account_holder }}</div>
-                                                            <div class="small"><strong>A/C Number:</strong> <code class="text-success font-monospace">{{ $bank->account_number }}</code></div>
-                                                            <div class="small"><strong>IFSC Code:</strong> {{ $bank->ifsc_code }}</div>
-                                                            @if($bank->branch_name)
-                                                                <div class="small text-muted"><strong>Branch:</strong> {{ $bank->branch_name }}</div>
+                                                @forelse($activeBanks as $index => $bank)
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="p-3 border rounded-3 h-100 d-flex flex-column justify-content-between bank-select-card shadow-sm position-relative" id="bankCardBank_{{ $bank->id }}" onclick="selectBankId({{ $bank->id }})" style="cursor: pointer; transition: all 0.2s ease;">
+                                                            <div class="position-absolute top-0 end-0 p-2">
+                                                                <input class="form-check-input bank-radio-input" type="radio" name="bank_account_id" id="bankRadioBank_{{ $bank->id }}" value="{{ $bank->id }}" {{ $index === 0 ? 'checked' : '' }} onchange="selectBankId({{ $bank->id }})">
+                                                            </div>
+                                                            <div>
+                                                                <div class="fw-bold text-theme-dynamic fs-6 mb-1 pe-4"><i class="ri-bank-card-line me-1"></i>{{ $bank->bank_name }}</div>
+                                                                <div class="small"><strong>A/C Holder:</strong> {{ $bank->account_holder }}</div>
+                                                                <div class="small"><strong>A/C Number:</strong> <code class="text-success font-monospace fs-6">{{ $bank->account_number }}</code></div>
+                                                                <div class="small"><strong>IFSC Code:</strong> <span class="badge bg-info-subtle text-info">{{ $bank->ifsc_code }}</span></div>
+                                                                @if($bank->branch_name)
+                                                                    <div class="small text-muted"><strong>Branch:</strong> {{ $bank->branch_name }}</div>
+                                                                @endif
+                                                                @if($bank->upi_id)
+                                                                    <div class="small mt-1"><strong>UPI ID:</strong> <span class="text-warning fw-bold">{{ $bank->upi_id }}</span></div>
+                                                                @endif
+                                                            </div>
+                                                            @if($bank->qr_code)
+                                                                <div class="mt-2 text-center">
+                                                                    <img src="{{ asset($bank->qr_code) }}" alt="QR Code" class="img-fluid rounded border bg-white p-1" style="max-width: 120px; max-height: 120px; object-fit: contain;">
+                                                                </div>
+                                                            @elseif($bank->upi_id)
+                                                                <div class="mt-2 text-center">
+                                                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data={{ urlencode('upi://pay?pa=' . $bank->upi_id . '&pn=' . $bank->account_holder . '&cu=INR') }}" alt="Dynamic QR Code" class="img-fluid rounded border bg-white p-1" style="max-width: 120px; max-height: 120px;">
+                                                                </div>
                                                             @endif
+                                                            <div class="badge bg-success bg-opacity-10 text-success border border-success-subtle w-100 mt-2 select-badge" id="selectBadgeBank_{{ $bank->id }}">
+                                                                <i class="ri-checkbox-circle-fill me-1"></i> {{ $index === 0 ? 'Selected Bank' : 'Click to Select' }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 @empty
@@ -875,19 +938,71 @@
             }
         }
 
+        function selectBankId(bankId) {
+            document.querySelectorAll('.bank-radio-input').forEach(r => {
+                if (parseInt(r.value) === parseInt(bankId)) {
+                    r.checked = true;
+                }
+            });
+
+            document.querySelectorAll('.bank-select-card').forEach(card => {
+                card.style.borderColor = 'rgba(148, 163, 184, 0.3)';
+                card.style.backgroundColor = '#ffffff';
+            });
+
+            document.querySelectorAll('.select-badge').forEach(badge => {
+                badge.className = 'badge bg-secondary bg-opacity-10 text-muted border w-100 mt-2 select-badge';
+                badge.innerHTML = '<i class="ri-add-circle-line me-1"></i> Click to Select';
+            });
+
+            let cardUPI = document.getElementById('bankCardUPI_' + bankId);
+            let cardBank = document.getElementById('bankCardBank_' + bankId);
+            let badgeUPI = document.getElementById('selectBadgeUPI_' + bankId);
+            let badgeBank = document.getElementById('selectBadgeBank_' + bankId);
+
+            [cardUPI, cardBank].forEach(c => {
+                if (c) {
+                    c.style.borderColor = 'var(--primary-amber, #fb8500)';
+                    c.style.backgroundColor = '#fffcf7';
+                }
+            });
+
+            [badgeUPI, badgeBank].forEach(b => {
+                if (b) {
+                    b.className = 'badge bg-success text-white w-100 mt-2 select-badge fw-bold shadow-sm';
+                    b.innerHTML = '<i class="ri-checkbox-circle-fill me-1"></i> Selected Bank';
+                }
+            });
+
+            updateSummaryReview();
+        }
+
         function updateSummaryReview() {
-            const name = document.getElementById('inputName').value || '—';
-            const phone = document.getElementById('inputPhone').value || '—';
-            const address = document.getElementById('inputAddress').value || '';
-            const city = document.getElementById('inputCity').value || '';
-            const pincode = document.getElementById('inputPincode').value || '';
+            const name = document.getElementById('inputName')?.value || '—';
+            const phone = document.getElementById('inputPhone')?.value || '—';
+            const address = document.getElementById('inputAddress')?.value || '';
+            const city = document.getElementById('inputCity')?.value || '';
+            const pincode = document.getElementById('inputPincode')?.value || '';
 
             const selectedPayment = document.querySelector('input[name="payment_method"]:checked')?.value || 'COD';
+            const selectedBankRadio = document.querySelector('input[name="bank_account_id"]:checked');
+            let bankText = '';
 
-            document.getElementById('reviewName').innerText = name;
-            document.getElementById('reviewPhone').innerText = phone;
-            document.getElementById('reviewAddress').innerText = `${address}, ${city} - ${pincode}`;
-            document.getElementById('reviewPaymentMethod').innerText = selectedPayment;
+            if (selectedPayment !== 'COD' && selectedBankRadio) {
+                let card = document.getElementById('bankCardUPI_' + selectedBankRadio.value) || document.getElementById('bankCardBank_' + selectedBankRadio.value);
+                if (card) {
+                    let bankNameEl = card.querySelector('.text-theme-dynamic');
+                    let bankName = bankNameEl ? bankNameEl.innerText.trim() : '';
+                    if (bankName) {
+                        bankText = ` (${bankName})`;
+                    }
+                }
+            }
+
+            if (document.getElementById('reviewName')) document.getElementById('reviewName').innerText = name;
+            if (document.getElementById('reviewPhone')) document.getElementById('reviewPhone').innerText = phone;
+            if (document.getElementById('reviewAddress')) document.getElementById('reviewAddress').innerText = `${address}, ${city} - ${pincode}`;
+            if (document.getElementById('reviewPaymentMethod')) document.getElementById('reviewPaymentMethod').innerText = selectedPayment + bankText;
         }
 
         function togglePaymentBox(type) {
@@ -898,7 +1013,13 @@
 
             if (type === 'UPI' && upiBox) upiBox.classList.remove('d-none');
             if (type === 'Bank' && bankBox) bankBox.classList.remove('d-none');
-            updateSummaryReview();
+
+            let firstRadio = document.querySelector('input[name="bank_account_id"]:checked') || document.querySelector('input[name="bank_account_id"]');
+            if (firstRadio) {
+                selectBankId(firstRadio.value);
+            } else {
+                updateSummaryReview();
+            }
         }
 
         function validatePaymentProofAndNext() {

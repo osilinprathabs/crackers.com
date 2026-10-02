@@ -36,14 +36,15 @@ class UpdateBankAccountRequest extends FormRequest
             'swift_code' => 'nullable|string|max:11',
             'routing_number' => 'nullable|string|max:20',
             'is_active' => 'boolean',
-            'gl_account_id' => 'required|exists:chart_of_accounts,id|unique:bank_accounts,gl_account_id,' . $bankAccountId,
+            'gl_account_id' => 'nullable',
+            'upi_id' => 'nullable|string|max:255',
+            'qr_code' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'gl_account_id.unique' => __('This GL account is already linked to an existing bank account.'),
             'account_number.regex' => __('Account number must be 9 to 18 digits and cannot be all zeros.'),
         ];
     }

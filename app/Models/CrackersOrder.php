@@ -27,12 +27,18 @@ class CrackersOrder extends Model
         'discount',
         'grand_total',
         'payment_method',
+        'bank_account_id',
         'payment_proof',
         'payment_status',
         'status',
         'order_type_pricing',
         'notes',
     ];
+
+    public function bankAccount()
+    {
+        return $this->belongsTo(CrackersBankAccount::class, 'bank_account_id');
+    }
 
     public function getGstAmountAttribute($value)
     {

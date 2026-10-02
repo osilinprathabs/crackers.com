@@ -14,7 +14,7 @@
 <div class="container-xxl flex-grow-1 container-p-y">
   @include('admin.account.shared.page-header', [
     'title' => __('Bank accounts'),
-    'subtitle' => __('Operating accounts linked to GL codes 1000–1099.'),
+    'subtitle' => __('Manage store and operating bank accounts.'),
     'icon' => 'ri-bank-line',
     'toolbar' => '<button type="button" class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addBankModal"><i class="ri-add-line me-1"></i>' . e(__('Add bank account')) . '</button>
     

@@ -143,15 +143,20 @@
                 <div class="text-uppercase small fw-bold text-muted mb-1">Payment Status & Method:</div>
                 <div class="mb-2">
                     @if($order->payment_status === 'paid')
-                        <span class="badge bg-success px-3 py-2 rounded-pill"><i class="ri-checkbox-circle-fill me-1"></i> PAID</span>
+                        <span class="badge bg-success text-white px-3 py-2 rounded-pill"><i class="ri-checkbox-circle-fill me-1"></i> PAID & VERIFIED</span>
+                    @elseif($order->payment_status === 'customer_paid' || $order->payment_status === 'unverified_paid')
+                        <span class="badge text-white px-3 py-2 rounded-pill" style="background-color: #fd7e14 !important;"><i class="ri-time-fill me-1"></i> CUSTOMER PAID (UNVERIFIED)</span>
                     @else
                         <span class="badge bg-warning text-dark px-3 py-2 rounded-pill"><i class="ri-time-line me-1"></i> PENDING PAYMENT</span>
                     @endif
                 </div>
                 <div class="small text-muted">
                     Payment Method: <strong>{{ str_replace('_', ' ', $order->payment_method) }}</strong><br>
+                    @if($order->bankAccount)
+                        <span class="text-dark fw-bold"><i class="ri-bank-line me-1 text-primary"></i>Bank: {{ $order->bankAccount->bank_name }} (A/C: {{ $order->bankAccount->account_number }})</span><br>
+                    @endif
                     @if($order->payment_proof)
-                        <span class="text-success fw-bold"><i class="ri-file-shield-2-line me-1"></i> Payment Proof Verified</span>
+                        <span class="text-success fw-bold"><i class="ri-file-shield-2-line me-1"></i> Payment Proof Attached</span>
                     @endif
                 </div>
             </div>

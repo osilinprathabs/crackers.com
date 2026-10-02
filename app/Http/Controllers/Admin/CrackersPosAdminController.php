@@ -37,7 +37,11 @@ class CrackersPosAdminController extends Controller
             ->take(200)
             ->get();
 
-        return view('admin.pos.index', compact('categories', 'products', 'settings', 'customers'));
+        $recentOrders = CrackersOrder::latest()
+            ->take(20)
+            ->get();
+
+        return view('admin.pos.index', compact('categories', 'products', 'settings', 'customers', 'recentOrders'));
     }
 
     /**

@@ -46,13 +46,15 @@
             ;
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --nav-bg: rgba(255, 255, 255, 0.95);
+            --nav-bg: rgba(255, 255, 255, 0.98);
             --modal-bg: #ffffff;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-dark);
+            background-color: #e6e4e4ff;
+            background-image: radial-gradient(#e2e8f0 0.8px, transparent 0.8px);
+            background-size: 28px 28px;
             color: var(--text-main);
             overflow-x: hidden;
         }
@@ -504,7 +506,8 @@
                 left: 0.5rem !important;
             }
 
-            .catalog-mode-pill, .store-mode-pill {
+            .catalog-mode-pill,
+            .store-mode-pill {
                 padding: 0.35rem 0.65rem !important;
                 font-size: 0.75rem !important;
             }
@@ -573,7 +576,8 @@
             transition: transform 0.2s ease;
         }
 
-        .mobile-nav-link.active, .mobile-nav-link:hover {
+        .mobile-nav-link.active,
+        .mobile-nav-link:hover {
             color: #ffc107;
         }
 
@@ -611,8 +615,10 @@
                 <span class="me-5"><i class="ri-map-pin-2-fill text-warning fs-5 align-middle me-1"></i> 🏭 Sivakasi
                     Factory Direct Hub - Pure Quality Guaranteed</span>
                 <span class="me-5">
-                    <a href="{{ $settings->whatsapp_link }}" target="_blank" class="text-white text-decoration-none fw-bold">
-                        <i class="ri-whatsapp-fill text-success fs-5 align-middle me-1"></i> 📱 WhatsApp Support: {{ $settings->formatted_whatsapp_number }}
+                    <a href="{{ $settings->whatsapp_link }}" target="_blank"
+                        class="text-white text-decoration-none fw-bold">
+                        <i class="ri-whatsapp-fill text-success fs-5 align-middle me-1"></i> 📱 WhatsApp Support:
+                        {{ $settings->formatted_whatsapp_number }}
                     </a>
                 </span>
                 <span class="me-5"><i class="ri-sparkling-fill text-warning fs-5 align-middle me-1"></i> ✨ GST
@@ -640,7 +646,8 @@
                             style="font-size: 1.85rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                             {{ $settings->company_name ?: ($companyDetail->company_name ?? 'S.R. TRADERS') }}
                         </span>
-                        <small class="d-block text-muted small fst-italic" style="font-size: 0.75rem; margin-top: -6px;">
+                        <small class="d-block text-muted small fst-italic"
+                            style="font-size: 0.75rem; margin-top: -6px;">
                             {{ $companyDetail->company_slogan ?? ($appearance->subtitle ?? 'Festive Fireworks Direct Store') }}
                         </small>
                     </div>
@@ -677,11 +684,13 @@
 
                 <!-- Action Buttons -->
                 <div class="d-flex align-items-center gap-1 gap-sm-3">
+
+
                     <!-- Wishlist Icon Button -->
                     <button
                         class="btn btn-light border rounded-circle shadow-sm position-relative d-flex align-items-center justify-content-center p-0 me-1"
-                        style="width: 40px; height: 40px;" data-bs-toggle="offcanvas" data-bs-target="#wishlistOffcanvas"
-                        title="My Wishlist">
+                        style="width: 40px; height: 40px;" data-bs-toggle="offcanvas"
+                        data-bs-target="#wishlistOffcanvas" title="My Wishlist">
                         <i class="ri-heart-3-line fs-5 text-danger"></i>
                         <span id="wishlistCount"
                             class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger font-monospace"
@@ -694,14 +703,16 @@
                             <button
                                 class="btn btn-outline-warning text-dark rounded-pill px-2 px-sm-3 py-1.5 fw-bold dropdown-toggle d-flex align-items-center gap-1 shadow-sm"
                                 type="button" data-bs-toggle="dropdown">
-                                <i class="ri-user-smile-line text-warning fs-5"></i> <span class="d-none d-sm-inline">{{ auth()->user()->name }}</span>
+                                <i class="ri-user-smile-line text-warning fs-5"></i> <span
+                                    class="d-none d-sm-inline">{{ auth()->user()->name }}</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3">
                                 <li><a class="dropdown-item py-2" href="{{ route('crackers.my-orders') }}"><i
                                             class="ri-shopping-bag-3-line text-warning me-2 fs-5 align-middle"></i> My
                                         Orders</a></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('crackers.profile') }}"><i
-                                            class="ri-user-settings-line text-primary me-2 fs-5 align-middle"></i> My Profile &
+                                            class="ri-user-settings-line text-primary me-2 fs-5 align-middle"></i> My
+                                        Profile &
                                         Address</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
@@ -718,7 +729,8 @@
                     @else
                         <!-- Customer Login / Register Button -->
                         <a href="{{ route('crackers.login-page') }}"
-                            class="btn btn-outline-warning text-dark rounded-pill px-2 px-sm-3 py-1.5 fw-bold d-flex align-items-center gap-1 shadow-sm" style="font-size: 0.88rem;">
+                            class="btn btn-outline-warning text-dark rounded-pill px-2 px-sm-3 py-1.5 fw-bold d-flex align-items-center gap-1 shadow-sm"
+                            style="font-size: 0.88rem;">
                             <i class="ri-user-line text-warning fs-5"></i>
                             <span class="d-none d-sm-inline">Login / Register</span>
                             <span class="d-sm-none">Login</span>
@@ -726,10 +738,12 @@
                     @endauth
 
                     <!-- Cart Button -->
-                    <button class="btn btn-warning rounded-pill px-2 px-sm-3 py-1.5 fw-bold d-flex align-items-center gap-1 gap-sm-2 shadow-sm"
+                    <button
+                        class="btn btn-warning rounded-pill px-2 px-sm-3 py-1.5 fw-bold d-flex align-items-center gap-1 gap-sm-2 shadow-sm"
                         data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas"
                         style="background: var(--gold-gradient); color:#000; font-size: 0.88rem;">
-                        <i class="ri-shopping-cart-fill fs-5"></i> <span class="d-none d-sm-inline">Cart </span>(<span id="cartCount">0</span>)
+                        <i class="ri-shopping-cart-fill fs-5"></i> <span class="d-none d-sm-inline">Cart </span>(<span
+                            id="cartCount">0</span>)
                     </button>
                 </div>
             </div>
@@ -746,6 +760,7 @@
                     <a class="nav-header-link" href="#catalog">
                         <i class="ri-fire-line text-warning me-1"></i> Products & Categories
                     </a>
+
                     <a class="nav-header-link" href="#about-us">
                         <i class="ri-information-line text-warning me-1"></i> About Us
                     </a>
@@ -756,7 +771,8 @@
 
                 <!-- Store Mode Switcher -->
                 <div class="d-flex align-items-center gap-2 py-1">
-                    <span class="small fw-bold me-1" style="color: var(--text-main);"><i class="ri-store-3-line text-warning me-1"></i>Store
+                    <span class="small fw-bold me-1" style="color: var(--text-main);"><i
+                            class="ri-store-3-line text-warning me-1"></i>Store
                         Mode:</span>
                     <div class="store-mode-container shadow-sm">
                         <a href="{{ route('crackers.storefront', ['type' => 'retail', 'category' => $category, 'search' => $search]) }}"
@@ -821,6 +837,7 @@
                                                     style="background: var(--gold-gradient); color:#000;">
                                                     <i class="ri-fire-line me-1"></i> Explore Fireworks Catalog
                                                 </a>
+
                                             </div>
                                         </div>
                                     </div>
@@ -855,6 +872,7 @@
                                 style="background: var(--gold-gradient); color:#000;">
                                 <i class="ri-fire-line me-1"></i> Explore Fireworks Catalog
                             </a>
+
                         </div>
                     </div>
                 </div>
@@ -946,10 +964,8 @@
                         <div class="col-6 col-md-4 col-lg-3">
                             <div class="product-card h-100 d-flex flex-column justify-content-between">
                                 <!-- Wishlist Toggle Button -->
-                                <button class="btn-wishlist" id="wishlistBtn{{ $product->id }}"
-                                    data-id="{{ $product->id }}"
-                                    data-name="{{ $product->name }}"
-                                    data-price="{{ $activePrice }}"
+                                <button class="btn-wishlist" id="wishlistBtn{{ $product->id }}" data-id="{{ $product->id }}"
+                                    data-name="{{ $product->name }}" data-price="{{ $activePrice }}"
                                     onclick="event.stopPropagation(); toggleWishlistFromElement(this)"
                                     title="Add to Wishlist">
                                     <i class="ri-heart-line fs-5"></i>
@@ -983,7 +999,8 @@
                                         'stock' => intval($product->stock),
                                         'description' => $product->description ?: 'High quality, certified green festive cracker product.',
                                         'images' => array_values(array_map(function ($img) {
-                                            return asset($img); }, $prodImgs))
+                                            return asset($img);
+                                        }, $prodImgs))
                                     ];
                                 @endphp
                                 <div class="product-img-box text-center p-2 position-relative overflow-hidden cursor-pointer"
@@ -1133,7 +1150,8 @@
                                     'stock' => intval($product->stock),
                                     'description' => $product->description ?: 'High quality, certified green festive cracker product.',
                                     'images' => array_values(array_map(function ($img) {
-                                        return asset($img); }, $prodImgs))
+                                        return asset($img);
+                                    }, $prodImgs))
                                 ];
                             @endphp
                             <tr>
@@ -1202,10 +1220,8 @@
                                 <td class="text-end pe-4">
                                     <div class="d-flex align-items-center justify-content-end gap-2">
                                         <button class="btn btn-sm btn-outline-danger btn-wishlist btn-wishlist-action"
-                                            id="wishlistBtnList{{ $product->id }}"
-                                            data-id="{{ $product->id }}"
-                                            data-name="{{ $product->name }}"
-                                            data-price="{{ $activePrice }}"
+                                            id="wishlistBtnList{{ $product->id }}" data-id="{{ $product->id }}"
+                                            data-name="{{ $product->name }}" data-price="{{ $activePrice }}"
                                             onclick="event.stopPropagation(); toggleWishlistFromElement(this)"
                                             title="Add to Wishlist">
                                             <i class="ri-heart-line fs-5"></i>
@@ -1226,7 +1242,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="{{ $customerType === 'wholesale' ? 6 : 5 }}" class="text-center py-5 text-muted">
+                                <td colspan="{{ $customerType === 'wholesale' ? 6 : 5 }}"
+                                    class="text-center py-5 text-muted">
                                     <i class="ri-ghost-line display-4 d-block mb-2 opacity-50"></i>
                                     No crackers found in catalog.
                                 </td>
@@ -1247,9 +1264,11 @@
                             <span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill mb-3">
                                 <i class="ri-award-fill me-1"></i> Certified Sivakasi Fireworks Direct
                             </span>
-                            <h2 class="fw-bold text-dark display-6 mb-3">About {{ $settings->company_name ?: 'S.R. TRADERS' }}</h2>
+                            <h2 class="fw-bold text-dark display-6 mb-3">About
+                                {{ $settings->company_name ?: 'S.R. TRADERS' }}</h2>
                             <p class="text-muted lead mb-4" style="font-size: 1.05rem; line-height: 1.7;">
-                                Welcome to <strong>{{ $settings->company_name ?: 'S.R. TRADERS' }}</strong> — India's premier online
+                                Welcome to <strong>{{ $settings->company_name ?: 'S.R. TRADERS' }}</strong> — India's
+                                premier online
                                 platform for certified green crackers, sparklers, flower pots, sky rockets, and festive
                                 gift boxes straight from Sivakasi manufacturing hubs.
                             </p>
@@ -1518,8 +1537,8 @@
                             <h5 class="fw-bold mb-0 text-uppercase text-danger"
                                 style="font-family: 'Outfit', sans-serif;">Statutory Compliance & Legal Disclaimer</h5>
                         </div>
-                        <span class="badge bg-danger text-white rounded-pill px-3 py-2 fs-6 fw-bold">License No:
-                            {{ $settings->license_number ?? 'LE/5/1234/2026' }}</span>
+                        <span class="badge bg-primary text-white rounded-pill px-3 py-2 fs-6 fw-bold">GSTIN:
+                            {{ $settings->gst_number }}</span>
                     </div>
                     <p class="mb-0 text-dark"
                         style="font-size: 0.95rem; line-height: 1.7; text-align: justify; font-weight: 500;">
@@ -1532,11 +1551,13 @@
                     <div class="col-lg-4 col-md-6">
                         <a class="brand-logo mb-2 text-decoration-none d-inline-block text-warning fw-bold fs-4"
                             href="{{ route('crackers.storefront') }}">
-                            <i class="ri-fire-fill text-warning fs-3"></i> {{ $settings->company_name ?: 'S.R. TRADERS' }}
+                            <i class="ri-fire-fill text-warning fs-3"></i>
+                            {{ $settings->company_name ?: 'S.R. TRADERS' }}
                         </a>
                         @if($settings->company_slogan)
                             <div class="fst-italic text-warning fw-bold fs-6 mb-2"><i class="ri-double-quotes-l"></i>
-                                {{ $settings->company_slogan }} <i class="ri-double-quotes-r"></i></div>
+                                {{ $settings->company_slogan }} <i class="ri-double-quotes-r"></i>
+                            </div>
                         @endif
                         <p class="text-dark pe-lg-4 fw-medium" style="font-size: 0.95rem; line-height: 1.6;">Your
                             trusted source for 100% legal, certified festive crackers, sparklers, ground chakkars,
@@ -1547,7 +1568,8 @@
                             <a href="#" class="btn btn-outline-warning rounded-circle px-2 py-1"><i
                                     class="ri-instagram-line fs-5"></i></a>
                             <a href="{{ $settings->whatsapp_link }}" target="_blank"
-                                class="btn btn-outline-success rounded-circle px-2 py-1" title="WhatsApp Support ({{ $settings->formatted_whatsapp_number }})"><i
+                                class="btn btn-outline-success rounded-circle px-2 py-1"
+                                title="WhatsApp Support ({{ $settings->formatted_whatsapp_number }})"><i
                                     class="ri-whatsapp-line fs-5"></i></a>
                             <a href="#" class="btn btn-outline-danger rounded-circle px-2 py-1"><i
                                     class="ri-youtube-fill fs-5"></i></a>
@@ -1563,7 +1585,8 @@
                             @php
                                 $catList = is_array($categories) ? $categories : (isset($categories) ? $categories->toArray() : []);
                                 $filteredCats = array_filter($catList, function ($c) {
-                                    return $c !== 'All'; });
+                                    return $c !== 'All';
+                                });
                             @endphp
                             @forelse($filteredCats as $catItem)
                                 <li>
@@ -1622,8 +1645,10 @@
                             @endif
                             @if($settings->whatsapp_number)
                                 <div>
-                                    <a href="{{ $settings->whatsapp_link }}" target="_blank" class="text-dark text-decoration-none hover-warning">
-                                        <i class="ri-whatsapp-fill text-success me-2 fs-6"></i> WhatsApp: {{ $settings->formatted_whatsapp_number }}
+                                    <a href="{{ $settings->whatsapp_link }}" target="_blank"
+                                        class="text-dark text-decoration-none hover-warning">
+                                        <i class="ri-whatsapp-fill text-success me-2 fs-6"></i> WhatsApp:
+                                        {{ $settings->formatted_whatsapp_number }}
                                     </a>
                                 </div>
                             @endif
@@ -1649,7 +1674,8 @@
                 <!-- Bottom Copyright Bar -->
                 <div class="border-top border-secondary pt-3 mt-3 d-flex flex-wrap justify-content-between align-items-center text-dark fw-semibold"
                     style="font-size: 0.95rem;">
-                    <div>&copy; {{ date('Y') }} <strong class="text-warning">{{ $settings->company_name ?: 'S.R. TRADERS' }}</strong>. All
+                    <div>&copy; {{ date('Y') }} <strong
+                            class="text-warning">{{ $settings->company_name ?: 'S.R. TRADERS' }}</strong>. All
                         Rights Reserved. Purely Festive Crackers Store.</div>
                     <div class="d-flex gap-3">
                         <span><i class="ri-shield-line me-1 text-success fs-6"></i> 100% Legal & Statutory
@@ -1857,17 +1883,57 @@
                                                         value="UPI" id="payUPI" {{ !$settings->enable_cod ? 'checked' : '' }} onchange="togglePaymentBox('UPI')">
                                                     <label class="form-check-label fw-bold" for="payUPI">
                                                         <i class="ri-qr-code-line text-info me-1"></i> UPI / GPay / PhonePe
-                                                        QR
+                                                        / Paytm
                                                     </label>
                                                     <div id="upiBox" class="payment-box d-none mt-2">
-                                                        <div class="small fw-bold">UPI ID: <span
-                                                                class="text-warning">{{ $settings->upi_id }}</span></div>
-                                                        @if($settings->upi_qr_code)
-                                                            <div class="mt-2 text-center">
-                                                                <img src="{{ $settings->upi_qr_code }}" alt="UPI QR Code"
-                                                                    class="img-fluid rounded" style="max-width: 180px;">
-                                                                <div class="small text-muted mt-1">Scan QR code to pay instantly
+                                                        @if(!empty($settings->upi_id))
+                                                            <div class="small fw-bold">Company Main UPI ID: <span
+                                                                    class="text-warning">{{ $settings->upi_id }}</span></div>
+                                                            @if($settings->upi_qr_code)
+                                                                <div class="mt-2 text-center">
+                                                                    <img src="{{ asset($settings->upi_qr_code) }}" alt="UPI QR Code"
+                                                                        class="img-fluid rounded bg-white p-1"
+                                                                        style="max-width: 160px;">
+                                                                    <div class="small text-muted mt-1">Scan QR code to pay instantly
+                                                                    </div>
                                                                 </div>
+                                                            @endif
+                                                        @endif
+
+                                                        @if(isset($activeBanks) && $activeBanks->count() > 0)
+                                                            <div class="small text-muted my-2 fw-semibold"><i
+                                                                    class="ri-qr-code-line me-1"></i> Bank Account Wise UPI & QR
+                                                                Codes:</div>
+                                                            <div class="row g-2">
+                                                                @foreach($activeBanks as $bank)
+                                                                    <div class="col-12 col-md-6">
+                                                                        <div
+                                                                            class="p-2 border rounded bg-dark text-center h-100 d-flex flex-column align-items-center justify-content-between">
+                                                                            <div class="fw-bold text-warning small mb-1"><i
+                                                                                    class="ri-bank-line me-1"></i>{{ $bank->bank_name }}
+                                                                            </div>
+                                                                            <div class="small text-muted mb-1">Holder:
+                                                                                {{ $bank->account_holder }}</div>
+                                                                            @if($bank->upi_id)
+                                                                                <div class="small fw-bold text-info mb-1">
+                                                                                    UPI: <code>{{ $bank->upi_id }}</code>
+                                                                                </div>
+                                                                            @endif
+                                                                            @if($bank->qr_code)
+                                                                                <img src="{{ asset($bank->qr_code) }}" alt="Bank QR"
+                                                                                    class="img-fluid rounded border bg-white p-1 mb-1"
+                                                                                    style="max-width: 130px; max-height: 130px; object-fit: contain;">
+                                                                            @elseif($bank->upi_id)
+                                                                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data={{ urlencode('upi://pay?pa=' . $bank->upi_id . '&pn=' . $bank->account_holder . '&cu=INR') }}"
+                                                                                    alt="Dynamic UPI QR"
+                                                                                    class="img-fluid rounded border bg-white p-1 mb-1"
+                                                                                    style="max-width: 130px; max-height: 130px;">
+                                                                            @endif
+                                                                            <div class="small text-muted" style="font-size: 10px;">
+                                                                                Scan with any UPI App</div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
                                                             </div>
                                                         @endif
                                                     </div>
@@ -1883,13 +1949,53 @@
                                                         <i class="ri-bank-line text-success me-1"></i> Direct Bank Transfer
                                                     </label>
                                                     <div id="bankBox" class="payment-box d-none mt-2">
-                                                        <div class="small"><strong>Bank:</strong> {{ $settings->bank_name }}
-                                                        </div>
-                                                        <div class="small"><strong>Account Holder:</strong>
-                                                            {{ $settings->account_holder }}</div>
-                                                        <div class="small"><strong>A/C No:</strong>
-                                                            {{ $settings->account_number }}</div>
-                                                        <div class="small"><strong>IFSC:</strong> {{ $settings->ifsc_code }}
+                                                        <div class="row g-2">
+                                                            @forelse($activeBanks as $bank)
+                                                                <div class="col-12 col-md-6">
+                                                                    <div
+                                                                        class="p-2 border rounded bg-dark text-start h-100 d-flex flex-column justify-content-between">
+                                                                        <div>
+                                                                            <div class="fw-bold text-warning small"><i
+                                                                                    class="ri-bank-card-line me-1"></i>{{ $bank->bank_name }}
+                                                                            </div>
+                                                                            <div class="small"><strong>Holder:</strong>
+                                                                                {{ $bank->account_holder }}</div>
+                                                                            <div class="small"><strong>A/C No:</strong> <code
+                                                                                    class="text-success font-monospace">{{ $bank->account_number }}</code>
+                                                                            </div>
+                                                                            <div class="small"><strong>IFSC:</strong>
+                                                                                {{ $bank->ifsc_code }}</div>
+                                                                            @if($bank->upi_id)
+                                                                                <div class="small text-info"><strong>UPI
+                                                                                        ID:</strong> {{ $bank->upi_id }}</div>
+                                                                            @endif
+                                                                        </div>
+                                                                        @if($bank->qr_code)
+                                                                            <div class="mt-2 text-center">
+                                                                                <img src="{{ asset($bank->qr_code) }}" alt="QR"
+                                                                                    class="img-fluid rounded border bg-white p-1"
+                                                                                    style="max-width: 120px; max-height: 120px;">
+                                                                            </div>
+                                                                        @elseif($bank->upi_id)
+                                                                            <div class="mt-2 text-center">
+                                                                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data={{ urlencode('upi://pay?pa=' . $bank->upi_id . '&pn=' . $bank->account_holder . '&cu=INR') }}"
+                                                                                    alt="Dynamic QR"
+                                                                                    class="img-fluid rounded border bg-white p-1"
+                                                                                    style="max-width: 120px; max-height: 120px;">
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            @empty
+                                                                <div class="small"><strong>Bank:</strong>
+                                                                    {{ $settings->bank_name }}</div>
+                                                                <div class="small"><strong>Account Holder:</strong>
+                                                                    {{ $settings->account_holder }}</div>
+                                                                <div class="small"><strong>A/C No:</strong>
+                                                                    {{ $settings->account_number }}</div>
+                                                                <div class="small"><strong>IFSC:</strong>
+                                                                    {{ $settings->ifsc_code }}</div>
+                                                            @endforelse
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1997,6 +2103,15 @@
                 <!-- Scripts -->
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
                 <script>
+                    function openPriceListModal() {
+                        let modalEl = document.getElementById('priceListDownloadModal');
+                        if (modalEl && typeof bootstrap !== 'undefined') {
+                            let bsModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                            bsModal.show();
+                        }
+                    }
+                    window.openPriceListModal = openPriceListModal;
+
                     var customerType = '{{ $customerType ?? "retail" }}';
                     var cart = JSON.parse(localStorage.getItem('crackers_cart') || '[]');
                     var wishlist = JSON.parse(localStorage.getItem('crackers_wishlist') || '[]');
@@ -2070,11 +2185,13 @@
                             for (let i = 0; i < qty; i++) {
                                 addToCart(prodData.id, prodData.name, prodData.active_price, prodData.unit);
                             }
-                            let modalEl = bootstrap.Modal.getInstance(document.getElementById('productQuickViewModal'));
-                            if (modalEl) modalEl.hide();
+                            let modalEl = document.getElementById('productQuickViewModal');
+                            let bsModal = bootstrap.Modal.getInstance(modalEl);
+                            if (bsModal) bsModal.hide();
                         };
 
-                        let bsModal = new bootstrap.Modal(document.getElementById('productQuickViewModal'));
+                        let modalEl = document.getElementById('productQuickViewModal');
+                        let bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
                         bsModal.show();
                     }
 
@@ -2084,9 +2201,6 @@
                             let bsModal = bootstrap.Modal.getInstance(modalEl);
                             if (bsModal) {
                                 bsModal.hide();
-                            } else {
-                                let m = new bootstrap.Modal(modalEl);
-                                m.hide();
                             }
                         }
                     }
@@ -2106,13 +2220,17 @@
                     function setTheme(theme) {
                         document.documentElement.setAttribute('data-theme', theme);
                         localStorage.setItem('theme', theme);
-                        themeIcon.className = theme === 'light' ? 'ri-moon-line' : 'ri-sun-line';
+                        if (themeIcon) {
+                            themeIcon.className = theme === 'light' ? 'ri-moon-line' : 'ri-sun-line';
+                        }
                     }
 
-                    themeToggle.addEventListener('click', () => {
-                        const current = document.documentElement.getAttribute('data-theme') || 'dark';
-                        setTheme(current === 'dark' ? 'light' : 'dark');
-                    });
+                    if (themeToggle) {
+                        themeToggle.addEventListener('click', () => {
+                            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+                            setTheme(current === 'dark' ? 'light' : 'dark');
+                        });
+                    }
 
                     // Initialize saved theme
                     const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -2518,106 +2636,123 @@
                     }
 
                     // Order Form Handler
-                    document.getElementById('checkoutForm').addEventListener('submit', function (e) {
-                        e.preventDefault();
+                    const checkoutForm = document.getElementById('checkoutForm');
+                    if (checkoutForm) {
+                        checkoutForm.addEventListener('submit', function (e) {
+                            e.preventDefault();
 
-                        let formData = new FormData(this);
-                        let data = Object.fromEntries(formData.entries());
-                        data.items = cart;
+                            let formData = new FormData(this);
+                            let data = Object.fromEntries(formData.entries());
+                            data.items = cart;
 
-                        let btn = document.getElementById('submitOrderBtn');
-                        btn.disabled = true;
+                            let btn = document.getElementById('submitOrderBtn');
+                            if (btn) btn.disabled = true;
 
-                        fetch('{{ route("crackers.place-order") }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify(data)
-                        })
-                            .then(res => res.json())
-                            .then(res => {
-                                if (res.success) {
-                                    window.location.href = res.redirect_url;
-                                } else {
-                                    alert(res.message || 'Error placing order.');
-                                    btn.disabled = false;
-                                }
+                            fetch('{{ route("crackers.place-order") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify(data)
                             })
-                            .catch(err => {
-                                alert('An error occurred while processing order.');
-                                btn.disabled = false;
-                            });
-                    });
+                                .then(res => res.json())
+                                .then(res => {
+                                    if (res.success) {
+                                        window.location.href = res.redirect_url;
+                                    } else {
+                                        alert(res.message || 'Error placing order.');
+                                        if (btn) btn.disabled = false;
+                                    }
+                                })
+                                .catch(err => {
+                                    alert('An error occurred while processing order.');
+                                    if (btn) btn.disabled = false;
+                                });
+                        });
+                    }
 
                     // Customer Login Handler
-                    document.getElementById('customerLoginForm').addEventListener('submit', function (e) {
-                        e.preventDefault();
-                        let formData = new FormData(this);
-                        let btn = document.getElementById('loginSubmitBtn');
-                        let errBox = document.getElementById('loginError');
-                        btn.disabled = true;
-                        errBox.classList.add('d-none');
+                    const customerLoginForm = document.getElementById('customerLoginForm');
+                    if (customerLoginForm) {
+                        customerLoginForm.addEventListener('submit', function (e) {
+                            e.preventDefault();
+                            let formData = new FormData(this);
+                            let btn = document.getElementById('loginSubmitBtn');
+                            let errBox = document.getElementById('loginError');
+                            if (btn) btn.disabled = true;
+                            if (errBox) errBox.classList.add('d-none');
 
-                        fetch('{{ route("crackers.login") }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify(Object.fromEntries(formData.entries()))
-                        })
-                            .then(res => res.json())
-                            .then(res => {
-                                if (res.success) {
-                                    window.location.href = res.redirect_url;
-                                } else {
-                                    errBox.innerText = res.message || 'Invalid credentials.';
-                                    errBox.classList.remove('d-none');
-                                    btn.disabled = false;
-                                }
+                            fetch('{{ route("crackers.login") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify(Object.fromEntries(formData.entries()))
                             })
-                            .catch(err => {
-                                errBox.innerText = 'Login failed. Please check your credentials.';
-                                errBox.classList.remove('d-none');
-                                btn.disabled = false;
-                            });
-                    });
+                                .then(res => res.json())
+                                .then(res => {
+                                    if (res.success) {
+                                        window.location.href = res.redirect_url;
+                                    } else {
+                                        if (errBox) {
+                                            errBox.innerText = res.message || 'Invalid credentials.';
+                                            errBox.classList.remove('d-none');
+                                        }
+                                        if (btn) btn.disabled = false;
+                                    }
+                                })
+                                .catch(err => {
+                                    if (errBox) {
+                                        errBox.innerText = 'Login failed. Please check your credentials.';
+                                        errBox.classList.remove('d-none');
+                                    }
+                                    if (btn) btn.disabled = false;
+                                });
+                        });
+                    }
 
                     // Customer Register Handler
-                    document.getElementById('customerRegisterForm').addEventListener('submit', function (e) {
-                        e.preventDefault();
-                        let formData = new FormData(this);
-                        let btn = document.getElementById('registerSubmitBtn');
-                        let errBox = document.getElementById('registerError');
-                        btn.disabled = true;
-                        errBox.classList.add('d-none');
+                    const customerRegisterForm = document.getElementById('customerRegisterForm');
+                    if (customerRegisterForm) {
+                        customerRegisterForm.addEventListener('submit', function (e) {
+                            e.preventDefault();
+                            let formData = new FormData(this);
+                            let btn = document.getElementById('registerSubmitBtn');
+                            let errBox = document.getElementById('registerError');
+                            if (btn) btn.disabled = true;
+                            if (errBox) errBox.classList.add('d-none');
 
-                        fetch('{{ route("crackers.register") }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify(Object.fromEntries(formData.entries()))
-                        })
-                            .then(res => res.json())
-                            .then(res => {
-                                if (res.success) {
-                                    window.location.href = res.redirect_url;
-                                } else {
-                                    errBox.innerText = res.message || 'Error creating account.';
-                                    errBox.classList.remove('d-none');
-                                    btn.disabled = false;
-                                }
+                            fetch('{{ route("crackers.register") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify(Object.fromEntries(formData.entries()))
                             })
-                            .catch(err => {
-                                errBox.innerText = 'Registration failed. Mobile number or email may already be in use.';
-                                errBox.classList.remove('d-none');
-                                btn.disabled = false;
-                            });
-                    });
+                                .then(res => res.json())
+                                .then(res => {
+                                    if (res.success) {
+                                        window.location.href = res.redirect_url;
+                                    } else {
+                                        if (errBox) {
+                                            errBox.innerText = res.message || 'Error creating account.';
+                                            errBox.classList.remove('d-none');
+                                        }
+                                        if (btn) btn.disabled = false;
+                                    }
+                                })
+                                .catch(err => {
+                                    if (errBox) {
+                                        errBox.innerText = 'Registration failed. Mobile number or email may already be in use.';
+                                        errBox.classList.remove('d-none');
+                                    }
+                                    if (btn) btn.disabled = false;
+                                });
+                        });
+                    }
 
                     // Expose functions globally on window object
                     window.addToCartFromElement = addToCartFromElement;
@@ -2632,8 +2767,17 @@
                     window.updateWishlistUI = updateWishlistUI;
                     window.openProductQuickView = openProductQuickView;
 
+                    function openPriceListModal() {
+                        let modalEl = document.getElementById('priceListDownloadModal');
+                        if (modalEl) {
+                            let bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                            bsModal.show();
+                        }
+                    }
+                    window.openPriceListModal = openPriceListModal;
+
                     // Prevent navigating to checkout when cart is empty
-                    document.addEventListener('click', function(e) {
+                    document.addEventListener('click', function (e) {
                         let target = e.target.closest('#checkoutBtn, #rightCheckoutBtn, #cornerCheckoutBtn, a[href*="/crackers/checkout"]');
                         if (target) {
                             let currentCart = JSON.parse(localStorage.getItem('crackers_cart') || '[]');
@@ -2650,6 +2794,16 @@
                     updateCartUI();
                     updateWishlistUI();
 
+                    // Ensure smooth modal cleanup and avoid leftover backdrops freezing the screen
+                    document.addEventListener('hidden.bs.modal', function () {
+                        if (document.querySelectorAll('.modal.show').length === 0) {
+                            document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+                            document.body.classList.remove('modal-open');
+                            document.body.style.removeProperty('overflow');
+                            document.body.style.removeProperty('padding-right');
+                        }
+                    });
+
                     const heroCarouselEl = document.getElementById('heroCarousel');
                     if (heroCarouselEl && typeof bootstrap !== 'undefined') {
                         const carousel = new bootstrap.Carousel(heroCarouselEl, {
@@ -2660,50 +2814,141 @@
                         carousel.cycle();
                     }
                 </script>
-    <!-- 📱 MOBILE BOTTOM NAVIGATION DOCK BAR (Shown on screens < 768px) -->
-    <div class="mobile-bottom-nav d-flex d-md-none align-items-center justify-content-around">
-        <a href="{{ route('crackers.storefront') }}" class="mobile-nav-link {{ request()->is('crackers') || request()->is('/') ? 'active' : '' }}">
-            <i class="ri-home-4-line"></i>
-            <span>Home</span>
-        </a>
-        <a href="#catalog" class="mobile-nav-link">
-            <i class="ri-fire-line"></i>
-            <span>Catalog</span>
-        </a>
-        <a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#wishlistOffcanvas" class="mobile-nav-link">
-            <i class="ri-heart-3-line"></i>
-            <span>Wishlist</span>
-            <span id="mobileWishlistBadge" class="position-absolute top-0 start-50 translate-middle-x badge rounded-pill bg-danger font-monospace" style="font-size: 0.65rem; margin-left: 12px; margin-top: 4px;">0</span>
-        </a>
-        <a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" class="mobile-nav-link">
-            <i class="ri-shopping-cart-line"></i>
-            <span>Cart</span>
-            <span id="mobileCartBadge" class="position-absolute top-0 start-50 translate-middle-x badge rounded-pill bg-warning text-dark font-monospace fw-bold" style="font-size: 0.65rem; margin-left: 12px; margin-top: 4px;">0</span>
-        </a>
-        @auth
-            <a href="{{ route('crackers.profile') }}" class="mobile-nav-link {{ request()->routeIs('crackers.profile') ? 'active' : '' }}">
-                <i class="ri-user-smile-line"></i>
-                <span>Account</span>
-            </a>
-        @else
-            <a href="{{ route('crackers.login-page') }}" class="mobile-nav-link {{ request()->routeIs('crackers.login-page') ? 'active' : '' }}">
-                <i class="ri-user-line"></i>
-                <span>Login</span>
-            </a>
-        @endauth
-    </div>
+                <!-- 📱 MOBILE BOTTOM NAVIGATION DOCK BAR (Shown on screens < 768px) -->
+                <div class="mobile-bottom-nav d-flex d-md-none align-items-center justify-content-around">
+                    <a href="{{ route('crackers.storefront') }}"
+                        class="mobile-nav-link {{ request()->is('crackers') || request()->is('/') ? 'active' : '' }}">
+                        <i class="ri-home-4-line"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="#catalog" class="mobile-nav-link">
+                        <i class="ri-fire-line"></i>
+                        <span>Catalog</span>
+                    </a>
+                    <a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#wishlistOffcanvas"
+                        class="mobile-nav-link">
+                        <i class="ri-heart-3-line"></i>
+                        <span>Wishlist</span>
+                        <span id="mobileWishlistBadge"
+                            class="position-absolute top-0 start-50 translate-middle-x badge rounded-pill bg-danger font-monospace"
+                            style="font-size: 0.65rem; margin-left: 12px; margin-top: 4px;">0</span>
+                    </a>
+                    <a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas"
+                        class="mobile-nav-link">
+                        <i class="ri-shopping-cart-line"></i>
+                        <span>Cart</span>
+                        <span id="mobileCartBadge"
+                            class="position-absolute top-0 start-50 translate-middle-x badge rounded-pill bg-warning text-dark font-monospace fw-bold"
+                            style="font-size: 0.65rem; margin-left: 12px; margin-top: 4px;">0</span>
+                    </a>
+                    @auth
+                        <a href="{{ route('crackers.profile') }}"
+                            class="mobile-nav-link {{ request()->routeIs('crackers.profile') ? 'active' : '' }}">
+                            <i class="ri-user-smile-line"></i>
+                            <span>Account</span>
+                        </a>
+                    @else
+                        <a href="{{ route('crackers.login-page') }}"
+                            class="mobile-nav-link {{ request()->routeIs('crackers.login-page') ? 'active' : '' }}">
+                            <i class="ri-user-line"></i>
+                            <span>Login</span>
+                        </a>
+                    @endauth
+                </div>
 
-    <!-- FLOATING WHATSAPP QUICK CHAT BUTTON -->
-    <a href="{{ $settings->whatsapp_link }}" target="_blank" 
-       class="position-fixed d-flex align-items-center justify-content-center text-white shadow-lg text-decoration-none" 
-       style="bottom: 85px; right: 20px; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); z-index: 1040; transition: transform 0.25s ease;"
-       onmouseover="this.style.transform='scale(1.1)'" 
-       onmouseout="this.style.transform='scale(1)'"
-       title="Chat on WhatsApp ({{ $settings->formatted_whatsapp_number }})">
-        <i class="ri-whatsapp-fill fs-2"></i>
-    </a>
+                <!-- FLOATING WHATSAPP QUICK CHAT BUTTON -->
+                <a href="{{ $settings->whatsapp_link }}" target="_blank"
+                    class="position-fixed d-flex align-items-center justify-content-center text-white shadow-lg text-decoration-none"
+                    style="bottom: 85px; right: 20px; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); z-index: 1040; transition: transform 0.25s ease;"
+                    onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"
+                    title="Chat on WhatsApp ({{ $settings->formatted_whatsapp_number }})">
+                    <i class="ri-whatsapp-fill fs-2"></i>
+                </a>
 
-    @include('crackers.partials.celebration_blast')
+                <!-- Modal: Download Crackers Price List PDF (Retail & Wholesale) -->
+                <div class="modal fade" id="priceListDownloadModal" tabindex="-1"
+                    aria-labelledby="priceListDownloadModalLabel" aria-hidden="true" style="z-index: 1070;">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                            <div class="modal-header text-white py-3"
+                                style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);">
+                                <h5 class="modal-title text-white fw-bold d-flex align-items-center gap-2 mb-0"
+                                    id="priceListDownloadModalLabel">
+                                    <i class="ri-file-download-line text-warning fs-4"></i> Download Crackers Price
+                                    Catalog (PDF)
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body p-4 text-center">
+                                <p class="text-muted mb-4 fs-6">
+                                    View & download official category-wise crackers list with product pictures, packing
+                                    specifications, MRP, and discounted rates:
+                                </p>
+
+                                <div class="row g-3">
+                                    <!-- Retail Price List Card -->
+                                    <div class="col-md-6">
+                                        <div
+                                            class="card h-100 border-2 border-primary shadow-sm hover-elevate rounded-4 text-start p-3 bg-light">
+                                            <div class="d-flex align-items-center gap-3 mb-3">
+                                                <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-circle">
+                                                    <i class="ri-shopping-bag-3-line fs-2"></i>
+                                                </div>
+                                                <div>
+                                                    <span class="badge bg-primary rounded-pill px-3 py-1 fw-bold">Retail
+                                                        Shoppers</span>
+                                                    <h5 class="fw-bold text-dark mb-0 mt-1">Retail Price Catalog</h5>
+                                                </div>
+                                            </div>
+                                            <p class="small text-muted mb-3">Includes item photos, category breakdown,
+                                                packing size, MRP, and retail offer prices.</p>
+                                            <a href="{{ route('crackers.price-list', 'retail') }}" target="_blank"
+                                                class="btn btn-primary rounded-pill fw-bold w-100 shadow-sm py-2">
+                                                <i class="ri-file-pdf-line me-1 fs-5 align-middle"></i> View / Download
+                                                Retail List (PDF)
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <!-- Wholesale Price List Card -->
+                                    <div class="col-md-6">
+                                        <div
+                                            class="card h-100 border-2 border-warning shadow-sm hover-elevate rounded-4 text-start p-3 bg-light">
+                                            <div class="d-flex align-items-center gap-3 mb-3">
+                                                <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-circle">
+                                                    <i class="ri-store-3-line fs-2"></i>
+                                                </div>
+                                                <div>
+                                                    <span
+                                                        class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold">B2B
+                                                        Bulk Buyers</span>
+                                                    <h5 class="fw-bold text-dark mb-0 mt-1">Wholesale Price List</h5>
+                                                </div>
+                                            </div>
+                                            <p class="small text-muted mb-3">Includes item photos, category breakdown,
+                                                packing size, B2B wholesale rates, and minimum bulk quantities.</p>
+                                            <a href="{{ route('crackers.price-list', 'wholesale') }}" target="_blank"
+                                                class="btn btn-warning rounded-pill fw-bold w-100 text-dark shadow-sm py-2"
+                                                style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                                                <i class="ri-file-pdf-line me-1 fs-5 align-middle"></i> View / Download
+                                                Wholesale List (PDF)
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer bg-light py-2 justify-content-between">
+                                <small class="text-muted"><i class="ri-information-line me-1"></i> You can view in
+                                    browser or print to save directly as PDF file.</small>
+                                <button type="button" class="btn btn-secondary rounded-pill px-4"
+                                    data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @include('crackers.partials.celebration_blast')
 </body>
 
 </html>

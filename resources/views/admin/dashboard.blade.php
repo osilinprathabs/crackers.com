@@ -204,6 +204,9 @@
           <h5 class="card-title mb-0 fw-bold"><i class="ri-pie-chart-2-line text-warning me-2"></i>Category Sales Share (%)</h5>
           <small class="text-muted">Sales % breakdown by cracker category</small>
         </div>
+        <button type="button" class="btn btn-sm btn-outline-warning rounded-pill px-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#allCategoriesShareModal" title="View complete list">
+          <i class="ri-eye-line me-1"></i> View All
+        </button>
       </div>
       <div class="card-body d-flex flex-column justify-content-between pt-2">
         <div id="categorySalesDonutChart" class="mb-3" style="min-height: 200px;"></div>
@@ -211,13 +214,14 @@
         <div class="category-breakdown-list">
           @php
             $colorClasses = ['bg-primary', 'bg-success', 'bg-warning', 'bg-danger', 'bg-info', 'bg-secondary'];
+            $top5Categories = array_slice($categorySalesBreakdown, 0, 5);
           @endphp
-          @foreach($categorySalesBreakdown as $idx => $catStat)
+          @foreach($top5Categories as $idx => $catStat)
             @php $badgeColor = $colorClasses[$idx % count($colorClasses)]; @endphp
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <div class="d-flex align-items-center gap-2">
-                <span class="badge {{ $badgeColor }} p-1 rounded-circle"></span>
-                <span class="fw-semibold text-dark small">{{ $catStat['category'] }}</span>
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <div class="d-flex align-items-center gap-2 text-truncate" style="max-width: 70%;">
+                <span class="badge {{ $badgeColor }} p-1 rounded-circle flex-shrink-0"></span>
+                <span class="fw-semibold text-dark small text-truncate" title="{{ $catStat['category'] }}">{{ $catStat['category'] }}</span>
               </div>
               <div class="text-end">
                 <strong class="text-dark small">{{ $catStat['percentage'] }}%</strong>
@@ -228,11 +232,74 @@
               <div class="progress-bar {{ $badgeColor }}" role="progressbar" style="width: {{ $catStat['percentage'] }}%;"></div>
             </div>
           @endforeach
+
+          <button type="button" class="btn btn-sm btn-warning w-100 rounded-pill fw-bold mt-2 text-dark border-0 shadow-sm" data-bs-toggle="modal" data-bs-target="#allCategoriesShareModal">
+            <i class="ri-pie-chart-2-line me-1"></i> View All {{ count($categorySalesBreakdown) }} Categories Share Popup
+          </button>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Modal: Complete Category Sales Share Breakdown -->
+<div class="modal fade" id="allCategoriesShareModal" tabindex="-1" aria-labelledby="allCategoriesShareModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+      <div class="modal-header bg-warning text-dark py-3">
+        <h5 class="modal-title fw-bold d-flex align-items-center gap-2 mb-0" id="allCategoriesShareModalLabel">
+          <i class="ri-pie-chart-2-fill fs-4"></i> Complete Category Sales Share ({{ count($categorySalesBreakdown) }} Categories)
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <!-- Search Filter inside Modal -->
+        <div class="input-group mb-3">
+          <span class="input-group-text bg-light border-end-0"><i class="ri-search-line"></i></span>
+          <input type="text" id="modalCategorySearch" class="form-control border-start-0 bg-light" placeholder="Search category name..." onkeyup="filterModalCategories()">
+        </div>
+
+        <div class="list-group list-group-flush" id="modalCategoryList">
+          @foreach($categorySalesBreakdown as $idx => $catStat)
+            @php $badgeColor = $colorClasses[$idx % count($colorClasses)]; @endphp
+            <div class="list-group-item px-0 modal-cat-item border-bottom py-2" data-cat-name="{{ strtolower($catStat['category']) }}">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge {{ $badgeColor }} p-1 rounded-circle"></span>
+                  <span class="fw-bold text-dark fs-6">{{ $catStat['category'] }}</span>
+                </div>
+                <div class="text-end">
+                  <strong class="text-success fs-6">{{ $catStat['percentage'] }}%</strong>
+                  <span class="text-muted small ms-2 font-monospace">(₹{{ number_format($catStat['total'], 2) }})</span>
+                </div>
+              </div>
+              <div class="progress" style="height: 6px;">
+                <div class="progress-bar {{ $badgeColor }}" role="progressbar" style="width: {{ $catStat['percentage'] }}%;"></div>
+              </div>
+            </div>
+          @endforeach
+        </div>
+      </div>
+      <div class="modal-footer bg-light py-2">
+        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function filterModalCategories() {
+    let q = document.getElementById('modalCategorySearch').value.toLowerCase().trim();
+    document.querySelectorAll('.modal-cat-item').forEach(el => {
+        let name = el.getAttribute('data-cat-name');
+        if (!q || name.includes(q)) {
+            el.classList.remove('d-none');
+        } else {
+            el.classList.add('d-none');
+        }
+    });
+}
+</script>
 
 <!-- Secondary Metrics -->
 <div class="row g-4 mb-4">

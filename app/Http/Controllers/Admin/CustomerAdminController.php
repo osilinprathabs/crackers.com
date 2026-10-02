@@ -48,13 +48,34 @@ class CustomerAdminController extends Controller
         }
 
         // KPI Counts & Revenue Calculations
-        $allBaseCustomers = Customer::all();
+        $allBaseCustomers = Customer::realCustomers()->get();
         $totalCustomersCount = $allBaseCustomers->count();
         $wholesaleCount = $allBaseCustomers->where('customer_type', 'wholesale')->count();
         $retailCount = $totalCustomersCount - $wholesaleCount;
         $totalRevenue = CrackersOrder::where('payment_status', 'paid')->sum('grand_total');
 
         $customers = $query->latest()->paginate(20)->withQueryString();
+
+        if ($request->ajax()) {
+            $html = view('admin.customers.partials.customers_table', compact(
+                'customers', 
+                'search', 
+                'type', 
+                'totalCustomersCount', 
+                'wholesaleCount', 
+                'retailCount', 
+                'totalRevenue'
+            ))->render();
+
+            return response()->json([
+                'success' => true,
+                'html' => $html,
+                'totalCustomersCount' => $totalCustomersCount,
+                'wholesaleCount' => $wholesaleCount,
+                'retailCount' => $retailCount,
+                'totalRevenue' => number_format($totalRevenue, 2),
+            ]);
+        }
 
         return view('admin.customers.index', compact(
             'customers', 
@@ -129,7 +150,7 @@ class CustomerAdminController extends Controller
         Auth::login($user);
         session(['impersonator_admin_id' => $adminId]);
 
-        return redirect()->route('crackers.my-orders')->with('success', "Logged in as customer: {$user->name}");
+        return redirect()->route('crackers.profile')->with('success', "Logged in as customer: {$user->name}");
     }
 
     public function stopImpersonating()

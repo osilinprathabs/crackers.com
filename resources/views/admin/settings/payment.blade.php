@@ -45,11 +45,16 @@
                 <div class="tab-content p-0">
                     <!-- TAB 1: MULTIPLE BANK ACCOUNTS -->
                     <div class="tab-pane fade show active" id="tabBanks">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
                             <h6 class="fw-bold text-success mb-0"><i class="ri-bank-line me-1"></i> Manage Store Bank Accounts</h6>
-                            <button type="button" class="btn btn-sm btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#addBankModal">
-                                <i class="ri-add-line me-1"></i> Add New Bank Account
-                            </button>
+                            <div>
+                                <a href="{{ route('account.bank-accounts.index') }}" class="btn btn-sm btn-outline-primary me-2 fw-bold">
+                                    <i class="ri-external-link-line me-1"></i> Go to Account Bank Accounts
+                                </a>
+                                <button type="button" class="btn btn-sm btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#addBankModal">
+                                    <i class="ri-add-line me-1"></i> Add New Bank Account
+                                </button>
+                            </div>
                         </div>
 
                         <div class="table-responsive text-nowrap border rounded mb-3">
@@ -60,8 +65,10 @@
                                         <th>Account Holder</th>
                                         <th>A/C Number</th>
                                         <th>IFSC Code</th>
-                                        <th>Branch Name</th>
-                                        <th>Enable / Disable Switch</th>
+                                        <th>Branch</th>
+                                        <th>UPI ID</th>
+                                        <th>QR Code</th>
+                                        <th>Active</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -73,6 +80,16 @@
                                             <td><code class="text-primary fw-bold">{{ $bank->account_number }}</code></td>
                                             <td><span class="badge bg-label-info">{{ $bank->ifsc_code }}</span></td>
                                             <td>{{ $bank->branch_name ?: 'N/A' }}</td>
+                                            <td><span class="badge bg-label-success">{{ $bank->upi_id ?: 'N/A' }}</span></td>
+                                            <td>
+                                                @if($bank->qr_code)
+                                                    <a href="{{ asset($bank->qr_code) }}" target="_blank">
+                                                        <img src="{{ asset($bank->qr_code) }}" alt="QR" class="rounded border p-1" style="height: 36px; width: 36px; object-fit: contain;">
+                                                    </a>
+                                                @else
+                                                    <span class="text-muted small">No QR</span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 <form action="{{ route('admin.payment-settings.bank.toggle', $bank->id) }}" method="POST" class="d-inline">
                                                     @csrf
@@ -104,7 +121,7 @@
                                                         <h5 class="modal-title">Edit Bank Account Details</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                     </div>
-                                                    <form action="{{ route('admin.payment-settings.bank.update', $bank->id) }}" method="POST">
+                                                    <form action="{{ route('admin.payment-settings.bank.update', $bank->id) }}" method="POST" enctype="multipart/form-data">
                                                         @csrf
                                                         @method('PUT')
                                                         <div class="modal-body">
@@ -127,6 +144,19 @@
                                                             <div class="mb-3">
                                                                 <label class="form-label">Branch Name (Optional)</label>
                                                                 <input type="text" name="branch_name" class="form-control" value="{{ $bank->branch_name }}">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">UPI ID / VPA (Optional)</label>
+                                                                <input type="text" name="upi_id" class="form-control" value="{{ $bank->upi_id }}" placeholder="e.g. merchant@sbi / 9876543210@ybl">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Bank QR Code Image (Optional)</label>
+                                                                @if($bank->qr_code)
+                                                                    <div class="mb-2">
+                                                                        <img src="{{ asset($bank->qr_code) }}" alt="QR Code" class="img-fluid rounded border" style="max-height: 100px;">
+                                                                    </div>
+                                                                @endif
+                                                                <input type="file" name="qr_code" class="form-control" accept="image/*">
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
@@ -208,21 +238,25 @@
                                 </div>
 
                                 <div class="col-md-12 mb-4">
-                                    <div class="card border p-3">
-                                        <div class="d-flex align-items-center justify-content-between mb-3">
-                                            <h6 class="fw-bold text-info mb-0"><i class="ri-qr-code-line me-1"></i> UPI & QR Code Payment</h6>
+                                    <div class="card border p-3 bg-white">
+                                        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                                            <div>
+                                                <h6 class="fw-bold text-info mb-0"><i class="ri-qr-code-line me-1"></i> UPI & QR Code Payment Settings</h6>
+                                                <small class="text-muted">Configure default UPI VPA, upload store QR code, and manage bank-wise QR codes & UPI switches</small>
+                                            </div>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" type="checkbox" name="enable_upi" id="enable_upi" {{ $settings->enable_upi ? 'checked' : '' }}>
+                                                <label class="form-check-label fw-bold text-dark" for="enable_upi">Enable Store UPI</label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
-                                                <label class="form-label">Store UPI ID</label>
-                                                <input type="text" name="upi_id" class="form-control" value="{{ old('upi_id', $settings->upi_id) }}" placeholder="e.g. crackers@upi">
+                                                <label class="form-label fw-bold">Primary Store UPI ID / VPA</label>
+                                                <input type="text" name="upi_id" class="form-control" value="{{ old('upi_id', $settings->upi_id) }}" placeholder="e.g. crackers@upi / 9876543210@ybl">
                                             </div>
                                             <div class="col-md-6 mb-3">
-                                                <label class="form-label">Upload Payment QR Code</label>
-                                                <input type="file" name="upi_qr_code" class="form-control">
+                                                <label class="form-label fw-bold">Upload Primary Payment QR Code</label>
+                                                <input type="file" name="upi_qr_code" class="form-control" accept="image/*">
                                                 @if($settings->upi_qr_code)
                                                     <div class="mt-2">
                                                         <img src="{{ $settings->upi_qr_code }}" alt="Current QR Code" class="img-thumbnail" style="max-width: 120px;">
@@ -230,11 +264,59 @@
                                                 @endif
                                             </div>
                                         </div>
+
+                                        <!-- Bank-Wise UPI & QR Code Directory with Enable/Disable Switches -->
+                                        <hr class="my-3">
+                                        <h6 class="fw-bold text-dark mb-3"><i class="ri-bank-card-line text-success me-1"></i> Bank-Wise UPI & QR Code Options (Enable / Disable per Bank)</h6>
+                                        <div class="row g-3">
+                                            @forelse($bankAccounts as $bAcc)
+                                                <div class="col-md-6 col-lg-4">
+                                                    <div class="card border rounded p-3 h-100 {{ $bAcc->is_active ? 'bg-success-subtle border-success' : 'bg-light border-secondary opacity-75' }}">
+                                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                                            <strong class="text-dark">{{ $bAcc->bank_name }}</strong>
+                                                            <div class="form-check form-switch mb-0">
+                                                                <input class="form-check-input" type="checkbox" role="switch" id="bankToggle_{{ $bAcc->id }}" 
+                                                                       {{ $bAcc->is_active ? 'checked' : '' }}
+                                                                       onchange="document.getElementById('bankToggleForm_{{ $bAcc->id }}').submit();">
+                                                            </div>
+                                                        </div>
+                                                        <small class="text-muted d-block mb-1">Holder: <strong>{{ $bAcc->account_holder }}</strong></small>
+                                                        <small class="text-muted d-block mb-2">A/C: <code class="text-primary font-monospace">{{ $bAcc->account_number }}</code></small>
+                                                        
+                                                        <div class="p-2 bg-white rounded border mb-2">
+                                                            <div class="small text-muted" style="font-size: 11px;">Bank UPI ID:</div>
+                                                            <div class="fw-bold text-success font-monospace small text-truncate">{{ $bAcc->upi_id ?: 'No UPI ID set' }}</div>
+                                                        </div>
+
+                                                        <div class="text-center mt-auto">
+                                                            @if($bAcc->qr_code)
+                                                                <a href="{{ asset($bAcc->qr_code) }}" target="_blank" title="Click to enlarge QR">
+                                                                    <img src="{{ asset($bAcc->qr_code) }}" alt="QR Code" class="rounded border bg-white p-1" style="max-height: 90px; object-fit: contain;">
+                                                                </a>
+                                                            @else
+                                                                <div class="p-2 text-muted small border rounded bg-white"><i class="ri-qr-code-line text-muted me-1"></i> No QR Code uploaded</div>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @empty
+                                                <div class="col-12 text-center py-3 text-muted">
+                                                    No bank accounts registered. Add accounts under <a href="#tabBanks" onclick="$('button[data-bs-target=\'#tabBanks\']').tab('show');">Multiple Bank Accounts tab</a>.
+                                                </div>
+                                            @endforelse
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary fw-bold px-4">Save Payment & GST Toggles</button>
                         </form>
+
+                        @foreach($bankAccounts as $bAcc)
+                            <form id="bankToggleForm_{{ $bAcc->id }}" action="{{ route('admin.payment-settings.bank.toggle', $bAcc->id) }}" method="POST" class="d-none">
+                                @csrf
+                                @method('PATCH')
+                            </form>
+                        @endforeach
                     </div>
 
                     <!-- TAB 3: CONTACT & SUPPORT -->
@@ -329,7 +411,7 @@
                 <h5 class="modal-title"><i class="ri-bank-line text-success me-1"></i> Add New Store Bank Account</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ route('admin.payment-settings.bank.store') }}" method="POST">
+            <form action="{{ route('admin.payment-settings.bank.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
@@ -351,6 +433,14 @@
                     <div class="mb-3">
                         <label class="form-label">Branch Name (Optional)</label>
                         <input type="text" name="branch_name" class="form-control" placeholder="e.g. Main Branch, Sivakasi">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">UPI ID / VPA (Optional)</label>
+                        <input type="text" name="upi_id" class="form-control" placeholder="e.g. merchant@sbi / 9876543210@ybl">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Bank QR Code Image (Optional)</label>
+                        <input type="file" name="qr_code" class="form-control" accept="image/*">
                     </div>
                 </div>
                 <div class="modal-footer">

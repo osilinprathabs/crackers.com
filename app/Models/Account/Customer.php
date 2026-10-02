@@ -73,6 +73,18 @@ class Customer extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function scopeRealCustomers($query)
+    {
+        return $query->where(function($q) {
+            $q->whereNull('user_id')
+              ->orWhereDoesntHave('user', function($uq) {
+                  $uq->whereHas('roles', function($rq) {
+                      $rq->whereIn('name', ['Admin', 'Agent', 'Staff', 'Super Admin']);
+                  });
+              });
+        });
+    }
+
     public function crackersOrders()
     {
         return $this->hasMany(\App\Models\CrackersOrder::class, 'customer_id');

@@ -6,7 +6,7 @@
         <h5 class="modal-title">{{ __('Add bank account') }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form action="{{ route('account.bank-accounts.store') }}" method="POST">
+      <form action="{{ route('account.bank-accounts.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="modal-body">
           <div class="row g-3">
@@ -26,15 +26,27 @@
             </div>
             <div class="col-md-6">
               <label class="form-label">{{ __('Account name') }} <span class="text-danger">*</span></label>
-              <input type="text" name="account_name" class="form-control" required placeholder="e.g. Main Operations" oninput="this.value=this.value.replace(/[0-9]/g,'');">
+              <input type="text" name="account_name" class="form-control" required placeholder="e.g. Main Operations">
             </div>
             <div class="col-md-6">
               <label class="form-label">{{ __('Bank name') }} <span class="text-danger">*</span></label>
-              <input type="text" name="bank_name" class="form-control" required placeholder="e.g. State Bank of India" oninput="this.value=this.value.replace(/[0-9]/g,'');">
+              <input type="text" name="bank_name" class="form-control" required placeholder="e.g. State Bank of India">
             </div>
             <div class="col-md-6">
               <label class="form-label">{{ __('Branch name') }}</label>
               <input type="text" name="branch_name" class="form-control" placeholder="{{ __('Optional') }}">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ __('IFSC / SWIFT Code') }}</label>
+              <input type="text" name="swift_code" class="form-control" placeholder="e.g. SBIN0001234">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ __('UPI ID / VPA') }}</label>
+              <input type="text" name="upi_id" class="form-control" placeholder="e.g. merchant@sbi / 9876543210@ybl">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ __('Bank QR Code Image') }}</label>
+              <input type="file" name="qr_code" class="form-control" accept="image/*">
             </div>
             <div class="col-md-6">
               <label class="form-label">{{ __('Account type') }} <span class="text-danger">*</span></label>
@@ -43,14 +55,6 @@
                 <option value="Current">{{ __('Current') }}</option>
                 <option value="Credit Card">{{ __('Credit Card') }}</option>
                 <option value="Other">{{ __('Other') }}</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">{{ __('GL account') }} <span class="text-danger">*</span></label>
-              <select name="gl_account_id" class="form-select" required>
-                @foreach ($bankGlAccounts as $g)
-                  <option value="{{ $g->id }}">{{ $g->account_code }} — {{ $g->account_name }}</option>
-                @endforeach
               </select>
             </div>
             <div class="col-md-6">

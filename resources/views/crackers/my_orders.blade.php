@@ -113,6 +113,35 @@
                                 <td><strong class="text-success fs-6">₹{{ number_format($order->grand_total, 2) }}</strong></td>
                                 <td>
                                     <span class="badge bg-outline-info text-info">{{ $order->payment_method }}</span>
+                                    @if($order->bankAccount)
+                                        <div class="small text-dark fw-bold mt-1" style="font-size: 11px;">
+                                            <i class="ri-bank-line text-warning me-1"></i>{{ $order->bankAccount->bank_name }}
+                                        </div>
+                                    @endif
+                                    @php
+                                        $payBadgeClass = match($order->payment_status) {
+                                            'paid' => 'bg-success text-white',
+                                            'customer_paid', 'unverified_paid' => 'text-white',
+                                            'failed', 'refunded' => 'bg-danger text-white',
+                                            default => 'bg-warning text-dark',
+                                        };
+                                        $payBadgeStyle = match($order->payment_status) {
+                                            'customer_paid', 'unverified_paid' => 'background-color: #fd7e14 !important;',
+                                            default => '',
+                                        };
+                                        $payBadgeText = match($order->payment_status) {
+                                            'paid' => 'Paid & Verified',
+                                            'customer_paid', 'unverified_paid' => 'Customer Paid (Unverified)',
+                                            'failed' => 'Failed',
+                                            'refunded' => 'Refunded',
+                                            default => 'Pending',
+                                        };
+                                    @endphp
+                                    <div class="mt-1">
+                                        <span class="badge {{ $payBadgeClass }} rounded-pill font-monospace" style="font-size: 10px; {{ $payBadgeStyle }}">
+                                            {{ $payBadgeText }}
+                                        </span>
+                                    </div>
                                 </td>
                                 <td>
                                     @php

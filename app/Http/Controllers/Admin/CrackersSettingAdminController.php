@@ -110,7 +110,17 @@ class CrackersSettingAdminController extends Controller
             'account_number' => 'required|string|max:255',
             'ifsc_code' => 'required|string|max:255',
             'branch_name' => 'nullable|string|max:255',
+            'upi_id' => 'nullable|string|max:255',
+            'qr_code' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
         ]);
+
+        $qrCodePath = null;
+        if ($request->hasFile('qr_code')) {
+            $file = $request->file('qr_code');
+            $filename = 'bank_qr_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/bank_qr'), $filename);
+            $qrCodePath = 'uploads/bank_qr/' . $filename;
+        }
 
         CrackersBankAccount::create([
             'bank_name' => $validated['bank_name'],
@@ -118,8 +128,14 @@ class CrackersSettingAdminController extends Controller
             'account_number' => $validated['account_number'],
             'ifsc_code' => $validated['ifsc_code'],
             'branch_name' => $validated['branch_name'] ?? null,
+            'upi_id' => $validated['upi_id'] ?? null,
+            'qr_code' => $qrCodePath,
             'is_active' => true,
         ]);
+
+        if (class_exists('\App\Models\Account\BankAccount')) {
+            \App\Models\Account\BankAccount::syncStoreBankAccounts();
+        }
 
         return redirect()->back()->with('success', 'New Bank Account added successfully!');
     }
@@ -134,7 +150,17 @@ class CrackersSettingAdminController extends Controller
             'account_number' => 'required|string|max:255',
             'ifsc_code' => 'required|string|max:255',
             'branch_name' => 'nullable|string|max:255',
+            'upi_id' => 'nullable|string|max:255',
+            'qr_code' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
         ]);
+
+        $qrCodePath = $bank->qr_code;
+        if ($request->hasFile('qr_code')) {
+            $file = $request->file('qr_code');
+            $filename = 'bank_qr_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/bank_qr'), $filename);
+            $qrCodePath = 'uploads/bank_qr/' . $filename;
+        }
 
         $bank->update([
             'bank_name' => $validated['bank_name'],
@@ -142,7 +168,13 @@ class CrackersSettingAdminController extends Controller
             'account_number' => $validated['account_number'],
             'ifsc_code' => $validated['ifsc_code'],
             'branch_name' => $validated['branch_name'] ?? null,
+            'upi_id' => $validated['upi_id'] ?? null,
+            'qr_code' => $qrCodePath,
         ]);
+
+        if (class_exists('\App\Models\Account\BankAccount')) {
+            \App\Models\Account\BankAccount::syncStoreBankAccounts();
+        }
 
         return redirect()->back()->with('success', 'Bank Account updated successfully!');
     }
@@ -153,12 +185,23 @@ class CrackersSettingAdminController extends Controller
         $bank->is_active = !$bank->is_active;
         $bank->save();
 
+        if (class_exists('\App\Models\Account\BankAccount')) {
+            if ($ba = \App\Models\Account\BankAccount::where('account_number', $bank->account_number)->first()) {
+                $ba->is_active = $bank->is_active;
+                $ba->save();
+            }
+        }
+
         return redirect()->back()->with('success', 'Bank status updated!');
     }
 
     public function destroyBank($id)
     {
         $bank = CrackersBankAccount::findOrFail($id);
+        if (class_exists('\App\Models\Account\BankAccount')) {
+            \App\Models\Account\BankAccount::where('account_number', $bank->account_number)->delete();
+        }
+
         $bank->delete();
 
         return redirect()->back()->with('success', 'Bank Account deleted!');

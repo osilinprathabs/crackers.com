@@ -138,9 +138,7 @@
         @if($settings->support_phone)
             <div class="store-sub">Phone: {{ $settings->support_phone }}</div>
         @endif
-        @if($settings->license_number)
-            <div class="store-sub">Explosive License: {{ $settings->license_number }}</div>
-        @endif
+        <div class="store-sub"><strong>GSTIN: {{ $settings->gst_number }}</strong></div>
     </div>
 
     <!-- Meta / Order Information -->

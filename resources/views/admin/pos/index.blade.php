@@ -13,7 +13,10 @@
                 </h4>
                 <small class="text-white-50">Point of Sale system for Walk-in counter customers & instant receipt generation</small>
             </div>
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button type="button" class="btn btn-sm btn-light rounded-pill px-3 fw-semibold text-primary" data-bs-toggle="modal" data-bs-target="#posRecentOrdersModal">
+                    <i class="ri-history-line me-1"></i> Recent Sales & Receipts
+                </button>
                 <span class="badge bg-white text-primary px-3 py-2 rounded-pill font-monospace shadow-sm">
                     <i class="ri-store-2-line me-1"></i> {{ $settings->company_name ?: 'S.R. TRADERS' }}
                 </span>
@@ -68,13 +71,29 @@
                                 $unitPrice = $product->discount_price ?: $product->price;
                                 $hasDiscount = $product->discount_price && $product->discount_price < $product->price;
                                 $isOutOfStock = $product->stock <= 0;
+                                $productData = [
+                                    'id' => $product->id,
+                                    'name' => $product->name,
+                                    'code' => $product->code ?? '',
+                                    'category' => $product->category ?: 'Crackers',
+                                    'price' => floatval($unitPrice),
+                                    'original_price' => floatval($product->price),
+                                    'has_discount' => $hasDiscount,
+                                    'stock' => $product->stock,
+                                    'unit' => $product->unit,
+                                    'image' => $product->image ? asset($product->image) : '',
+                                    'description' => $product->description ?? ''
+                                ];
                             @endphp
                             <div class="col-6 col-md-4 col-xl-3 product-card-item" 
                                  data-name="{{ strtolower($product->name) }}" 
                                  data-code="{{ strtolower($product->code) }}" 
                                  data-category="{{ strtolower($product->category) }}">
-                                <div class="card h-100 border shadow-none product-box {{ $isOutOfStock ? 'opacity-50' : '' }}" style="border-radius: 12px;">
-                                    <div class="position-relative text-center p-2 bg-light rounded-top">
+                                <div class="card h-100 border shadow-none product-box {{ $isOutOfStock ? 'opacity-50' : '' }}" style="border-radius: 12px; transition: all 0.2s ease;">
+                                    <div class="position-relative text-center p-2 bg-light rounded-top cursor-pointer" 
+                                         data-product="{{ json_encode($productData) }}" 
+                                         onclick="triggerProductViewModal(this)" 
+                                         title="Click to View Cracker Details">
                                         @if($product->image)
                                             <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="img-fluid rounded" style="height: 90px; object-fit: contain;">
                                         @else
@@ -89,7 +108,7 @@
                                     </div>
 
                                     <div class="card-body p-2 d-flex flex-column justify-content-between">
-                                        <div>
+                                        <div class="cursor-pointer" data-product="{{ json_encode($productData) }}" onclick="triggerProductViewModal(this)" title="Click to View Cracker Details">
                                             <div class="small text-muted text-truncate mb-1">{{ $product->category ?: 'Crackers' }}</div>
                                             <h6 class="card-title fw-bold text-dark mb-1 text-truncate" title="{{ $product->name }}">{{ $product->name }}</h6>
                                         </div>
@@ -105,18 +124,29 @@
                                                 <small class="text-muted">{{ $product->unit }}</small>
                                             </div>
 
-                                            <button type="button" 
-                                                    class="btn btn-sm btn-primary w-100 rounded-pill fw-semibold add-to-cart-btn" 
-                                                    {{ $isOutOfStock ? 'disabled' : '' }}
-                                                    onclick="addToCart({{ json_encode([
-                                                        'id' => $product->id,
-                                                        'name' => $product->name,
-                                                        'price' => floatval($unitPrice),
-                                                        'stock' => $product->stock,
-                                                        'unit' => $product->unit
-                                                    ]) }})">
-                                                <i class="ri-add-line me-1"></i> Add
-                                            </button>
+                                            <div class="d-flex gap-1 align-items-center">
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-outline-info rounded-circle d-flex align-items-center justify-content-center p-0" 
+                                                        style="width: 32px; height: 32px; flex-shrink: 0;"
+                                                        title="View Cracker Details"
+                                                        data-product="{{ json_encode($productData) }}"
+                                                        onclick="triggerProductViewModal(this)">
+                                                    <i class="ri-eye-line fs-6"></i>
+                                                </button>
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-primary rounded-pill flex-grow-1 fw-semibold add-to-cart-btn" 
+                                                        {{ $isOutOfStock ? 'disabled' : '' }}
+                                                        data-product="{{ json_encode([
+                                                            'id' => $product->id,
+                                                            'name' => $product->name,
+                                                            'price' => floatval($unitPrice),
+                                                            'stock' => $product->stock,
+                                                            'unit' => $product->unit
+                                                        ]) }}"
+                                                        onclick="triggerAddToCart(this)">
+                                                    <i class="ri-add-line me-1"></i> Add
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -139,7 +169,7 @@
                                     <th>Category</th>
                                     <th class="text-center">Stock</th>
                                     <th class="text-end">Price</th>
-                                    <th class="text-end" style="width: 90px;">Action</th>
+                                    <th class="text-end" style="width: 140px;">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="posProductListBody">
@@ -148,12 +178,25 @@
                                         $unitPrice = $product->discount_price ?: $product->price;
                                         $hasDiscount = $product->discount_price && $product->discount_price < $product->price;
                                         $isOutOfStock = $product->stock <= 0;
+                                        $productData = [
+                                            'id' => $product->id,
+                                            'name' => $product->name,
+                                            'code' => $product->code ?? '',
+                                            'category' => $product->category ?: 'Crackers',
+                                            'price' => floatval($unitPrice),
+                                            'original_price' => floatval($product->price),
+                                            'has_discount' => $hasDiscount,
+                                            'stock' => $product->stock,
+                                            'unit' => $product->unit,
+                                            'image' => $product->image ? asset($product->image) : '',
+                                            'description' => $product->description ?? ''
+                                        ];
                                     @endphp
                                     <tr class="product-list-item {{ $isOutOfStock ? 'opacity-50 bg-light' : '' }}"
                                         data-name="{{ strtolower($product->name) }}"
                                         data-code="{{ strtolower($product->code) }}"
                                         data-category="{{ strtolower($product->category) }}">
-                                        <td>
+                                        <td class="cursor-pointer" data-product="{{ json_encode($productData) }}" onclick="triggerProductViewModal(this)" title="Click to View Cracker Details">
                                             @if($product->image)
                                                 <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="rounded border" style="width: 36px; height: 36px; object-fit: cover;">
                                             @else
@@ -162,7 +205,7 @@
                                                 </div>
                                             @endif
                                         </td>
-                                        <td>
+                                        <td class="cursor-pointer" data-product="{{ json_encode($productData) }}" onclick="triggerProductViewModal(this)" title="Click to View Cracker Details">
                                             <div class="fw-bold text-dark mb-0">{{ $product->name }}</div>
                                             @if($product->code)
                                                 <small class="text-muted font-monospace me-2">Code: {{ $product->code }}</small>
@@ -185,15 +228,24 @@
                                         </td>
                                         <td class="text-end">
                                             <button type="button" 
+                                                    class="btn btn-sm btn-outline-info rounded-circle d-inline-flex align-items-center justify-content-center p-0 me-1" 
+                                                    style="width: 32px; height: 32px; vertical-align: middle;"
+                                                    title="View Cracker Details"
+                                                    data-product="{{ json_encode($productData) }}"
+                                                    onclick="triggerProductViewModal(this)">
+                                                <i class="ri-eye-line fs-6"></i>
+                                            </button>
+                                            <button type="button" 
                                                     class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold add-to-cart-btn" 
                                                     {{ $isOutOfStock ? 'disabled' : '' }}
-                                                    onclick="addToCart({{ json_encode([
+                                                    data-product="{{ json_encode([
                                                         'id' => $product->id,
                                                         'name' => $product->name,
                                                         'price' => floatval($unitPrice),
                                                         'stock' => $product->stock,
                                                         'unit' => $product->unit
-                                                    ]) }})">
+                                                    ]) }}"
+                                                    onclick="triggerAddToCart(this)">
                                                 <i class="ri-add-line me-1"></i> Add
                                             </button>
                                         </td>
@@ -444,8 +496,163 @@
                 </div>
             </div>
             <div class="modal-footer bg-light py-2 justify-content-between">
-                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold" onclick="clearCart(); $('#posQuotationModal').modal('hide');">New POS Sale</button>
+                <small class="text-muted"><i class="ri-information-line me-1"></i> Instant POS Sales Quote</small>
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- POS Product Details Click & View Modal -->
+<div class="modal fade" id="posProductViewModal" tabindex="-1" aria-labelledby="posProductViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-primary text-white py-3">
+                <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2 mb-0" id="posProductViewModalLabel">
+                    <i class="ri-sparkles-line text-warning fs-4"></i> <span id="pvModalTitle">Cracker Details</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-4 align-items-center">
+                    <!-- Image Preview -->
+                    <div class="col-md-5 text-center border-end">
+                        <div class="p-3 bg-light rounded-3 position-relative d-flex align-items-center justify-content-center" style="min-height: 240px;">
+                            <img id="pvModalImage" src="" alt="Cracker Product" class="img-fluid rounded shadow-sm d-none" style="max-height: 220px; object-fit: contain;">
+                            <div id="pvModalImagePlaceholder" class="text-center py-4 text-warning">
+                                <i class="ri-sparkles-line display-1"></i>
+                            </div>
+                            <span id="pvModalStockBadge" class="position-absolute top-0 end-0 badge bg-success m-3 fs-6 px-3 py-2 rounded-pill shadow-sm">
+                                In Stock
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Details & Quick Add -->
+                    <div class="col-md-7">
+                        <div class="mb-2">
+                            <span id="pvModalCategory" class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill fw-semibold mb-1">Category</span>
+                            <span id="pvModalCode" class="badge bg-light text-muted border font-monospace px-2 py-1 ms-1">Code: 101</span>
+                        </div>
+                        <h4 class="fw-bold text-dark mb-2" id="pvModalName">Product Name</h4>
+                        
+                        <div class="p-3 bg-light rounded-3 border mb-3">
+                            <div class="d-flex align-items-baseline gap-2 mb-1">
+                                <h3 class="fw-bold text-success mb-0" id="pvModalPrice">₹0.00</h3>
+                                <span class="text-muted text-decoration-line-through small d-none" id="pvModalOriginalPrice">₹0.00</span>
+                                <span class="badge bg-danger rounded-pill px-2 py-1 small d-none" id="pvModalDiscountBadge">OFF</span>
+                            </div>
+                            <small class="text-muted">Unit / Packing: <strong id="pvModalUnit" class="text-dark">Box</strong></small>
+                        </div>
+                        
+                        <p class="text-muted small mb-3" id="pvModalDescription">No detailed description available for this cracker item.</p>
+
+                        <!-- Quantity Selector & Add to Cart -->
+                        <div class="row g-2 align-items-center bg-success-subtle p-3 rounded-3 border border-success">
+                            <div class="col-6">
+                                <label class="form-label fw-bold small text-dark mb-1">Select Quantity:</label>
+                                <div class="input-group">
+                                    <button class="btn btn-outline-secondary bg-white fw-bold" onclick="changePvModalQty(-1)">-</button>
+                                    <input type="number" id="pvModalQtyInput" class="form-control text-center fw-bold bg-white" value="1" min="1" oninput="updatePvModalTotal()">
+                                    <button class="btn btn-outline-secondary bg-white fw-bold" onclick="changePvModalQty(1)">+</button>
+                                </div>
+                            </div>
+                            <div class="col-6 text-end">
+                                <small class="text-muted d-block mb-1">Item Total:</small>
+                                <div class="fw-bold text-success fs-4 mb-2" id="pvModalItemTotal">₹0.00</div>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <button type="button" id="pvModalAddBtn" class="btn btn-success w-100 rounded-pill fw-bold py-2 shadow-sm" onclick="addPvModalToCart()">
+                                    <i class="ri-shopping-cart-2-line me-1"></i> Add to Cart & Continue Billing
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light py-2">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- POS Recent Counter Sales & Receipts Modal -->
+<div class="modal fade" id="posRecentOrdersModal" tabindex="-1" aria-labelledby="posRecentOrdersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-dark text-white py-3">
+                <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2 mb-0" id="posRecentOrdersModalLabel">
+                    <i class="ri-history-line text-warning"></i> Recent Counter Sales & Receipts
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="table-responsive" style="max-height: 400px;">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light sticky-top">
+                            <tr class="small text-muted text-uppercase">
+                                <th>Order / Receipt #</th>
+                                <th>Customer</th>
+                                <th>Date & Time</th>
+                                <th class="text-end">Amount</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-end">Receipt / PDF</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentOrders as $ro)
+                                <tr>
+                                    <td>
+                                        <span class="fw-bold text-primary font-monospace">{{ $ro->order_number }}</span>
+                                        @if($ro->status === 'quotation')
+                                            <span class="badge bg-info text-white ms-1">Quote</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-dark">{{ $ro->customer_name ?: 'Walk-In Customer' }}</div>
+                                        @if($ro->customer_phone)
+                                            <small class="text-muted font-monospace">{{ $ro->customer_phone }}</small>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ $ro->created_at ? $ro->created_at->format('d M, h:i A') : 'N/A' }}</small>
+                                    </td>
+                                    <td class="text-end fw-bold text-success">
+                                        ₹{{ number_format($ro->grand_total, 2) }}
+                                    </td>
+                                    <td class="text-center">
+                                        @if($ro->payment_status === 'paid')
+                                            <span class="badge bg-success">Paid</span>
+                                        @elseif($ro->payment_status === 'pending')
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        @else
+                                            <span class="badge bg-secondary">{{ ucfirst($ro->payment_status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-end">
+                                        @if($ro->status === 'quotation')
+                                            <a href="{{ route('admin.pos.quotation.view', $ro->id) }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill fw-bold">
+                                                <i class="ri-file-pdf-line me-1"></i> Quote PDF
+                                            </a>
+                                        @else
+                                            <a href="{{ route('admin.pos.receipt', $ro->id) }}" target="_blank" class="btn btn-sm btn-outline-success rounded-pill fw-bold">
+                                                <i class="ri-printer-line me-1"></i> Receipt
+                                            </a>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center py-4 text-muted">No recent sales records found.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer bg-light py-2">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -727,6 +934,151 @@
         checkPosFormValidity();
     });
 
+    function triggerProductViewModal(el) {
+        if (!el) return;
+        try {
+            let dataStr = el.getAttribute('data-product');
+            if (dataStr) {
+                let product = JSON.parse(dataStr);
+                openProductViewModal(product);
+            }
+        } catch(e) {
+            console.error('POS Product View Parse Error:', e);
+        }
+    }
+
+    function triggerAddToCart(el) {
+        if (!el) return;
+        try {
+            let dataStr = el.getAttribute('data-product');
+            if (dataStr) {
+                let product = JSON.parse(dataStr);
+                addToCart(product);
+            }
+        } catch(e) {
+            console.error('POS Add To Cart Parse Error:', e);
+        }
+    }
+
+    let currentPvProduct = null;
+
+    function openProductViewModal(product) {
+        currentPvProduct = product;
+        document.getElementById('pvModalTitle').innerText = 'Cracker Details - ' + product.name;
+        document.getElementById('pvModalName').innerText = product.name;
+        document.getElementById('pvModalCategory').innerText = product.category || 'Crackers';
+        document.getElementById('pvModalCode').innerText = product.code ? ('Code: ' + product.code) : '';
+        document.getElementById('pvModalUnit').innerText = product.unit || 'Pcs';
+        document.getElementById('pvModalDescription').innerText = product.description || 'No detailed description available for this cracker item.';
+        document.getElementById('pvModalPrice').innerText = '₹' + product.price.toFixed(2);
+        
+        let origPriceEl = document.getElementById('pvModalOriginalPrice');
+        let discountBadgeEl = document.getElementById('pvModalDiscountBadge');
+        if (product.has_discount && product.original_price > product.price) {
+            origPriceEl.innerText = '₹' + product.original_price.toFixed(2);
+            origPriceEl.classList.remove('d-none');
+            let pctOff = Math.round(((product.original_price - product.price) / product.original_price) * 100);
+            discountBadgeEl.innerText = pctOff + '% OFF';
+            discountBadgeEl.classList.remove('d-none');
+        } else {
+            origPriceEl.classList.add('d-none');
+            discountBadgeEl.classList.add('d-none');
+        }
+
+        let imgEl = document.getElementById('pvModalImage');
+        let phEl = document.getElementById('pvModalImagePlaceholder');
+        if (product.image) {
+            imgEl.src = product.image;
+            imgEl.classList.remove('d-none');
+            phEl.classList.add('d-none');
+        } else {
+            imgEl.classList.add('d-none');
+            phEl.classList.remove('d-none');
+        }
+
+        let stockBadge = document.getElementById('pvModalStockBadge');
+        let addBtn = document.getElementById('pvModalAddBtn');
+        if (product.stock <= 0) {
+            stockBadge.innerText = 'Out of Stock';
+            stockBadge.className = 'position-absolute top-0 end-0 badge bg-danger m-3 fs-6 px-3 py-2 rounded-pill shadow-sm';
+            addBtn.disabled = true;
+            addBtn.innerHTML = '<i class="ri-close-circle-line me-1"></i> Out of Stock';
+        } else {
+            stockBadge.innerText = 'Stock: ' + product.stock + ' ' + product.unit;
+            stockBadge.className = 'position-absolute top-0 end-0 badge bg-success m-3 fs-6 px-3 py-2 rounded-pill shadow-sm';
+            addBtn.disabled = false;
+            addBtn.innerHTML = '<i class="ri-shopping-cart-2-line me-1"></i> Add to Cart & Continue Billing';
+        }
+
+        document.getElementById('pvModalQtyInput').value = 1;
+        updatePvModalTotal();
+
+        let modalEl = document.getElementById('posProductViewModal');
+        let modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+    }
+
+    function changePvModalQty(delta) {
+        let input = document.getElementById('pvModalQtyInput');
+        let val = (parseInt(input.value) || 1) + delta;
+        if (val < 1) val = 1;
+        if (currentPvProduct && val > currentPvProduct.stock) {
+            val = currentPvProduct.stock;
+            Swal.fire({
+                icon: 'warning',
+                title: 'Stock Limit Reached',
+                text: `Only ${currentPvProduct.stock} units available.`,
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+        input.value = val;
+        updatePvModalTotal();
+    }
+
+    function updatePvModalTotal() {
+        if (!currentPvProduct) return;
+        let qty = parseInt(document.getElementById('pvModalQtyInput').value) || 1;
+        let total = currentPvProduct.price * qty;
+        document.getElementById('pvModalItemTotal').innerText = '₹' + total.toFixed(2);
+    }
+
+    function addPvModalToCart() {
+        if (!currentPvProduct) return;
+        let qty = parseInt(document.getElementById('pvModalQtyInput').value) || 1;
+        
+        let existing = posCart.find(i => i.id === currentPvProduct.id);
+        if (existing) {
+            if (existing.quantity + qty > currentPvProduct.stock) {
+                Swal.fire('Stock Exceeded', `Cannot add ${qty} more. Stock limit is ${currentPvProduct.stock}.`, 'warning');
+                return;
+            }
+            existing.quantity += qty;
+        } else {
+            posCart.push({
+                id: currentPvProduct.id,
+                name: currentPvProduct.name,
+                price: currentPvProduct.price,
+                stock: currentPvProduct.stock,
+                unit: currentPvProduct.unit,
+                quantity: qty
+            });
+        }
+        renderCart();
+
+        let modalEl = document.getElementById('posProductViewModal');
+        let modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Added to Cart',
+            text: `${qty} x ${currentPvProduct.name} added to cart.`,
+            timer: 1200,
+            showConfirmButton: false
+        });
+    }
+
     function validateCustomerSelection() {
         let type = document.getElementById('posCustomerType').value;
         let customerId = document.getElementById('posCustomerId').value;
@@ -761,6 +1113,18 @@
         if (!validateCustomerSelection()) {
             return;
         }
+
+        let customerType = document.getElementById('posCustomerType').value;
+        let customerId = document.getElementById('posCustomerId').value;
+        let customerName = document.getElementById('posCustomerName').value;
+        let customerPhone = document.getElementById('posCustomerPhone').value;
+        let paymentMethod = document.getElementById('posPaymentMethod').value;
+        let discountType = document.getElementById('posDiscountTypeSelect')?.value || 'amount';
+        let discountVal = parseFloat(document.getElementById('posDiscountInput').value) || 0;
+        let subtotal = posCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        let calculatedDiscount = discountType === 'percent' ? (subtotal * discountVal) / 100 : discountVal;
+        let discountAmount = Math.min(subtotal, Math.max(0, calculatedDiscount));
+        let amountTendered = parseFloat(document.getElementById('posAmountTendered').value) || 0;
 
         let btn = document.getElementById('posSubmitBtn');
         btn.disabled = true;
@@ -882,7 +1246,7 @@
                 document.getElementById('quoModalPdfBtn').href = res.quotation_url;
                 document.getElementById('quoModalPhoneInput').value = res.customer_phone ? res.customer_phone.replace(/[^0-9]/g, '') : '';
 
-                var quoModal = new bootstrap.Modal(document.getElementById('posQuotationModal'));
+                var quoModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('posQuotationModal'));
                 quoModal.show();
             } else {
                 Swal.fire('Quotation Error', res.message || 'Failed to create quotation.', 'error');
@@ -912,5 +1276,15 @@
 
         window.open(waUrl, '_blank');
     }
+
+    // Ensure smooth modal cleanup and avoid leftover backdrops freezing the screen in POS
+    document.addEventListener('hidden.bs.modal', function() {
+        if (document.querySelectorAll('.modal.show').length === 0) {
+            document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+            document.body.classList.remove('modal-open');
+            document.body.style.removeProperty('overflow');
+            document.body.style.removeProperty('padding-right');
+        }
+    });
 </script>
 @endsection

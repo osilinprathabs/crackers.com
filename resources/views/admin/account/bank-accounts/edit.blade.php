@@ -52,14 +52,6 @@
           </select>
         </div>
         <div class="col-md-2">
-          <label class="form-label">{{ __('GL account') }}</label>
-          <select name="gl_account_id" class="form-select" required>
-            @foreach ($chartofaccounts as $g)
-              <option value="{{ $g->id }}" @selected(old('gl_account_id', $bankaccount->gl_account_id) == $g->id)>{{ $g->account_code }} — {{ $g->account_name }}</option>
-            @endforeach
-          </select>
-        </div>
-        <div class="col-md-2">
           <label class="form-label">{{ __('Opening') }}</label>
           <input type="number" step="0.01" name="opening_balance" value="{{ old('opening_balance', $bankaccount->opening_balance) }}" class="form-control" required>
         </div>

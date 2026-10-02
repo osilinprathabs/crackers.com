@@ -17,7 +17,7 @@ class CrackersOrderAdminController extends Controller
         $dateFrom = $request->query('date_from');
         $dateTo = $request->query('date_to');
 
-        $query = CrackersOrder::with('items');
+        $query = CrackersOrder::with(['items', 'bankAccount']);
 
         // Helper to apply date constraints
         $applyDateFilter = function(&$q) use ($dateFilter, $dateFrom, $dateTo) {
@@ -103,8 +103,18 @@ class CrackersOrderAdminController extends Controller
         $totalPeriodRevenue = (clone $query)->where('status', '!=', 'cancelled')->sum('grand_total');
 
         $orders = $query->latest()->paginate(20)->withQueryString();
+        $activeBanks = \App\Models\CrackersBankAccount::where('is_active', true)->get();
 
-        return view('admin.orders.index', compact('orders', 'search', 'status', 'orderType', 'statusCounts', 'dateFilter', 'dateFrom', 'dateTo', 'totalPeriodRevenue'));
+        if ($request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'success' => true,
+                'html' => view('admin.orders.partials.orders_table', compact('orders', 'search', 'status', 'orderType', 'statusCounts', 'dateFilter', 'dateFrom', 'dateTo', 'totalPeriodRevenue', 'activeBanks'))->render(),
+                'statusCounts' => $statusCounts,
+                'totalPeriodRevenue' => number_format($totalPeriodRevenue, 2),
+            ]);
+        }
+
+        return view('admin.orders.index', compact('orders', 'search', 'status', 'orderType', 'statusCounts', 'dateFilter', 'dateFrom', 'dateTo', 'totalPeriodRevenue', 'activeBanks'));
     }
 
     public function updateStatus(Request $request, $id)
@@ -150,14 +160,18 @@ class CrackersOrderAdminController extends Controller
     public function updatePaymentStatus(Request $request, $id)
     {
         $validated = $request->validate([
-            'payment_status' => 'required|in:pending,paid,failed,refunded',
+            'payment_status' => 'required|in:pending,customer_paid,paid,failed,refunded',
             'payment_method' => 'nullable|string|max:50',
+            'bank_account_id' => 'nullable|exists:crackers_bank_accounts,id',
         ]);
 
         $order = CrackersOrder::findOrFail($id);
         $order->payment_status = $validated['payment_status'];
         if (!empty($validated['payment_method'])) {
             $order->payment_method = $validated['payment_method'];
+        }
+        if ($request->has('bank_account_id')) {
+            $order->bank_account_id = $validated['bank_account_id'];
         }
         $order->save();
 

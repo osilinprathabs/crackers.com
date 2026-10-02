@@ -64,7 +64,7 @@ class DashboardController extends Controller
         }
 
         // Global Totals
-        $totalCustomers = Customer::count();
+        $totalCustomers = Customer::realCustomers()->count();
         $totalOrders = CrackersOrder::count();
         $totalSales = CrackersOrder::where('payment_status', 'paid')->sum('grand_total') ?: CrackersOrder::sum('grand_total');
         $totalProducts = CrackersProduct::count();

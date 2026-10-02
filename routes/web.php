@@ -696,6 +696,7 @@ Route::post('/crackers/place-order', [\App\Http\Controllers\CrackersStoreControl
 Route::get('/crackers/order-success/{orderNumber}', [\App\Http\Controllers\CrackersStoreController::class, 'orderSuccess'])->name('crackers.order-success');
 Route::get('/crackers/order/{orderNumber}/invoice', [\App\Http\Controllers\CrackersStoreController::class, 'downloadInvoice'])->name('crackers.order-invoice');
 Route::post('/crackers/order/{orderNumber}/upload-payment-proof', [\App\Http\Controllers\CrackersStoreController::class, 'uploadPaymentProof'])->name('crackers.upload-payment-proof');
+Route::get('/crackers/price-list/{type?}', [\App\Http\Controllers\CrackersStoreController::class, 'downloadPriceList'])->name('crackers.price-list');
 
 
 
@@ -704,7 +705,7 @@ Route::get('/crackers/login', [\App\Http\Controllers\CustomerStoreAuthController
 Route::post('/crackers/login', [\App\Http\Controllers\CustomerStoreAuthController::class, 'login'])->name('crackers.login');
 Route::get('/crackers/register', [\App\Http\Controllers\CustomerStoreAuthController::class, 'showRegisterForm'])->name('crackers.register-page');
 Route::post('/crackers/register', [\App\Http\Controllers\CustomerStoreAuthController::class, 'register'])->name('crackers.register');
-Route::post('/crackers/logout', [\App\Http\Controllers\CustomerStoreAuthController::class, 'logout'])->name('crackers.logout');
+Route::any('/crackers/logout', [\App\Http\Controllers\CustomerStoreAuthController::class, 'logout'])->name('crackers.logout');
 Route::get('/crackers/my-orders', [\App\Http\Controllers\CustomerStoreAuthController::class, 'myOrders'])->name('crackers.my-orders');
 Route::get('/crackers/profile', [\App\Http\Controllers\CustomerStoreAuthController::class, 'showProfile'])->name('crackers.profile');
 Route::post('/crackers/profile', [\App\Http\Controllers\CustomerStoreAuthController::class, 'updateProfile'])->name('crackers.profile.update');

@@ -17,6 +17,8 @@ class CrackersBankAccount extends Model
         'account_number',
         'ifsc_code',
         'branch_name',
+        'upi_id',
+        'qr_code',
         'is_active',
     ];
 

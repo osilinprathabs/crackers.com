@@ -45,21 +45,9 @@ class BankAccountController extends Controller
                 ->paginate(request('per_page', 20))
                 ->withQueryString();
 
-            $usedGlIds = BankAccount::where('created_by', creatorId())->pluck('gl_account_id')->toArray();
-            
-            $chartofaccounts = ChartOfAccount::where('created_by', creatorId())
-                ->where('is_active', true)
-                ->whereHas('accountType.category', function($q) {
-                    $q->where('type', 'assets');
-                })
-                ->whereNotIn('id', $usedGlIds)
-                ->select('id', 'account_code', 'account_name')
-                ->orderBy('account_code')
-                ->get();
-
             return view('admin.account.bank-accounts.index', [
                 'bankaccounts' => $bankaccounts,
-                'chartofaccounts' => $chartofaccounts,
+                'chartofaccounts' => collect(),
             ]);
         }
         else{
@@ -124,7 +112,6 @@ class BankAccountController extends Controller
                 'bank' => $ba->bank_name,
                 'branch' => $ba->branch_name ?? '—',
                 'type' => $ba->account_type,
-                'gl' => $ba->gl_account?->account_code ? ($ba->gl_account->account_code . ' — ' . $ba->gl_account->account_name) : '—',
                 'opening' => '₹' . number_format((float) ($ba->opening_balance ?? 0), 2),
                 'current' => '₹' . number_format((float) ($ba->current_balance ?? 0), 2),
                 'active' => $ba->is_active ? __('Yes') : __('No'),
@@ -137,7 +124,6 @@ class BankAccountController extends Controller
             'bank' => '',
             'branch' => '',
             'type' => '',
-            'gl' => '',
             'opening' => '₹' . number_format($totalOpening, 2),
             'current' => '₹' . number_format($totalCurrent, 2),
             'active' => '',
@@ -149,7 +135,6 @@ class BankAccountController extends Controller
             ['key' => 'bank', 'label' => __('Bank')],
             ['key' => 'branch', 'label' => __('Branch')],
             ['key' => 'type', 'label' => __('Type')],
-            ['key' => 'gl', 'label' => __('GL')],
             ['key' => 'opening', 'label' => __('Opening'), 'class' => 'text-end'],
             ['key' => 'current', 'label' => __('Current'), 'class' => 'text-end'],
             ['key' => 'active', 'label' => __('Active')],
@@ -200,24 +185,9 @@ class BankAccountController extends Controller
             abort(403);
         }
 
-        $usedGlIds = BankAccount::where('created_by', creatorId())
-            ->where('id', '!=', $bankaccount->id)
-            ->pluck('gl_account_id')
-            ->toArray();
-
-        $chartofaccounts = ChartOfAccount::where('created_by', creatorId())
-            ->where('is_active', true)
-            ->whereHas('accountType.category', function($q) {
-                $q->where('type', 'assets');
-            })
-            ->whereNotIn('id', $usedGlIds)
-            ->select('id', 'account_code', 'account_name')
-            ->orderBy('account_code')
-            ->get();
-
         return view('admin.account.bank-accounts.edit', [
-            'bankaccount' => $bankaccount->load('gl_account'),
-            'chartofaccounts' => $chartofaccounts,
+            'bankaccount' => $bankaccount,
+            'chartofaccounts' => collect(),
         ]);
     }
 
@@ -239,21 +209,32 @@ class BankAccountController extends Controller
             $bankaccount->iban = $validated['iban'] ?? null;
             $bankaccount->swift_code = $validated['swift_code'] ?? null;
             $bankaccount->routing_number = $validated['routing_number'] ?? null;
+            $bankaccount->upi_id = $validated['upi_id'] ?? null;
+
+            if ($request->hasFile('qr_code')) {
+                $file = $request->file('qr_code');
+                $filename = 'bank_qr_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/bank_qr'), $filename);
+                $bankaccount->qr_code = 'uploads/bank_qr/' . $filename;
+            }
+
             $bankaccount->is_active = $validated['is_active'];
-            $bankaccount->gl_account_id = $validated['gl_account_id'];
+            $bankaccount->gl_account_id = $validated['gl_account_id'] ?? null;
             $bankaccount->creator_id = Auth::id();
             $bankaccount->created_by = creatorId();
             $bankaccount->save();
 
             // Sync with GL Account
-            if ($bankaccount->opening_balance > 0) {
+            if (!empty($bankaccount->gl_account_id) && $bankaccount->opening_balance > 0) {
                 $glAccount = \App\Models\Account\ChartOfAccount::find($bankaccount->gl_account_id);
                 if ($glAccount) {
                     $glAccount->opening_balance += $bankaccount->opening_balance;
                     $glAccount->current_balance += $bankaccount->opening_balance;
                     $glAccount->save();
                 }
+            }
 
+            if ($bankaccount->opening_balance > 0) {
                 // Add Opening Balance to Bank Transaction Log
                 $initialTransaction = new \App\Models\Account\BankTransaction();
                 $initialTransaction->bank_account_id = $bankaccount->id;
@@ -269,12 +250,28 @@ class BankAccountController extends Controller
                 $initialTransaction->save();
             }
 
+            if (class_exists('\App\Models\CrackersBankAccount')) {
+                \App\Models\CrackersBankAccount::updateOrCreate(
+                    ['account_number' => $bankaccount->account_number],
+                    [
+                        'bank_name' => $bankaccount->bank_name,
+                        'account_holder' => $bankaccount->account_name,
+                        'account_number' => $bankaccount->account_number,
+                        'ifsc_code' => $bankaccount->swift_code ?: 'SBIN0000000',
+                        'branch_name' => $bankaccount->branch_name ?? '',
+                        'upi_id' => $bankaccount->upi_id,
+                        'qr_code' => $bankaccount->qr_code,
+                        'is_active' => $bankaccount->is_active,
+                    ]
+                );
+            }
+
             CreateBankAccount::dispatch($request, $bankaccount);
 
-            return redirect()->route('account.bank-accounts.index')->with('success', __('The bank account has been created successfully.'));
+            return redirect()->back()->with('success', __('The bank account has been created successfully.'));
         }
         else{
-            return redirect()->route('account.bank-accounts.index')->with('error', __('Permission denied'));
+            return redirect()->back()->with('error', __('Permission denied'));
         }
     }
 
@@ -302,8 +299,17 @@ class BankAccountController extends Controller
             $bankaccount->iban = $validated['iban'] ?? null;
             $bankaccount->swift_code = $validated['swift_code'] ?? null;
             $bankaccount->routing_number = $validated['routing_number'] ?? null;
+            $bankaccount->upi_id = $validated['upi_id'] ?? null;
+
+            if ($request->hasFile('qr_code')) {
+                $file = $request->file('qr_code');
+                $filename = 'bank_qr_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/bank_qr'), $filename);
+                $bankaccount->qr_code = 'uploads/bank_qr/' . $filename;
+            }
+
             $bankaccount->is_active = $validated['is_active'];
-            $bankaccount->gl_account_id = $validated['gl_account_id'];
+            $bankaccount->gl_account_id = array_key_exists('gl_account_id', $validated) ? $validated['gl_account_id'] : $oldGlId;
             $bankaccount->save();
 
             $newGlId = $bankaccount->gl_account_id;
@@ -312,7 +318,7 @@ class BankAccountController extends Controller
             // Sync GL Account
             if ($oldGlId != $newGlId) {
                 // Subtract from old GL
-                if ($oldOpeningBalance > 0) {
+                if ($oldGlId && $oldOpeningBalance > 0) {
                     $oldGl = \App\Models\Account\ChartOfAccount::find($oldGlId);
                     if ($oldGl) {
                         $oldGl->opening_balance -= $oldOpeningBalance;
@@ -321,7 +327,7 @@ class BankAccountController extends Controller
                     }
                 }
                 // Add to new GL
-                if ($newOpeningBalance > 0) {
+                if ($newGlId && $newOpeningBalance > 0) {
                     $newGl = \App\Models\Account\ChartOfAccount::find($newGlId);
                     if ($newGl) {
                         $newGl->opening_balance += $newOpeningBalance;
@@ -329,7 +335,7 @@ class BankAccountController extends Controller
                         $newGl->save();
                     }
                 }
-            } else if ($oldOpeningBalance != $newOpeningBalance) {
+            } else if ($newGlId && $oldOpeningBalance != $newOpeningBalance) {
                 // Update same GL
                 $glAccount = \App\Models\Account\ChartOfAccount::find($newGlId);
                 if ($glAccount) {
@@ -362,12 +368,32 @@ class BankAccountController extends Controller
                 $adjTransaction->save();
             }
 
+            if (class_exists('\App\Models\CrackersBankAccount')) {
+                $oldAccNo = $bankaccount->getOriginal('account_number');
+                if ($oldAccNo && $oldAccNo !== $bankaccount->account_number) {
+                    \App\Models\CrackersBankAccount::where('account_number', $oldAccNo)->delete();
+                }
+                \App\Models\CrackersBankAccount::updateOrCreate(
+                    ['account_number' => $bankaccount->account_number],
+                    [
+                        'bank_name' => $bankaccount->bank_name,
+                        'account_holder' => $bankaccount->account_name,
+                        'account_number' => $bankaccount->account_number,
+                        'ifsc_code' => $bankaccount->swift_code ?: 'SBIN0000000',
+                        'branch_name' => $bankaccount->branch_name ?? '',
+                        'upi_id' => $bankaccount->upi_id,
+                        'qr_code' => $bankaccount->qr_code,
+                        'is_active' => $bankaccount->is_active,
+                    ]
+                );
+            }
+
             UpdateBankAccount::dispatch($request, $bankaccount);
 
             return redirect()->back()->with('success', __('The bank account details are updated successfully.'));
         }
         else{
-            return redirect()->route('account.bank-accounts.index')->with('error', __('Permission denied'));
+            return redirect()->back()->with('error', __('Permission denied'));
         }
     }
 
@@ -377,7 +403,7 @@ class BankAccountController extends Controller
             DestroyBankAccount::dispatch($bankaccount);
             
             // Reverse GL Account sync
-            if ($bankaccount->opening_balance > 0) {
+            if (!empty($bankaccount->gl_account_id) && $bankaccount->opening_balance > 0) {
                 $glAccount = \App\Models\Account\ChartOfAccount::find($bankaccount->gl_account_id);
                 if ($glAccount) {
                     $glAccount->opening_balance -= $bankaccount->opening_balance;
@@ -386,12 +412,16 @@ class BankAccountController extends Controller
                 }
             }
 
+            if (class_exists('\App\Models\CrackersBankAccount')) {
+                \App\Models\CrackersBankAccount::where('account_number', $bankaccount->account_number)->delete();
+            }
+
             $bankaccount->delete();
 
             return redirect()->back()->with('success', __('The bank account has been deleted.'));
         }
         else{
-            return redirect()->route('account.bank-accounts.index')->with('error', __('Permission denied'));
+            return redirect()->back()->with('error', __('Permission denied'));
         }
     }
 

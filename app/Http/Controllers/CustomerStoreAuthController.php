@@ -19,7 +19,7 @@ class CustomerStoreAuthController extends Controller
             if (method_exists($user, 'hasAnyRole') && $user->hasAnyRole(['Admin', 'Agent', 'Staff', 'Super Admin'])) {
                 return redirect()->route('dashboard');
             }
-            return redirect()->route('crackers.my-orders');
+            return redirect()->route('crackers.profile');
         }
         return view('crackers.auth.login');
     }
@@ -27,7 +27,7 @@ class CustomerStoreAuthController extends Controller
     public function showRegisterForm()
     {
         if (Auth::check()) {
-            return redirect()->route('crackers.my-orders');
+            return redirect()->route('crackers.profile');
         }
         return view('crackers.auth.register');
     }
@@ -55,7 +55,7 @@ class CustomerStoreAuthController extends Controller
         Auth::login($user, true);
 
         $isAdmin = method_exists($user, 'hasAnyRole') && $user->hasAnyRole(['Admin', 'Agent', 'Staff', 'Super Admin']);
-        $redirectUrl = $isAdmin ? route('dashboard') : route('crackers.my-orders');
+        $redirectUrl = $isAdmin ? route('dashboard') : route('crackers.profile');
 
         // Flash login celebration flags to session
         session()->flash('show_login_celebration', true);
@@ -130,11 +130,11 @@ class CustomerStoreAuthController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Account created successfully!',
-                    'redirect_url' => route('crackers.my-orders'),
+                    'redirect_url' => route('crackers.profile'),
                 ]);
             }
 
-            return redirect()->route('crackers.my-orders')->with('success', 'Account created successfully!');
+            return redirect()->route('crackers.profile')->with('success', 'Account created successfully!');
         });
     }
 
@@ -154,7 +154,7 @@ class CustomerStoreAuthController extends Controller
 
         $user = Auth::user();
         $customer = Customer::where('user_id', $user->id)->first();
-        $orders = CrackersOrder::with('items')
+        $orders = CrackersOrder::with(['items', 'bankAccount'])
             ->where(function($q) use ($user) {
                 $q->where('customer_phone', $user->phone);
                 if ($user->email) {

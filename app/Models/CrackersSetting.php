@@ -145,4 +145,15 @@ class CrackersSetting extends Model
         }
         return 'https://wa.me/' . $digits;
     }
+
+    public function getGstNumberAttribute()
+    {
+        if (class_exists('\App\Models\CompanyDetail')) {
+            $cd = \App\Models\CompanyDetail::first();
+            if ($cd && !empty($cd->gst_number)) {
+                return $cd->gst_number;
+            }
+        }
+        return '33AAAAA0000A1Z5';
+    }
 }

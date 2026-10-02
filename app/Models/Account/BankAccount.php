@@ -23,6 +23,8 @@ class BankAccount extends Model
         'iban',
         'swift_code',
         'routing_number',
+        'upi_id',
+        'qr_code',
         'is_active',
         'gl_account_id',
         'creator_id',
@@ -59,9 +61,12 @@ class BankAccount extends Model
                 static::updateOrCreate(
                     ['account_number' => $sb->account_number],
                     [
-                        'account_name' => ($sb->account_holder ? $sb->account_holder . ' (' . $sb->bank_name . ')' : $sb->bank_name),
+                        'account_name' => $sb->account_holder ?: $sb->bank_name,
                         'bank_name' => $sb->bank_name ?: 'Bank',
                         'branch_name' => $sb->branch_name ?? '',
+                        'swift_code' => $sb->ifsc_code ?? null,
+                        'upi_id' => $sb->upi_id ?? null,
+                        'qr_code' => $sb->qr_code ?? null,
                         'account_type' => 'savings',
                         'opening_balance' => 0,
                         'current_balance' => 0,

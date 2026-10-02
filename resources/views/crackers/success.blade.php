@@ -237,7 +237,29 @@
                         <div class="col-md-6 text-md-end">
                             <small class="text-muted fw-bold d-block">PAYMENT INFORMATION:</small>
                             <div class="fw-bold text-info">{{ str_replace('_', ' ', $order->payment_method) }}</div>
-                            <div class="small text-muted">Payment Status: <span class="badge bg-warning text-dark">{{ ucfirst($order->payment_status) }}</span></div>
+                            @if($order->bankAccount)
+                                <div class="small text-dark fw-bold mt-1"><i class="ri-bank-line text-warning me-1"></i>Bank: {{ $order->bankAccount->bank_name }} (A/C: {{ $order->bankAccount->account_number }})</div>
+                            @endif
+                            @php
+                                $payBadgeClass = match($order->payment_status) {
+                                    'paid' => 'bg-success text-white',
+                                    'customer_paid', 'unverified_paid' => 'text-white',
+                                    'failed', 'refunded' => 'bg-danger text-white',
+                                    default => 'bg-warning text-dark',
+                                };
+                                $payBadgeStyle = match($order->payment_status) {
+                                    'customer_paid', 'unverified_paid' => 'background-color: #fd7e14 !important;',
+                                    default => '',
+                                };
+                                $payBadgeText = match($order->payment_status) {
+                                    'paid' => 'Paid (Admin Verified)',
+                                    'customer_paid', 'unverified_paid' => 'Customer Paid (Pending Admin Verification)',
+                                    'failed' => 'Failed',
+                                    'refunded' => 'Refunded',
+                                    default => 'Pending',
+                                };
+                            @endphp
+                            <div class="small text-muted mt-1">Payment Status: <span class="badge {{ $payBadgeClass }} px-3 py-1 rounded-pill" style="{{ $payBadgeStyle }}">{{ $payBadgeText }}</span></div>
                             <div class="small text-muted">Placed Date: {{ $order->created_at ? $order->created_at->format('d M Y, h:i A') : date('d M Y') }}</div>
                         </div>
                     </div>

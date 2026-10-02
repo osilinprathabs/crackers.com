@@ -59,8 +59,9 @@ class CrackersStoreController extends Controller
         $heroBanners = \App\Models\Slide::where('type', 'banner')->latest()->get();
         $appearance = \App\Models\Appearance::where('type', 'web')->first();
         $companyDetail = \App\Models\CompanyDetail::first();
+        $activeBanks = CrackersBankAccount::where('is_active', true)->get();
 
-        return view('crackers.index', compact('products', 'categories', 'featuredProducts', 'category', 'search', 'settings', 'customerType', 'heroBanners', 'appearance', 'companyDetail'));
+        return view('crackers.index', compact('products', 'categories', 'featuredProducts', 'category', 'search', 'settings', 'customerType', 'heroBanners', 'appearance', 'companyDetail', 'activeBanks'));
     }
 
     public function checkout(Request $request)
@@ -136,6 +137,7 @@ class CrackersStoreController extends Controller
                 'city' => 'nullable|string|max:100',
                 'pincode' => 'nullable|string|max:20',
                 'payment_method' => 'nullable|string',
+                'bank_account_id' => 'nullable|exists:crackers_bank_accounts,id',
                 'notes' => 'nullable|string',
                 'payment_proof' => 'nullable|image|max:5120',
                 'items' => 'required|array|min:1',
@@ -262,8 +264,9 @@ class CrackersStoreController extends Controller
                     'discount' => 0,
                     'grand_total' => $grandTotal,
                     'payment_method' => $validated['payment_method'] ?? 'COD',
+                    'bank_account_id' => $validated['bank_account_id'] ?? null,
                     'payment_proof' => $paymentProofPath,
-                    'payment_status' => 'pending',
+                    'payment_status' => ($validated['payment_method'] ?? 'COD') !== 'COD' ? 'customer_paid' : 'pending',
                     'status' => 'pending',
                     'notes' => $validated['notes'] ?? null,
                 ]);
@@ -324,7 +327,7 @@ class CrackersStoreController extends Controller
 
     public function orderSuccess($orderNumber)
     {
-        $order = CrackersOrder::with('items')->where('order_number', $orderNumber)->firstOrFail();
+        $order = CrackersOrder::with(['items', 'bankAccount'])->where('order_number', $orderNumber)->firstOrFail();
         $settings = CrackersSetting::getSettings();
         $activeBanks = CrackersBankAccount::where('is_active', true)->get();
         return view('crackers.success', compact('order', 'settings', 'activeBanks'));
@@ -332,7 +335,7 @@ class CrackersStoreController extends Controller
 
     public function downloadInvoice($orderNumber)
     {
-        $order = CrackersOrder::with('items')->where('order_number', $orderNumber)->firstOrFail();
+        $order = CrackersOrder::with(['items', 'bankAccount'])->where('order_number', $orderNumber)->firstOrFail();
         $settings = CrackersSetting::getSettings();
         $activeBanks = CrackersBankAccount::where('is_active', true)->get();
         return view('crackers.invoice', compact('order', 'settings', 'activeBanks'));
@@ -357,6 +360,9 @@ class CrackersStoreController extends Controller
 
             $file->move($destinationPath, $filename);
             $order->payment_proof = 'uploads/payment_proofs/' . $filename;
+            if ($order->payment_status === 'pending') {
+                $order->payment_status = 'customer_paid';
+            }
             $order->save();
         }
 
@@ -369,5 +375,26 @@ class CrackersStoreController extends Controller
         }
 
         return redirect()->back()->with('success', 'Payment proof screenshot uploaded successfully!');
+    }
+
+    /**
+     * Generate Category-Wise Crackers Price List (Retail & Wholesale) with Images & Printable Layout
+     */
+    public function downloadPriceList(Request $request, $type = 'retail')
+    {
+        $mode = strtolower($type) === 'wholesale' ? 'wholesale' : 'retail';
+
+        $productsGrouped = CrackersProduct::where('status', true)
+            ->orderBy('category', 'asc')
+            ->orderBy('name', 'asc')
+            ->get()
+            ->groupBy(function($item) {
+                return !empty($item->category) ? $item->category : 'General Crackers';
+            });
+
+        $settings = CrackersSetting::getSettings();
+        $bankAccounts = CrackersBankAccount::where('is_active', true)->get();
+
+        return view('crackers.price_list_pdf', compact('productsGrouped', 'mode', 'settings', 'bankAccounts'));
     }
 }

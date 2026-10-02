@@ -82,14 +82,23 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
+            try {
+                if (Auth::check()) {
+                    Auth::logout();
+                }
+                if ($request->hasSession()) {
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                }
+            } catch (\Throwable) {}
+
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json([
                     'message' => 'Your session has expired due to inactivity. Please reload the page.',
                     'csrf_token' => csrf_token(),
                 ], 419);
             }
-            return redirect()->route('login')
-                ->with('warning', 'Your session has expired due to inactivity. Please log in again.');
+            return redirect('/')->with('warning', 'Your session has expired due to inactivity.');
         });
 
         $exceptions->render(function (Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
@@ -104,6 +113,25 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
+            if ($e->getStatusCode() == 419) {
+                try {
+                    if (Auth::check()) {
+                        Auth::logout();
+                    }
+                    if ($request->hasSession()) {
+                        $request->session()->invalidate();
+                        $request->session()->regenerateToken();
+                    }
+                } catch (\Throwable) {}
+
+                if ($request->expectsJson() || $request->is('api/*')) {
+                    return response()->json([
+                        'message' => 'Your session has expired due to inactivity.',
+                        'csrf_token' => csrf_token(),
+                    ], 419);
+                }
+                return redirect('/')->with('warning', 'Your session has expired due to inactivity.');
+            }
             if ($e->getStatusCode() == 500) {
                 return response()->view('error.500', [], 500);
             }

@@ -41,8 +41,8 @@ class DashboardController extends Controller
         $totalGst = CrackersOrder::sum('gst_amount');
         $inventoryValuation = CrackersProduct::selectRaw('SUM(stock * price) as val')->value('val') ?: 0;
 
-        $retailCustomersCount = Customer::where('customer_type', 'retail')->orWhereNull('customer_type')->count();
-        $wholesaleCustomersCount = Customer::where('customer_type', 'wholesale')->count();
+        $retailCustomersCount = Customer::realCustomers()->where(function($q) { $q->where('customer_type', 'retail')->orWhereNull('customer_type'); })->count();
+        $wholesaleCustomersCount = Customer::realCustomers()->where('customer_type', 'wholesale')->count();
         $totalOrdersCount = CrackersOrder::count();
 
         // GL Ledger Revenue & Expense Totals
